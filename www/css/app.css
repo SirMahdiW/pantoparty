@@ -535,7 +535,7 @@ body {
   line-height: 1;
   color: var(--primary);
 }
-.stat-card span { font-size: var(--fs-xs); color: var(--text-faint); line-height: 1.6; }
+.stat-card .sc-lbl { font-size: var(--fs-xs); color: var(--text-faint); line-height: 1.6; }
 
 /* ---------- فهرست ---------- */
 .list { display: grid; gap: var(--s-2); }
@@ -788,6 +788,40 @@ body {
   line-height: 1.45;
   text-align: center;
   color: var(--text-dim);
+}
+
+/* ---------- نشانگر وضعیت امتیازهای هر دسته (برای تیم فعال) ---------- */
+.cat-dots {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 8px;
+}
+.cat-dots .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: block;
+  background: var(--success);
+  box-shadow: 0 0 0 2px var(--success-soft);
+}
+.cat-dots .dot.is-used {
+  background: var(--danger);
+  box-shadow: 0 0 0 2px var(--danger-soft);
+}
+.cat-tile.is-done { opacity: .55; }
+.cat-tile.is-done .cat-name { color: var(--text-faint); }
+
+/* چیپ قفل‌شده (کارت مصرف‌شده‌ی تیم فعال) */
+.chip.is-used,
+.chip[disabled] {
+  color: var(--danger);
+  background: var(--danger-soft);
+  border-color: color-mix(in srgb, var(--danger) 28%, transparent);
+  cursor: not-allowed;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
 }
 
 /* ---------- شیت / مودال ---------- */

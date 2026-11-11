@@ -279,17 +279,17 @@
     statGrid.appendChild(h(
       '<button type="button" class="stat-card" data-stats>' +
       '<span class="orb orb-sm sc-orb" style="--orb:#6D28D9">' + Icons.get('chart') + '</span>' +
-      '<b>' + fa(s.games) + '</b><span>بازی انجام‌شده</span></button>'
+      '<b>' + fa(s.games) + '</b><span class="sc-lbl">بازی انجام‌شده</span></button>'
     ));
     statGrid.appendChild(h(
       '<button type="button" class="stat-card" data-stats>' +
       '<span class="orb orb-sm sc-orb" style="--orb:#0891B2">' + Icons.get('target') + '</span>' +
-      '<b>' + fa(s.words) + '</b><span>کلمه‌ی بازی‌شده</span></button>'
+      '<b>' + fa(s.words) + '</b><span class="sc-lbl">کلمه‌ی بازی‌شده</span></button>'
     ));
     statGrid.appendChild(h(
       '<button type="button" class="stat-card" data-history>' +
       '<span class="orb orb-sm sc-orb" style="--orb:#4F46E5">' + Icons.get('history') + '</span>' +
-      '<b>' + fa(Store.history.length) + '</b><span>بازی اخیر</span></button>'
+      '<b>' + fa(Store.history.length) + '</b><span class="sc-lbl">بازی اخیر</span></button>'
     ));
     el.appendChild(statGrid);
 
@@ -509,7 +509,7 @@
     });
     var team = engine.team(engine.turnIndex);
     groups.forEach(function (g) {
-      if (g.name === 'ضرب المثل' && team.proverbState) {
+      if (g.name === 'ضرب المثل' && (team.proverbState || engine.isCardUsed(engine.turnIndex, 50, 20))) {
         g.items = g.items.filter(function (i) { return i.score !== 20; });
       }
     });
@@ -551,13 +551,22 @@
       var grid = sec.querySelector('.cat-grid');
       g.items.forEach(function (c) {
         var ic = CAT_ICON[c.cid] || 'grid';
+        var opts = engine.cardOptions(c);
+        var used = opts.map(function (sc) { return engine.isCardUsed(engine.turnIndex, c.cid, sc); });
+        var allUsed = used.length > 0 && used.every(Boolean);
+        var dots = used.map(function (u) { return '<i class="dot' + (u ? ' is-used' : '') + '"></i>'; }).join('');
         var tile = h(
-          '<button type="button" class="cat-tile" style="--cat:' + c.color + '">' +
+          '<button type="button" class="cat-tile' + (allUsed ? ' is-done' : '') + '" style="--cat:' + c.color + '"' +
+          (allUsed ? ' aria-disabled="true"' : '') + '>' +
           '<span class="cat-ic">' + Icons.get(ic) + '</span>' +
           '<span class="cat-name">' + esc(c.fa) + '</span>' +
+          '<span class="cat-dots" aria-label="وضعیت امتیازهای این دسته">' + dots + '</span>' +
           '</button>'
         );
-        tile.addEventListener('click', function () { openCatDialog(c); });
+        tile.addEventListener('click', function () {
+          if (allUsed) { toast('همه‌ی امتیازهای «' + c.fa + '» برای این تیم استفاده شده'); return; }
+          openCatDialog(c);
+        });
         grid.appendChild(tile);
       });
       wrap.appendChild(sec);
@@ -604,11 +613,18 @@
       if (b.textContent.indexOf('ادامه') >= 0) contBtn = b;
     });
 
+    var opts = engine.cardOptions(c);
+    var firstFree = -1;
+    opts.forEach(function (sc) { if (firstFree < 0 && !engine.isCardUsed(engine.turnIndex, c.cid, sc)) firstFree = sc; });
+
     if (c.score === 0) {
-      catSel.score = 1;
-      [1, 2, 3].forEach(function (sc) {
-        var chip = h('<button type="button" class="chip" data-sc="' + sc + '">' + fa(sc) + ' امتیازی</button>');
+      catSel.score = firstFree >= 0 ? firstFree : opts[0];
+      opts.forEach(function (sc) {
+        var used = engine.isCardUsed(engine.turnIndex, c.cid, sc);
+        var chip = h('<button type="button" class="chip' + (used ? ' is-used' : '') + '" data-sc="' + sc + '"' + (used ? ' disabled aria-disabled="true"' : '') + '>' +
+          fa(sc) + ' امتیازی' + (used ? ' ✓' : '') + '</button>');
         chip.addEventListener('click', function () {
+          if (used) { toast('این امتیاز از «' + c.fa + '» برای این تیم استفاده شده'); return; }
           catSel.score = sc;
           paintSc();
           beep('click');
@@ -617,13 +633,18 @@
       });
       function paintSc() {
         row.querySelectorAll('[data-sc]').forEach(function (ch) {
-          ch.classList.toggle('is-on', Number(ch.dataset.sc) === catSel.score);
+          ch.classList.toggle('is-on', !ch.disabled && Number(ch.dataset.sc) === catSel.score);
         });
       }
       paintSc();
+      if (firstFree < 0) {
+        contBtn.disabled = true;
+      }
     } else {
-      row.appendChild(h('<span class="pill pill-accent">' + fa(c.score) + ' امتیازی</span>'));
-      if (contBtn) contBtn.classList.add('btn-lg');
+      var usedFixed = engine.isCardUsed(engine.turnIndex, c.cid, c.score);
+      row.appendChild(h('<span class="pill' + (usedFixed ? '' : ' pill-accent') + '">' + fa(c.score) + ' امتیازی' + (usedFixed ? ' ✓ استفاده‌شده' : '') + '</span>'));
+      if (usedFixed) { if (contBtn) contBtn.disabled = true; }
+      else if (contBtn) contBtn.classList.add('btn-lg');
     }
   }
 

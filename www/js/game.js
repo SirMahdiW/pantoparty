@@ -64,7 +64,8 @@
         score: 0,
         counter: 1,              // طبق اپ اصلی همه از ۱ شروع می‌کنند
         position: i === 0,       // تیم اول نوبت‌دار
-        proverbState: false      // ضرب‌المثل ۲۰ امتیازی — هر تیم فقط یک بار
+        proverbState: false,     // ضرب‌المثل ۲۰ امتیازی — هر تیم فقط یک بار
+        usedCards: {}            // کارت‌های انتخاب‌شده: کلید = "cid:score" (مستقل برای هر تیم)
       };
     });
     this.n = this.teams.length;
@@ -181,6 +182,8 @@
    * ================================================================ */
   Engine.prototype.startTurn = function (cid, score) {
     var team = this.teams[this.turnIndex];
+    /* قانون انتخاب کارت: هر تیم هر ترکیب «دسته + امتیاز» را فقط یک‌بار می‌تواند بردارد */
+    if (this.isCardUsed(this.turnIndex, cid, score)) return null;
     var t = {
       cid: cid,
       score: score,              // امتیاز انتخابی (برای ۶۹ ممکن است صفر باشد)
@@ -210,6 +213,7 @@
       t.wordScore = t.word.score;
     }
     this.turn = t;
+    this.markCardUsed(this.turnIndex, cid, score);
     return t;
   };
 
@@ -513,6 +517,36 @@
     }
     this.loadBoomWord();
     return 'next-word';
+  };
+
+  /* ================================================================
+   *  منطق انتخاب کارت — مستقل برای هر تیم
+   *
+   *  قانون: هر تیم از هر دسته‌بندی می‌تواند یک کارت 1 امتیازی، یک کارت 2 امتیازی
+   *  و یک کارت 3 امتیازی انتخاب کند؛ اما هیچ‌کدام را نمی‌تواند دوباره انتخاب کند.
+   *  کلید تشخیص = Team ID + Category ID + Point Value
+   * ================================================================ */
+
+  /* گزینه‌های امتیازی یک دسته: دسته‌های کلمه → 1/2/3 ، بقیه → امتیاز ثابت خودش */
+  Engine.prototype.cardOptions = function (cat) {
+    if (!cat) return [];
+    return (cat.score === 0) ? [1, 2, 3] : [cat.score];
+  };
+
+  /* آیا این تیم قبلاً این کارت (دسته + امتیاز) را انتخاب کرده است؟ */
+  Engine.prototype.isCardUsed = function (teamIdx, cid, score) {
+    var t = this.teams[teamIdx == null ? this.turnIndex : teamIdx];
+    if (!t || !t.usedCards) return false;
+    return !!t.usedCards[cid + ':' + score];
+  };
+
+  /* ثبت انتخاب کارت برای تیم */
+  Engine.prototype.markCardUsed = function (teamIdx, cid, score) {
+    var t = this.teams[teamIdx == null ? this.turnIndex : teamIdx];
+    if (!t) return false;
+    if (!t.usedCards) t.usedCards = {};
+    t.usedCards[cid + ':' + score] = true;
+    return true;
   };
 
   /* ================================================================
