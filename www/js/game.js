@@ -403,26 +403,37 @@
    * ================================================================ */
   Engine.prototype.startBoom = function () {
     this.boom = {
-      state: 1,                // 1=آماده  2=نمایان  3=در حال اجرا  4=نتیجه
+      state: 1,                // 1 = آماده، 2 = کلمه گرفته شد، 3 = در حال اجرا، 4 = نتیجه
       running: false,
       word: null,
       player: this.turnIndex,  // تیمی که گوشی دستشه
-      active: 0,               // تیم صاحب کلمه فعلی
+      active: this.turnIndex,  // تیم صاحب کلمه فعلی
       timeLeft: this.moreTime,
+      timeout: false,          // زمان تمام شد (دکمه غلط ظاهر می‌شود)
       finalRound: false
     };
+    this.loadBoomWord();
     return this.boom;
   };
 
-  /* پرس اول: نمایش کلمه + چرخش گروه‌ها + شمارنده++ */
-  Engine.prototype.boomReveal = function () {
+  /* کلمه بعدی — کلمه قبلی مصرف می‌شود و تایمر ریست می‌شود */
+  Engine.prototype.loadBoomWord = function () {
+    var b = this.boom;
+    if (!b) return null;
+    if (b.word) this.markUsed(0, b.word);
+    b.word = this.drawBoomWord();
+    b.timeLeft = this.moreTime;
+    b.timeout = false;
+    b.state = 1;
+    b.running = false;
+    return b.word;
+  };
+
+  /* پرس اول: تیم نوبت‌دار کلمه را می‌گیرد — شمارنده++ و نوبت به تیم بعدی */
+  Engine.prototype.boomClaim = function () {
     var b = this.boom;
     if (!b || b.state !== 1) return false;
-    var w = this.drawBoomWord();
-    if (!w) return false;
-    b.word = w;
     b.active = b.player;
-    b.state = 2;
 
     var team = this.teams[b.active];
     team.counter++;
@@ -431,8 +442,8 @@
     this.teams[b.player].position = true;
     this.turnIndex = b.player;
 
-    /* کلمه آخر؟ */
-    if (this.isOver()) b.finalRound = true;
+    b.timeLeft = this.moreTime;   // تایمر این کلمه آماده می‌شود
+    b.state = 2;
     return true;
   };
 
@@ -445,13 +456,16 @@
     return w;
   };
 
-  /* پرس دوم: شروع تایمر (زمان هر کلمه = moreTime) */
+  /* پرس دوم: شروع تایمر — زمان هر کلمه از نو (مثل اپ اصلی) */
   Engine.prototype.boomRun = function () {
     var b = this.boom;
     if (!b || b.state !== 2) return false;
     b.state = 3;
     b.running = true;
-    this.markUsed(0, b.word);
+    b.timeLeft = this.moreTime;   // رفع باگ: تایمر هر کلمه از صفر شروع می‌شود
+    b.timeout = false;
+    /* دور آخر — مثل اپ اصلی: شمارنده‌ی آخرین تیم از تعداد دور بیشتر شود */
+    if (this.isOver()) b.finalRound = true;
     return true;
   };
 
@@ -462,15 +476,16 @@
     if (b.timeLeft <= 0) {
       b.timeLeft = 0;
       b.running = false;
+      b.timeout = true;      // مثل اپ اصلی: بعد از پایان زمان دکمه «غلط» ظاهر می‌شود
       return 'timeout';
     }
     return b.timeLeft;
   };
 
-  /* درست: امتیاز = ثانیه‌های باقی‌مانده + ۱ */
+  /* درست: امتیاز = ثانیه‌های باقی‌مانده + 1 (اگر زمان تمام شده: 0+1=1 مثل اپ اصلی) */
   Engine.prototype.boomTrue = function () {
     var b = this.boom;
-    if (!b || b.state !== 3 || !b.running) return 0;
+    if (!b || b.state !== 3) return 0;
     b.running = false;
     b.state = 4;
     var gain = Math.floor(b.timeLeft) + 1;
@@ -478,7 +493,7 @@
     return gain;
   };
 
-  /* غلط / پایان زمان: صفر امتیاز */
+  /* غلط: صفر امتیاز (در اپ اصلی بعد از پایان زمان در دسترس است) */
   Engine.prototype.boomFalse = function () {
     var b = this.boom;
     if (!b || b.state !== 3) return 0;
@@ -496,10 +511,7 @@
       this.lastSummary = { type: 'end', team: b.active };
       return 'end';
     }
-    b.state = 1;
-    b.running = false;
-    b.word = null;
-    b.finalRound = false;
+    this.loadBoomWord();
     return 'next-word';
   };
 

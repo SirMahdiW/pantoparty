@@ -914,27 +914,27 @@
   function renderBoom() {
     var b = engine.boom;
     var el = h('<div></div>');
-    var team = engine.team(b.active);
 
     var head = h(
-      '<div class="play-head" style="justify-content:center">' +
-      '<span class="turn-pill" id="boom-player" style="--team:' + TEAM_COLORS[team ? team.color : 0].v + ';border-color:' + TEAM_COLORS[team ? team.color : 0].v + '">' +
-      Icons.get('users') + ' ' + esc(team ? team.name : '') + '</span>' +
-      '<span class="round-pill">دور ' + fa(engine.roundNumber()) + ' از ' + fa(engine.rounds) + '</span>' +
+      '<div class="play-head" style="justify-content:center;flex-wrap:wrap">' +
+      '<span class="turn-pill" id="boom-player">' +
+      Icons.get('users') + ' ' + esc(engine.team(b.active).name) + '</span>' +
+      '<span class="round-pill">' + Icons.get('flag') + ' دور <span id="boom-round">' + fa(engine.roundNumber()) + '</span> از ' + fa(engine.rounds) + '</span>' +
       '</div>'
     );
 
     var timerWrap = h(
-      '<div class="timer-num" id="boom-num" style="text-align:center;font-size:clamp(48px,15vw,72px);font-family:var(--font-display);margin-top:var(--s-2)">' + mmss(b.timeLeft) + '</div>'
+      '<div class="timer-num" id="boom-num" style="text-align:center;font-size:clamp(44px,13vw,68px);font-family:var(--font-display);margin-top:var(--s-2)">' + mmss(b.timeLeft) + '</div>'
     );
 
+    /* کلمه همیشه روی صفحه دیده می‌شود (مثل اپ اصلی) */
     var wordCard = h(
       '<div class="clay word-card" id="word-card">' +
-      '<div class="w-text" id="w-text">کلمه مخفی است</div>' +
+      '<div class="w-text" id="w-text">' + esc(b.word || '') + '</div>' +
       '</div>'
     );
 
-    var bigBtn = h('<button type="button" class="btn btn-primary btn-lg btn-block" id="big-btn" style="margin-top:var(--s-3);min-height:84px;font-size:clamp(19px,5vw,24px)">' + Icons.get('eye') + '<span>نمایش کلمه</span></button>');
+    var bigBtn = h('<button type="button" class="btn btn-primary btn-lg btn-block" id="big-btn" style="margin-top:var(--s-3);min-height:80px;font-size:clamp(18px,4.6vw,23px)"></button>');
 
     var controls = h('<div class="controls" id="controls"></div>');
 
@@ -945,6 +945,7 @@
     el.appendChild(controls);
 
     function paint() {
+      /* نام بازیکن: تا قبل از گرفتن کلمه، نفر بعدی؛ بعد از آن، صاحب کلمه */
       var holder = engine.team(b.state === 1 ? b.player : b.active);
       var pill = el.querySelector('#boom-player');
       pill.style.setProperty('--team', TEAM_COLORS[holder.color].v);
@@ -952,36 +953,47 @@
       pill.innerHTML = Icons.get('users') + ' ' + esc(holder.name);
 
       var txt = el.querySelector('#w-text');
-      if (b.state === 1) {
-        txt.textContent = 'کلمه مخفی است';
-        txt.classList.remove('len-m', 'len-l', 'len-xl');
-      } else {
+      if (b.word) {
         txt.textContent = b.word;
         var len = b.word.length;
         txt.classList.toggle('len-m', len > 14 && len <= 30);
         txt.classList.toggle('len-l', len > 30 && len <= 70);
         txt.classList.toggle('len-xl', len > 70);
+      } else {
+        txt.textContent = '—';
       }
 
       var num = el.querySelector('#boom-num');
       num.textContent = mmss(b.state === 1 ? engine.moreTime : b.timeLeft);
       num.style.color = (b.running && b.timeLeft <= 2) ? 'var(--rose)' : '';
+      num.style.opacity = b.state === 1 ? '.55' : '1';
 
-      if (b.state === 1) { bigBtn.innerHTML = Icons.get('eye') + '<span>نمایش کلمه</span>'; bigBtn.className = 'btn btn-primary btn-lg btn-block'; }
-      else if (b.state === 2) { bigBtn.innerHTML = Icons.get('play2') + '<span>شروع ' + fa(engine.moreTime) + ' ثانیه‌ای</span>'; bigBtn.className = 'btn btn-skip btn-lg btn-block'; }
-      else { bigBtn.innerHTML = Icons.get('pause') + '<span>در حال اجرا</span>'; bigBtn.className = 'btn btn-ghost btn-lg btn-block'; bigBtn.disabled = true; }
+      /* شماره دور مثل اپ اصلی با هر کلمه به‌روز می‌شود */
+      var round = el.querySelector('#boom-round');
+      if (round) round.textContent = fa(engine.roundNumber());
+
+      bigBtn.className = 'btn btn-lg btn-block';
+      bigBtn.style.marginTop = 'var(--s-3)';
+      bigBtn.style.minHeight = '80px';
+      bigBtn.style.fontSize = 'clamp(18px,4.6vw,23px)';
+
+      if (b.state === 1) {
+        bigBtn.innerHTML = Icons.get('eye') + '<span>شروع نوبت</span>';
+        bigBtn.classList.add('btn-primary');
+        bigBtn.disabled = false;
+      } else if (b.state === 2) {
+        bigBtn.innerHTML = Icons.get('play2') + '<span>شروع ' + fa(engine.moreTime) + ' ثانیه‌ای</span>';
+        bigBtn.classList.add('btn-skip');
+        bigBtn.disabled = false;
+      } else {
+        bigBtn.innerHTML = Icons.get('check') + '<span>درست</span>';
+        bigBtn.classList.add(b.timeout ? 'btn-ghost' : 'btn-ok');
+        bigBtn.disabled = false;
+      }
 
       controls.innerHTML = '';
-      if (b.state === 3) {
-        var ok = h('<button type="button" class="btn btn-ok">' + Icons.get('check') + '<span>درست</span></button>');
-        ok.addEventListener('click', function () {
-          stopTimer();
-          var gain = engine.boomTrue();
-          beep('correct');
-          vibrate(20);
-          if (gain) toast('+' + fa(gain) + ' امتیاز');
-          afterBoom();
-        });
+      /* دکمه «غلط» فقط بعد از پایان زمان (دقیقاً مثل اپ اصلی) */
+      if (b.state === 3 && b.timeout) {
         var no = h('<button type="button" class="btn btn-bad">' + Icons.get('x') + '<span>غلط</span></button>');
         no.addEventListener('click', function () {
           stopTimer();
@@ -990,24 +1002,21 @@
           vibrate(30);
           afterBoom();
         });
-        controls.appendChild(ok);
         controls.appendChild(no);
       }
     }
 
     function afterBoom() {
-      paint();
       var next = engine.boomNext();
-      if (next === 'end') { go('rank'); return; }
-      /* آماده‌ی کلمه بعدی — دست بعدی */
-      beep('click');
+      if (next === 'end') { paint(); go('rank'); return; }
       paint();
+      beep('click');
       toast('نوبت ' + engine.team(b.player).name);
     }
 
     bigBtn.addEventListener('click', function () {
       if (b.state === 1) {
-        engine.boomReveal();
+        engine.boomClaim();
         beep('click');
         vibrate(12);
         paint();
@@ -1017,6 +1026,13 @@
         beep('start');
         vibrate(20);
         paint();
+      } else if (b.state === 3) {
+        stopTimer();
+        var gain = engine.boomTrue();
+        beep('correct');
+        vibrate(20);
+        toast('+' + fa(gain) + ' امتیاز');
+        afterBoom();
       }
     });
 
@@ -1031,7 +1047,6 @@
           vibrate([30, 60, 30]);
           toast('زمان تمام شد');
           paint();
-          afterBoom();
         }
       }, 1000);
     }
@@ -1067,12 +1082,15 @@
     crown.appendChild(h('<h1>' + (isTie ? 'مساوی شد!' : 'برنده') + '</h1>'));
     crown.appendChild(h('<div class="w-team">' + esc(isTie ? 'گروه‌ها مساوی‌اند' : winner.name) + '</div>'));
 
-    var medals = ['🥇', '🥈', '🥉'];
+    var medalColors = ['#FBBF24', '#A6A6C4', '#C2794A'];
     var sg = h('<div style="margin-top:var(--s-4)"></div>');
     rank.forEach(function (t, i) {
+      var posIcon = i < 3
+        ? '<span class="rl-pos" style="color:' + medalColors[i] + '">' + Icons.get('trophy') + '</span>'
+        : '<span style="width:28px;text-align:center;font-size:var(--fs-sm);color:var(--text-faint)">' + fa(i + 1) + '</span>';
       sg.appendChild(h(
         '<div class="round-line" style="--team:' + TEAM_COLORS[t.color].v + '">' +
-        '<span style="width:28px;text-align:center;font-size:20px">' + (medals[i] || fa(i + 1)) + '</span>' +
+        posIcon +
         '<span class="rl-dot" style="background:' + TEAM_COLORS[t.color].v + '"></span>' +
         '<span class="rl-name">' + esc(t.name) + '</span>' +
         '<span class="rl-total" style="font-family:var(--font-display);font-size:26px;color:var(--amber)">' + fa(t.score) + '</span>' +

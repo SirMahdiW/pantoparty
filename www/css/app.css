@@ -913,6 +913,8 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
 .round-line { display: flex; align-items: center; gap: var(--s-3); padding: 12px 4px; }
 .round-line + .round-line { border-top: 2px solid var(--line); }
 .round-line .rl-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--team); flex: none; }
+.round-line .rl-pos { width: 28px; display: grid; place-items: center; flex: none; }
+.round-line .rl-pos svg { width: 20px; height: 20px; }
 .round-line .rl-name { flex: 1; font-weight: 700; }
 .round-line .rl-delta { font-family: var(--font-display); font-size: 24px; color: var(--green); }
 .round-line .rl-total { font-family: var(--font-display); font-size: 24px; color: var(--text-dim); min-width: 56px; text-align: left; }
