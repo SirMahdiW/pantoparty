@@ -1,0 +1,9 @@
+{
+  "appId": "app.pantoparty.game",
+  "appName": "پانتوپارتی",
+  "webDir": "www",
+  "backgroundColor": "#0E3B3A",
+  "android": {
+    "allowMixedContent": false
+  }
+}
