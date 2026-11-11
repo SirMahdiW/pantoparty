@@ -380,21 +380,31 @@
 
     var el = h('<div></div>');
     var upNext = engine.team(engine.turnIndex);
+    var upColor = TEAM_COLORS[upNext.color].v;
 
     el.appendChild(h(
-      '<div class="play-head" style="justify-content:center;margin-bottom:var(--s-3)">' +
+      '<div class="play-head" style="justify-content:center;margin-bottom:var(--s-3);flex-wrap:wrap">' +
       '<span class="round-pill">' + Icons.get('flag') + ' دور ' + fa(engine.roundNumber()) + ' از ' + fa(engine.rounds) + '</span>' +
-      '<span class="turn-pill">' + Icons.get('info') + ' ' + TYPES[engine.gameType].title + '</span>' +
+      '<span class="tag">' + TYPES[engine.gameType].title + '</span>' +
       '</div>'
     ));
 
-    var box = h('<div class="clay" style="padding:var(--s-4)"></div>');
+    el.appendChild(h(
+      '<section class="clay" style="padding:var(--s-4);margin-bottom:var(--s-3);text-align:center;background:var(--surface-2);background:linear-gradient(150deg, color-mix(in srgb, ' + upColor + ' 22%, var(--surface-2)), var(--bg-elev));border-color:' + upColor + '55">' +
+      '<p class="lead" style="margin:0 0 6px">نوبت بعدی</p>' +
+      '<h2 style="font-family:var(--font-display);font-size:clamp(28px,8vw,40px);margin:0;color:' + upColor + '">' + esc(upNext.name) + '</h2>' +
+      '<p class="lead" style="margin:8px 0 0">امتیاز فعلی: <strong style="color:var(--text)">' + fa(upNext.score) + '</strong></p>' +
+      '</section>'
+    ));
+
+    var box = h('<div class="clay" style="padding:var(--s-4)"><div class="section-title" style="margin:0 0 var(--s-3)">' + Icons.get('users') + ' جدول امتیازات</div></div>');
     engine.teams.forEach(function (t, i) {
+      var isNext = i === engine.turnIndex;
       var row = h(
-        '<div class="round-line" style="--team:' + TEAM_COLORS[t.color].v + '">' +
+        '<div class="round-line" style="--team:' + TEAM_COLORS[t.color].v + ';' + (isNext ? 'border-color:' + TEAM_COLORS[t.color].v + '66;background:rgba(255,255,255,.04);background:color-mix(in srgb,' + TEAM_COLORS[t.color].v + ' 10%, transparent);' : '') + '">' +
         '<span class="rl-dot"></span>' +
         '<span class="rl-name">' + esc(t.name) +
-        (i === engine.turnIndex ? ' <span class="tag" style="margin-inline-start:6px">نوبت بعدی</span>' : '') +
+        (isNext ? ' <span class="tag" style="margin-inline-start:6px">نوبت بعدی</span>' : '') +
         '</span>' +
         '<span class="rl-total">' + fa(t.score) + '</span>' +
         '</div>'
@@ -404,7 +414,7 @@
     });
     el.appendChild(box);
 
-    var cta = h('<button type="button" class="btn btn-primary btn-lg btn-block" style="margin-top:var(--s-5)">' +
+    var cta = h('<button type="button" class="btn btn-primary btn-lg btn-block" style="margin-top:var(--s-5);min-height:72px">' +
       Icons.get('play') + ' شروع نوبت «' + esc(upNext.name) + '»</button>');
     cta.addEventListener('click', function () {
       beep('start');

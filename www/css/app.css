@@ -78,13 +78,12 @@ body {
   position: sticky;
   top: 0;
   z-index: var(--z-topbar);
-  height: var(--topbar-h);
+  min-height: calc(var(--topbar-h) + env(safe-area-inset-top));
   display: flex;
   align-items: center;
   gap: var(--s-3);
-  padding: 0 var(--gutter);
-  padding-top: env(safe-area-inset-top);
-  background: rgba(5, 5, 10, .78);
+  padding: env(safe-area-inset-top) var(--gutter) 0;
+  background: rgba(5, 5, 10, .82);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 2px solid var(--line);
@@ -144,9 +143,14 @@ body {
   z-index: var(--z-main);
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: var(--s-5) var(--gutter) calc(var(--s-7) + env(safe-area-inset-bottom));
+  padding: var(--s-4) var(--gutter) calc(var(--s-7) + env(safe-area-inset-bottom));
+  min-height: calc(100dvh - var(--topbar-h));
 }
 .main:focus { outline: none; }
+
+@media (min-width: 640px) {
+  .main { padding: var(--s-5) var(--gutter) calc(var(--s-7) + env(safe-area-inset-bottom)); }
+}
 
 .screen { animation: screen-in var(--dur-slow) var(--ease-out) both; }
 @keyframes screen-in {
@@ -418,7 +422,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
 
 /* ---------- هیرو ---------- */
 .hero {
-  padding: var(--s-6) var(--s-5);
+  padding: var(--s-5) var(--s-4);
   overflow: hidden;
   background:
     linear-gradient(150deg, rgba(124,58,237,.35), rgba(244,63,94,.2) 55%, rgba(34,211,238,.16)),
@@ -637,7 +641,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
 
 /* کنترل‌های بازی */
 .controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-2); margin-top: var(--s-4); }
-.controls .btn { min-height: 74px; flex-direction: column; gap: 4px; padding: 10px 6px; font-size: var(--fs-sm); }
+.controls .btn { min-height: 68px; flex-direction: column; gap: 4px; padding: 10px 6px; font-size: var(--fs-sm); }
 .controls .btn svg { width: 30px; height: 30px; }
 .controls .btn.btn-ok, .controls .btn.btn-bad, .controls .btn.btn-skip { grid-column: span 1; }
 .controls .btn-wide { grid-column: span 3; min-height: 56px; flex-direction: row; }
@@ -647,30 +651,36 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   position: fixed;
   inset: 0;
   z-index: var(--z-modal);
-  background: rgba(3, 3, 8, .78);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: rgba(3, 3, 8, .82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: grid;
-  place-items: center;
+  place-items: end center;
   padding: var(--gutter);
+  padding-bottom: max(var(--gutter), env(safe-area-inset-bottom));
   animation: fade var(--dur) var(--ease-out) both;
 }
 @keyframes fade { from { opacity: 0; } }
 .modal {
   width: min(560px, 100%);
-  max-height: min(86dvh, 760px);
+  max-height: min(88dvh, 760px);
   overflow-y: auto;
   padding: var(--s-5);
+  border-radius: var(--r-xl) var(--r-xl) var(--r-lg) var(--r-lg);
   animation: modal-in var(--dur-slow) var(--ease-clay) both;
 }
 @keyframes modal-in {
-  from { opacity: 0; transform: translateY(24px) scale(.94); }
+  from { opacity: 0; transform: translateY(40px) scale(.98); }
   to   { opacity: 1; transform: none; }
 }
-.modal h2 { font-family: var(--font-display); font-size: var(--fs-h1); margin: 0 0 6px; }
+@media (min-width: 640px) {
+  .scrim { place-items: center; }
+  .modal { border-radius: var(--r-lg); }
+}
+.modal h2 { font-family: var(--font-display); font-size: var(--fs-h1); margin: 0 0 6px; text-align: center; }
 .modal .m-body { color: var(--text-dim); margin-bottom: var(--s-4); }
 .modal-actions { display: flex; gap: var(--s-2); flex-wrap: wrap; }
-.modal-actions .btn { flex: 1 1 150px; }
+.modal-actions .btn { flex: 1 1 140px; min-height: 52px; }
 
 /* ---------- تیم‌ها ---------- */
 .team-row {
@@ -852,7 +862,9 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   background-clip: text;
   color: transparent;
 }
-.hero-actions { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-3); }
+.hero-actions { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-3); }
+.hero-actions .btn { flex: 1 1 100%; }
+@media (min-width: 480px) { .hero-actions .btn { flex: 0 1 auto; } }
 .hero-stats {
   display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4);
   margin-top: var(--s-5); padding-top: var(--s-4);
