@@ -185,13 +185,13 @@
       '</div>';
   }
 
-  function paintGauge(el, remaining, total) {
+  function paintGauge(el, remaining, total, running) {
     if (!el) return;
     var C = parseFloat(el.dataset.c) || 326.7;
     var bar = el.querySelector('.g-bar');
     var ratio = total > 0 ? Math.max(0, Math.min(1, remaining / total)) : 0;
     if (bar) bar.style.strokeDashoffset = (C * (1 - ratio)).toFixed(2);
-    el.classList.toggle('is-urgent', remaining <= 10 && remaining > 0);
+    el.classList.toggle('is-urgent', !!running && remaining <= 10 && remaining > 0);
   }
 
   function sectionHead(icon, title, sub) {
@@ -821,7 +821,7 @@
       var g = el.querySelector('#gauge');
       var left = (t.state === 1) ? t.stableTime : t.timeLeft;
       num.textContent = mmss(left);
-      paintGauge(g, left, t.stableTime);
+      paintGauge(g, left, t.stableTime, t.running);
     }
 
     function repaint() {
@@ -992,6 +992,7 @@
 
     var wordCard = h(
       '<div class="spotlight" id="word-card">' +
+      '<div class="w-head">سه</div>' +
       '<div class="w-text" id="w-text">' + esc(b.word || '') + '</div>' +
       '</div>'
     );
@@ -1021,7 +1022,7 @@
 
       var num = el.querySelector('#timer-num');
       num.textContent = mmss(b.state === 1 ? engine.moreTime : b.timeLeft);
-      paintGauge(el.querySelector('#gauge'), b.state === 1 ? engine.moreTime : b.timeLeft, engine.moreTime);
+      paintGauge(el.querySelector('#gauge'), b.state === 1 ? engine.moreTime : b.timeLeft, engine.moreTime, b.running);
 
       var round = el.querySelector('#boom-round');
       if (round) round.textContent = fa(engine.roundNumber());

@@ -688,6 +688,19 @@ body {
   overflow: hidden;
 }
 .spotlight .w-meta { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.spotlight .w-head {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 54px;
+  padding: 6px 16px;
+  border-radius: var(--r-pill);
+  background: var(--primary);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+}
 .spotlight .w-text {
   font-family: var(--font-word);
   font-size: clamp(28px, 8.2vw, 42px);
@@ -727,7 +740,7 @@ body {
 /* ---------- کنترل‌های بازی ---------- */
 .controls {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   gap: var(--s-2);
   margin-top: var(--s-4);
 }
@@ -740,7 +753,7 @@ body {
   border-radius: var(--r-md);
 }
 .controls .btn svg { width: var(--icon-lg); height: var(--icon-lg); }
-.controls .btn-wide { grid-column: span 3; min-height: 54px; flex-direction: row; }
+.controls .btn-wide { grid-column: 1 / -1; min-height: 54px; flex-direction: row; }
 
 /* ---------- دسته‌ها ---------- */
 .cat-section { margin-bottom: var(--s-6); }
