@@ -111,16 +111,6 @@ body {
 }
 .topbar-actions { margin-inline-start: auto; display: flex; align-items: center; gap: var(--s-2); }
 
-.badge-free {
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  color: #04120C;
-  background: linear-gradient(140deg, var(--green), var(--lime));
-  padding: 5px 12px;
-  border-radius: var(--r-pill);
-  box-shadow: inset 2px 2px 0 rgba(255,255,255,.4), 3px 4px 8px rgba(0,0,0,.5);
-  white-space: nowrap;
-}
 
 /* ---------- دکمه آیکونی ---------- */
 .icon-btn {
@@ -485,14 +475,6 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   line-height: 1.85;
   position: relative; z-index: 1;
 }
-.mode-card .m-count {
-  margin-top: auto;
-  padding-top: 10px;
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  color: var(--text-faint);
-  position: relative; z-index: 1;
-}
 @media (hover: hover) {
   .mode-card { transition: transform var(--dur) var(--ease-clay), box-shadow var(--dur); }
   .mode-card:hover { transform: translateY(-3px); }
@@ -520,7 +502,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
 
 /* ---------- هیرو ---------- */
 .hero {
-  padding: var(--pad-hero) var(--pad-card);
+  padding: var(--s-5) var(--pad-card);
   overflow: hidden;
   background:
     linear-gradient(150deg, rgba(124,58,237,.32), rgba(244,63,94,.18) 55%, rgba(34,211,238,.14)),
@@ -530,20 +512,13 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   font-family: var(--font-display);
   font-size: var(--fs-hero);
   line-height: 1.25;
-  margin: 0 0 10px;
+  margin: 0 0 var(--s-4);
   max-width: 20ch;
   text-wrap: balance;
   text-shadow: 0 3px 10px rgba(0,0,0,.55);
 }
 .hero h1 .grad-text { display: block; }
-.hero .hero-sub {
-  margin: 0 0 var(--s-4);
-  color: var(--text-dim);
-  font-size: var(--fs-body);
-  line-height: 1.9;
-  max-width: 46ch;
-}
-.hero .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--s-4); }
+.hero .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--s-3); }
 .tag {
   font-size: var(--fs-xs);
   font-weight: 700;
@@ -983,28 +958,12 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   background-clip: text;
   color: transparent;
 }
-.hero-actions { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-4); }
+.hero-actions { display: flex; flex-wrap: wrap; gap: var(--s-2); }
 .hero-actions .btn { flex: 1 1 100%; }
 @media (min-width: 480px) {
   .hero-actions .btn { flex: 1 1 0; }
 }
-.hero-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--s-3);
-  margin-top: var(--s-5);
-  padding-top: var(--s-4);
-  border-top: var(--bw) solid var(--line);
-}
-.hs-item { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.hs-item strong {
-  font-family: var(--font-display);
-  font-size: clamp(20px, 5.4vw, 26px);
-  font-weight: 400;
-  line-height: 1.1;
-  color: var(--cyan);
-}
-.hs-item span { font-size: var(--fs-xs); color: var(--text-dim); }
+
 
 .how-grid { display: grid; grid-template-columns: 1fr; gap: var(--s-3); }
 @media (min-width: 768px) { .how-grid { grid-template-columns: repeat(3, 1fr); gap: var(--s-4); } }

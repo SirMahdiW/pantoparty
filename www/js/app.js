@@ -24,13 +24,13 @@
   var TYPES = {
     adabazi: {
       title: 'ادابازی',
-      desc: 'هر نوبت یک کلمه: تیم نوبت‌دار دسته را انتخاب می‌کند و بقیه حدس می‌زنند.',
+      desc: 'هر نوبت یک کلمه؛ بقیه حدس می‌زنند.',
       icon: 'book',
       glow: 'linear-gradient(150deg, #7C3AED, #4C1D95)'
     },
     boom: {
       title: 'بوم',
-      desc: 'کلمه به کلمه و دست‌به‌دست؛ درست = ثانیه‌های باقی‌مانده + ۱ امتیاز.',
+      desc: 'کلمه به کلمه، دست‌به‌دست.',
       icon: 'bolt',
       glow: 'linear-gradient(150deg, #F43F5E, #9F1239)'
     }
@@ -166,9 +166,9 @@
   /* ----- خانه ----- */
 
   var HOW_STEPS = [
-    { icon: 'users', title: 'بازی را بسازید', desc: 'تعداد گروه‌ها (۲ تا ۶)، تعداد دور و زمان اضافه را انتخاب کنید — دقیقاً مثل اپ اصلی.' },
-    { icon: 'spark', title: 'هر نوبت یک دسته', desc: 'تیم نوبت‌دار بین سرعتی، ضرب‌المثل، دسته‌های کلمه یا ترانه انتخاب می‌کند و امتیاز کلمه را مشخص می‌کند.' },
-    { icon: 'book', title: 'یک کلمه، یک نتیجه', desc: 'کلمه مخفی است؛ با «شروع تایمر» اجرا می‌شود. در پایان دیالوگ درست/غلط امتیاز را ثبت می‌کند.' }
+    { icon: 'users', title: 'بازی را بسازید', desc: 'تعداد گروه‌ها (۲ تا ۶)، تعداد دور و زمان اضافه را انتخاب کنید.' },
+    { icon: 'spark', title: 'هر نوبت یک دسته', desc: 'تیم نوبت‌دار دسته را انتخاب می‌کند و امتیاز کلمه را مشخص می‌کند.' },
+    { icon: 'book', title: 'یک کلمه، یک نتیجه', desc: 'کلمه مخفی است؛ با «شروع تایمر» اجرا می‌شود و در پایان امتیاز ثبت می‌کند.' }
   ];
 
   function sectionHead(icon, title, sub) {
@@ -200,36 +200,23 @@
     el.appendChild(h(
       '<section class="clay hero">' +
       '<h1>بازی گروهی <span class="grad-text">پانتومیم و حدس کلمه</span></h1>' +
-      '<p class="hero-sub">دقیقاً با همان منطق اپ اصلی ادابازی: گروه‌ها، دورها، دسته‌ها و امتیازها — بدون تبلیغات و بدون پرداخت درون‌برنامه‌ای.</p>' +
-      '<div class="hero-tags">' +
-      '<span class="tag">رایگان</span>' +
-      '<span class="tag">بدون تبلیغات</span>' +
-      '<span class="tag">' + fa(data.totals.adabazi + data.totals.proverb) + ' محتوا</span>' +
-      '</div>' +
       '<div class="hero-actions">' +
       '<button type="button" class="btn btn-primary btn-lg" id="cta-play">' + Icons.get('play') + ' شروع بازی</button>' +
       '<button type="button" class="btn btn-ghost btn-lg" id="cta-boom">' + Icons.get('bolt') + ' بازی بوم</button>' +
-      '</div>' +
-      '<div class="hero-stats">' +
-      '<div class="hs-item"><strong>' + fa(data.totals.adabazi) + '</strong><span>کلمه</span></div>' +
-      '<div class="hs-item"><strong>' + fa(data.totals.proverb) + '</strong><span>ضرب‌المثل</span></div>' +
-      '<div class="hs-item"><strong>' + fa(data.totals.boom) + '</strong><span>چالش بوم</span></div>' +
       '</div>' +
       '</section>'
     ));
 
     /* ---------- حالت‌های بازی ---------- */
-    el.appendChild(sectionHead('grid', 'حالت‌های بازی', 'دو حالت، با قوانین یکسان اپ اصلی'));
+    el.appendChild(sectionHead('grid', 'حالت‌های بازی'));
     var bento = h('<div class="bento"></div>');
     Object.keys(TYPES).forEach(function (key) {
       var m = TYPES[key];
-      var count = key === 'boom' ? data.totals.boom : (data.totals.adabazi + data.totals.proverb + data.totals.songs);
       var card = h(
         '<button type="button" class="clay pressable mode-card span-3" data-type="' + key + '" style="--glow:' + m.glow + '">' +
         '<span class="m-icon">' + Icons.get(m.icon) + '</span>' +
         '<h3>' + m.title + '</h3>' +
         '<p>' + m.desc + '</p>' +
-        '<span class="m-count">' + fa(count) + ' محتوا</span>' +
         '</button>'
       );
       card.addEventListener('click', function () { beep('click'); pendingType = key; go('create'); });
@@ -238,7 +225,7 @@
     el.appendChild(bento);
 
     /* ---------- چطور بازی کنیم ---------- */
-    el.appendChild(sectionHead('spark', 'چطور بازی کنیم؟', 'سه قدم تا اولین دور'));
+    el.appendChild(sectionHead('spark', 'چطور بازی کنیم؟'));
     var steps = h('<div class="how-grid"></div>');
     HOW_STEPS.forEach(function (st, i) {
       steps.appendChild(h(
@@ -252,7 +239,7 @@
     el.appendChild(steps);
 
     /* ---------- آمار شما ---------- */
-    el.appendChild(sectionHead('chart', 'آمار شما', 'آمار بازی‌های همین دستگاه'));
+    el.appendChild(sectionHead('chart', 'آمار شما'));
     var statList = h('<div class="clay stat-list"></div>');
     statList.appendChild(statRow('chart', 'بازی‌ها', 'تعداد کل بازی‌های انجام‌شده', s.games, 'stats'));
     statList.appendChild(statRow('target', 'کلمه‌ها', 'کلمه‌های بازی‌شده', s.words, 'stats'));
@@ -275,14 +262,8 @@
     el.appendChild(h(
       '<section class="clay cta-band">' +
       '<h2>آماده‌ای شروع کنی؟</h2>' +
-      '<p>گروه‌ها را بساز، دسته را انتخاب کن و بازی را شروع کن. بدون تبلیغ، بدون خرید درون‌برنامه‌ای.</p>' +
       '<button type="button" class="btn btn-primary btn-lg btn-block" id="cta-final">' + Icons.get('play') + ' شروع بازی</button>' +
       '</section>'
-    ));
-
-    el.appendChild(h(
-      '<p class="foot">ادابازی نسخه وب — کاملاً رایگان، بدون تبلیغات و بدون پرداخت درون‌برنامه‌ای.<br>' +
-      'بازسازی وبِ بازی گروهی ادابازی با همان قوانین و محتوا.</p>'
     ));
 
     el.querySelector('#cta-play').addEventListener('click', function () { beep('click'); pendingType = 'adabazi'; go('create'); });
@@ -317,7 +298,6 @@
       '<section class="clay hero" style="padding:var(--s-5)">' +
       '<div class="hero-tags"><span class="tag">' + t.title + '</span></div>' +
       '<h1 style="font-size:var(--fs-h1)">بازی جدید</h1>' +
-      '<p>' + t.desc + '</p>' +
       '</section>'
     ));
 
@@ -355,7 +335,7 @@
     start.addEventListener('click', function () { beginGame(); });
     el.appendChild(start);
 
-    el.appendChild(h('<p class="foot">نام گروه‌ها خودکار ساخته می‌شود (' + (d.gameType === 'boom' ? 'بازیکن' : 'گروه') + ' ' + fa(1) + ' تا ' + fa(d.groups) + ') — مثل اپ اصلی.</p>'));
+    el.appendChild(h('<p class="foot">نام گروه‌ها خودکار ساخته می‌شود: ' + (d.gameType === 'boom' ? 'بازیکن' : 'گروه') + ' ' + fa(1) + ' تا ' + fa(d.groups) + '.</p>'));
 
     return el;
   }
@@ -464,8 +444,6 @@
       }
     });
     el.appendChild(cta);
-
-    el.appendChild(h('<p class="foot">هر تیم در هر دور دقیقاً یک نوبت بازی می‌کند؛ پس از پایان همه‌ی دورها رتبه‌بندی نمایش داده می‌شود.</p>'));
 
     render._cleanup = function () { stopTimer(); };
     return el;
@@ -1195,8 +1173,7 @@
   function renderSettings() {
     var st = Store.settings;
     var el = h('<div></div>');
-    el.appendChild(h('<section class="clay hero" style="padding:var(--s-5)"><h1 style="font-size:var(--fs-h1)">تنظیمات</h1>' +
-      '<p>همه امکانات رایگان است؛ هیچ قفل یا خریدی وجود ندارد.</p></section>'));
+    el.appendChild(h('<section class="clay hero" style="padding:var(--s-5)"><h1 style="font-size:var(--fs-h1)">تنظیمات</h1></section>'));
 
     var box = h('<div style="margin-top:var(--s-4)"></div>');
     box.appendChild(toggleRow('volume', 'صداهای بازی', 'بوق درست/غلط و پایان زمان', st.sound, function (v) {
@@ -1228,8 +1205,6 @@
     aboutBtn.addEventListener('click', function () { go('about'); });
     about.appendChild(aboutBtn);
     el.appendChild(about);
-
-    el.appendChild(h('<p class="foot">داده‌ها فقط روی دستگاه خودت (localStorage) ذخیره می‌شوند.<br>هیچ سروری، هیچ تبلیغی، هیچ پرداختی.</p>'));
     return el;
   }
 
@@ -1259,15 +1234,13 @@
     el.appendChild(h(
       '<section class="clay hero" style="padding:var(--s-5)">' +
       '<h1 style="font-size:var(--fs-h1)">درباره ادابازی</h1>' +
-      '<p>نسخه وب بازی گروهی پانتومیم و حدس کلمه — با همان قوانین اپ اصلی: گروه‌ها، دورها، دسته‌ها و امتیازدهی.</p>' +
       '</section>'
     ));
 
     var list = h('<div style="margin-top:var(--s-4)"></div>');
     [
-      ['shield', 'رایگان و بدون قفل', 'هیچ دسته، کلمه یا امکانی قفل نیست. هیچ پرداختی در کار نیست.', '#34D399'],
-      ['heart', 'بدون جمع‌آوری داده', 'هیچ اطلاعاتی از دستگاهت به بیرون ارسال نمی‌شود. همه چیز محلی است.', '#F43F5E'],
-      ['book', 'منطق اپ اصلی', 'ساخت نوبت‌ها، زمان ثابت هر دسته، تعویض کلمه، خطاها و پاداش زمان — دقیقاً مثل نسخه اندروید.', '#7C3AED'],
+      ['heart', 'بدون جمع‌آوری داده', 'همه چیز روی همین دستگاه ذخیره می‌شود.', '#F43F5E'],
+      ['book', 'منطق اپ اصلی', 'ساخت نوبت‌ها، زمان هر دسته، تعویض کلمه، خطاها و پاداش زمان.', '#7C3AED'],
       ['grid', 'چهار دسته بازی', 'سرعتی، ضرب‌المثل، دسته‌های کلمه و ترانه + حالت ویژه‌ی بوم.', '#22D3EE']
     ].forEach(function (r) {
       list.appendChild(h(
