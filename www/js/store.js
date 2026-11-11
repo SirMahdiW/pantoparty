@@ -7,19 +7,17 @@
   var DEFAULTS = {
     settings: {
       rounds: 3,          // تعداد دور
-      roundTime: 60,      // ثانیه هر نوبت
-      wordsPerTurn: 5,    // کلمه در هر نوبت
-      timeReward: true,   // پاداش زمان باقی‌مانده
+      groups: 2,          // تعداد گروه
+      moreTime: 15,       // زمان اضافه (ادابازی)
+      boomMoreTime: 5,    // زمان هر کلمه (بوم)
       sound: true,
-      haptics: true,
-      teamNames: ['قرمز', 'آبی'],
-      teamColors: [1, 2]
+      haptics: true
     },
     stats: {
       games: 0,
       words: 0,
       best: null,         // {team, score, date}
-      byMode: { adabazi: 0, boom: 0, songs: 0 }
+      byMode: { adabazi: 0, boom: 0 }
     },
     history: []           // {mode, winner, score, date, words}
   };
