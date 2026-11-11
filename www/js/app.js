@@ -91,7 +91,7 @@
     var scrim = h(
       '<div class="scrim" role="dialog" aria-modal="true" aria-label="' + esc(opts.title || 'پنجره') + '">' +
       '<div class="modal clay">' +
-      (opts.icon ? '<div class="winner-card" style="padding:0 0 8px"><div class="w-crown" style="width:64px;height:64px;border-radius:22px">' + Icons.get(opts.icon) + '</div></div>' : '') +
+      (opts.icon ? '<div class="winner-card" style="padding:0 0 8px"><div class="w-crown" style="width:64px;height:64px;border-radius:22px' + (opts.iconColor ? ';color:' + opts.iconColor + ';border-color:' + opts.iconColor + '55' : '') + '">' + Icons.get(opts.icon) + '</div></div>' : '') +
       '<h2>' + esc(opts.title || '') + '</h2>' +
       (opts.body ? '<div class="m-body">' + opts.body + '</div>' : '') +
       '<div class="modal-actions"></div>' +
@@ -528,6 +528,7 @@
     var scrim = modal({
       title: 'دسته انتخاب شد',
       icon: ic,
+      iconColor: c.color,
       body: body,
       dismiss: false,
       actions: [

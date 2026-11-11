@@ -272,11 +272,11 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
 .cat-section { display: block; }
 .cat-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--s-2);
 }
-@media (min-width: 420px) { .cat-grid { grid-template-columns: repeat(4, 1fr); } }
-@media (min-width: 640px) { .cat-grid { grid-template-columns: repeat(6, 1fr); gap: var(--s-3); } }
+@media (min-width: 480px) { .cat-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 768px) { .cat-grid { grid-template-columns: repeat(6, 1fr); gap: var(--s-3); } }
 
 .cat-tile {
   display: flex;
@@ -284,7 +284,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   align-items: center;
   justify-content: flex-start;
   gap: 8px;
-  min-height: 104px;
+  min-height: 118px;
   padding: var(--s-3) var(--s-2) var(--s-2);
   border: var(--bw) solid var(--line);
   border-radius: var(--r-md);
@@ -294,6 +294,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   font: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
   transition: transform var(--dur) var(--ease-clay), box-shadow var(--dur), border-color var(--dur);
 }
 .cat-tile:active { transform: translateY(4px); box-shadow: var(--clay-press); border-color: var(--cat); }
@@ -301,9 +302,9 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
 .cat-ic {
   display: grid;
   place-items: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 18px;
+  width: 56px;
+  height: 56px;
+  border-radius: 20px;
   color: var(--cat);
   background: var(--surface-2); /* fallback برای WebView قدیمی */
   background:
@@ -342,6 +343,11 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
 .cat-dlg-head .cat-ic { width: 46px; height: 46px; border-radius: 15px; }
 .cat-dlg-head .cat-ic svg { width: 25px; height: 25px; }
 .cat-dlg-head .cat-name { color: var(--cat); text-shadow: 0 0 18px rgba(255,255,255,.25); text-shadow: 0 0 18px color-mix(in srgb, var(--cat) 50%, transparent); }
+
+/* تأخیر دوگانه‌ی کلیک روی موبایل */
+.btn, .chip, .cat-tile, .icon-btn, .mode-card, .team-row, .btn-ghost, .btn-danger {
+  touch-action: manipulation;
+}
 
 /* ---------- کارت حالت بازی ---------- */
 .mode-card {
