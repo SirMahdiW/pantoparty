@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ادابازی">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="55%" stop-color="#F43F5E"/>
+      <stop offset="100%" stop-color="#FBBF24"/>
+    </linearGradient>
+    <linearGradient id="clay" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1B1B2A"/>
+      <stop offset="100%" stop-color="#0A0A12"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="120" fill="url(#bg)"/>
+  <rect x="52" y="52" width="408" height="408" rx="96" fill="url(#clay)"/>
+  <!-- حرف «ا» + نقطه، به‌صورت بلوکی -->
+  <rect x="228" y="150" width="56" height="180" rx="26" fill="#F4F4FF"/>
+  <circle cx="256" cy="112" r="30" fill="#22D3EE"/>
+  <!-- بلوک‌های رنگی اطراف -->
+  <rect x="112" y="330" width="70" height="70" rx="22" fill="#FBBF24"/>
+  <rect x="330" y="330" width="70" height="70" rx="22" fill="#22D3EE"/>
+  <rect x="330" y="120" width="54" height="54" rx="18" fill="#F43F5E"/>
+</svg>

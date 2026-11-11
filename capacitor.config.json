@@ -1,8 +1,8 @@
 {
-  "appId": "app.pantoparty.game",
-  "appName": "پانتوپارتی",
+  "appId": "app.adabazi.game",
+  "appName": "ادابازی",
   "webDir": "www",
-  "backgroundColor": "#0E3B3A",
+  "backgroundColor": "#05050A",
   "android": {
     "allowMixedContent": false
   }
