@@ -181,8 +181,11 @@
    * ================================================================ */
   Engine.prototype.startTurn = function (cid, score) {
     var team = this.teams[this.turnIndex];
+    /* «تصادفی» (cid 69) کاملاً مستقل از محدودیت انتخاب دستی است:
+       نه ثبت می‌شود، نه محدودیتی می‌سازد، نه چیزی را مصرف می‌کند. */
+    var isRandom = (cid === 69);
     /* قانون انتخاب کارت: هر تیم هر ترکیب «دسته + امتیاز» را فقط یک‌بار می‌تواند بردارد */
-    if (this.isCardUsed(this.turnIndex, cid, score)) return null;
+    if (!isRandom && this.isCardUsed(this.turnIndex, cid, score)) return null;
     var t = {
       cid: cid,
       score: score,              // امتیاز انتخابی (برای ۶۹ ممکن است صفر باشد)
@@ -213,7 +216,8 @@
       t.wordScore = t.word.score;
     }
     this.turn = t;
-    this.markCardUsed(this.turnIndex, cid, score);
+    /* انتخاب تصادفی هرگز به‌عنوان انتخاب دستی ثبت نمی‌شود */
+    if (!isRandom) this.markCardUsed(this.turnIndex, cid, score);
     return t;
   };
 
