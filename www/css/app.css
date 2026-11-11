@@ -128,7 +128,7 @@ body {
 }
 .icon-btn:hover { border-color: var(--line-strong); }
 .icon-btn:active { transform: translateY(3px); box-shadow: var(--clay-press); }
-.icon-btn svg { width: 22px; height: 22px; }
+.icon-btn svg { width: var(--icon-md); height: var(--icon-md); }
 
 /* ---------- چیدمان اصلی ---------- */
 .main {
@@ -157,7 +157,7 @@ body {
   margin: var(--s-6) 0 var(--s-3);
   display: flex; align-items: center; gap: 10px;
 }
-.section-title svg { width: 24px; height: 24px; color: var(--violet-2); }
+.section-title svg { width: var(--icon-md); height: var(--icon-md); color: var(--violet-2); }
 
 .lead { color: var(--text-dim); margin: 0 0 var(--s-4); }
 
@@ -217,7 +217,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   color: #fff;
   box-shadow: inset 2px 2px 0 rgba(255,255,255,.35), inset -3px -3px 8px rgba(0,0,0,.45);
 }
-.section-head .sh-ic svg { width: 20px; height: 20px; }
+.section-head .sh-ic svg { width: var(--icon-sm); height: var(--icon-sm); }
 .section-head .sh-txt { min-width: 0; }
 .section-head h2 {
   font-family: var(--font-display);
@@ -261,7 +261,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   border: 1.5px solid var(--line-strong);
   color: var(--violet-2);
 }
-.stat-row .sr-ic svg { width: 19px; height: 19px; }
+.stat-row .sr-ic svg { width: var(--icon-sm); height: var(--icon-sm); }
 .stat-row .sr-txt { flex: 1; min-width: 0; }
 .stat-row .sr-txt strong { display: block; font-size: var(--fs-sm); font-weight: 700; }
 .stat-row .sr-txt span { display: block; font-size: var(--fs-xs); color: var(--text-faint); }
@@ -316,7 +316,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   transition: transform var(--dur) var(--ease-clay), box-shadow var(--dur) var(--ease-out), filter var(--dur), border-color var(--dur);
   -webkit-tap-highlight-color: transparent;
 }
-.btn svg { width: 22px; height: 22px; flex: none; }
+.btn svg { width: var(--icon-md); height: var(--icon-md); flex: none; }
 .btn:hover { filter: brightness(1.12); border-color: var(--line-strong); }
 .btn:active { transform: translateY(4px); box-shadow: var(--clay-press); }
 .btn[disabled] { opacity: .45; pointer-events: none; }
@@ -353,7 +353,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   transition: transform var(--dur) var(--ease-clay), box-shadow var(--dur), color var(--dur), border-color var(--dur), background var(--dur);
   -webkit-tap-highlight-color: transparent;
 }
-.chip svg { width: 17px; height: 17px; }
+.chip svg { width: var(--icon-sm); height: var(--icon-sm); }
 .chip:active { transform: translateY(3px); box-shadow: var(--clay-press); }
 .chip[aria-pressed="true"], .chip.is-on {
   color: #06101A;
@@ -412,7 +412,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
     inset 0 -3px 6px rgba(0,0,0,.35),
     0 6px 12px color-mix(in srgb, var(--cat) 30%, transparent);
 }
-.cat-ic svg { width: 28px; height: 28px; }
+.cat-ic svg { width: var(--icon-lg); height: var(--icon-lg); }
 
 .cat-name {
   font-size: var(--fs-sm);
@@ -435,7 +435,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   margin-bottom: var(--s-3);
 }
 .cat-dlg-head .cat-ic { width: 46px; height: 46px; border-radius: 15px; }
-.cat-dlg-head .cat-ic svg { width: 25px; height: 25px; }
+.cat-dlg-head .cat-ic svg { width: var(--icon-md); height: var(--icon-md); }
 .cat-dlg-head .cat-name { color: var(--cat); text-shadow: 0 0 18px rgba(255,255,255,.25); text-shadow: 0 0 18px color-mix(in srgb, var(--cat) 50%, transparent); }
 
 /* تأخیر دوگانه‌ی کلیک روی موبایل */
@@ -461,7 +461,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   color: #fff;
   position: relative; z-index: 1;
 }
-.mode-card .m-icon svg { width: 27px; height: 27px; }
+.mode-card .m-icon svg { width: var(--icon-lg); height: var(--icon-lg); }
 .mode-card h3 {
   font-family: var(--font-display);
   font-size: var(--fs-h2);
@@ -496,7 +496,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   box-shadow: inset 2px 2px 0 rgba(255,255,255,.3), inset -3px -3px 7px rgba(0,0,0,.45);
   color: #fff;
 }
-.mini-card .mc-icon svg { width: 22px; height: 22px; }
+.mini-card .mc-icon svg { width: var(--icon-md); height: var(--icon-md); }
 .mini-card strong { font-family: var(--font-display); font-size: 19px; font-weight: 400; }
 .mini-card span { font-size: var(--fs-xs); color: var(--text-dim); }
 
@@ -552,7 +552,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   box-shadow: inset 2px 2px 0 rgba(255,255,255,.3), inset -3px -3px 7px rgba(0,0,0,.45);
   color: #fff;
 }
-.row .r-icon svg { width: 22px; height: 22px; }
+.row .r-icon svg { width: var(--icon-md); height: var(--icon-md); }
 
 /* کلید سوییچ */
 .switch {
@@ -725,7 +725,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
 /* کنترل‌های بازی */
 .controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-2); margin-top: var(--s-4); }
 .controls .btn { min-height: 68px; flex-direction: column; gap: 4px; padding: 10px 6px; font-size: var(--fs-sm); }
-.controls .btn svg { width: 30px; height: 30px; }
+.controls .btn svg { width: var(--icon-lg); height: var(--icon-lg); }
 .controls .btn.btn-ok, .controls .btn.btn-bad, .controls .btn.btn-skip { grid-column: span 1; }
 .controls .btn-wide { grid-column: span 3; min-height: 56px; flex-direction: row; }
 
@@ -774,7 +774,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   box-shadow: inset 2px 2px 0 rgba(255,255,255,.08), inset -5px -6px 12px rgba(0,0,0,.55), 6px 8px 18px rgba(0,0,0,.55);
   color: var(--violet-2);
 }
-.modal-icon svg { width: 30px; height: 30px; }
+.modal-icon svg { width: var(--icon-lg); height: var(--icon-lg); }
 .modal-actions { display: flex; gap: var(--s-2); flex-wrap: wrap; }
 .modal-actions .btn { flex: 1 1 140px; min-height: 52px; }
 
@@ -914,7 +914,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
 .round-line + .round-line { border-top: 2px solid var(--line); }
 .round-line .rl-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--team); flex: none; }
 .round-line .rl-pos { width: 28px; display: grid; place-items: center; flex: none; }
-.round-line .rl-pos svg { width: 20px; height: 20px; }
+.round-line .rl-pos svg { width: var(--icon-sm); height: var(--icon-sm); }
 .round-line .rl-name { flex: 1; font-weight: 700; }
 .round-line .rl-delta { font-family: var(--font-display); font-size: 24px; color: var(--green); }
 .round-line .rl-total { font-family: var(--font-display); font-size: 24px; color: var(--text-dim); min-width: 56px; text-align: left; }
@@ -980,7 +980,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
 }
 .how-card .h-top { display: flex; align-items: center; gap: 10px; }
 .how-card .h-icon { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 15px; background: linear-gradient(150deg, var(--violet-2), var(--violet)); color: #fff; box-shadow: inset 2px 2px 0 rgba(255,255,255,.35), inset -3px -3px 8px rgba(0,0,0,.45); }
-.how-card .h-icon svg { width: 22px; height: 22px; }
+.how-card .h-icon svg { width: var(--icon-md); height: var(--icon-md); }
 .how-card h3 { font-family: var(--font-display); font-size: var(--fs-h3); margin: 0; position: relative; z-index: 1; }
 .how-card p { margin: 0; color: var(--text-dim); font-size: var(--fs-sm); position: relative; z-index: 1; line-height: 1.85; }
 .how-card .h-num {
