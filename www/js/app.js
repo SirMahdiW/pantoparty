@@ -456,6 +456,14 @@
     return esc(c.fa);
   }
 
+  /* آیکون اختصاصی هر دسته — مطابق تصاویر اورجینال APK */
+  var CAT_ICON = {
+    40: 'bolt', 50: 'quote', 60: 'mic', 69: 'dice', 70: 'general',
+    71: 'food', 72: 'object', 73: 'film', 74: 'celebrity', 75: 'place',
+    76: 'sport', 77: 'job', 78: 'animal', 79: 'book', 80: 'tech',
+    81: 'globe', 82: 'music', 83: 'kids', 84: 'cartoon', 85: 'celebrity', 86: 'football'
+  };
+
   function renderCategory() {
     var el = h('<div></div>');
     var team = engine.team(engine.turnIndex);
@@ -471,19 +479,25 @@
     var wrap = h('<div></div>');
     categoryGroups().forEach(function (g) {
       var card = h(
-        '<div class="clay" style="padding:var(--s-4);margin-bottom:var(--s-3)">' +
-        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:var(--s-3)">' +
-        '<span style="width:14px;height:14px;border-radius:50%;background:' + g.color + ';box-shadow:0 0 12px ' + g.color + '"></span>' +
+        '<div class="cat-section" style="margin-bottom:var(--s-4)">' +
+        '<div class="section-title" style="margin:0 0 var(--s-3)">' +
+        '<span style="width:12px;height:12px;border-radius:50%;background:' + g.color + ';box-shadow:0 0 10px ' + g.color + '"></span>' +
         '<strong style="font-family:var(--font-display);font-size:var(--fs-h3)">' + esc(g.name) + '</strong>' +
         '</div>' +
-        '<div class="chip-row"></div>' +
+        '<div class="cat-grid"></div>' +
         '</div>'
       );
-      var row = card.querySelector('.chip-row');
+      var grid = card.querySelector('.cat-grid');
       g.items.forEach(function (c) {
-        var chip = h('<button type="button" class="chip" style="border-color:' + c.color + '55">' + esc(c.fa) + '</button>');
-        chip.addEventListener('click', function () { openCatDialog(c); });
-        row.appendChild(chip);
+        var ic = CAT_ICON[c.cid] || 'grid';
+        var tile = h(
+          '<button type="button" class="cat-tile clay" style="--cat:' + c.color + '">' +
+          '<span class="cat-ic">' + Icons.get(ic) + '</span>' +
+          '<span class="cat-name">' + esc(c.fa) + '</span>' +
+          '</button>'
+        );
+        tile.addEventListener('click', function () { openCatDialog(c); });
+        grid.appendChild(tile);
       });
       wrap.appendChild(card);
     });
@@ -495,11 +509,26 @@
 
   function openCatDialog(c) {
     beep('click');
-    var body = '<div style="text-align:center;white-space:pre-line;margin-bottom:10px">' + catLabel(c) + '</div>';
+    var ic = CAT_ICON[c.cid] || 'grid';
+
+    /* عنوان دیالوگ = اسم دسته (طبق خواسته: با انتخاب دسته، اسمش برای انتخاب امتیاز نوشته شود) */
+    var title = esc(c.fa);
+    if (c.cid === 40) title = 'سرعتی ' + esc(c.fa);
+    if (c.cid === 50) title = 'ضرب‌المثل ' + esc(c.fa);
+    if (c.cid === 60) title = 'ترانه ' + esc(c.fa);
+
+    var body =
+      '<div class="cat-dlg-head" style="--cat:' + c.color + '">' +
+      '<span class="cat-ic">' + Icons.get(ic) + '</span>' +
+      '<span class="cat-name" style="font-family:var(--font-display);font-size:var(--fs-h2)">' + title + '</span>' +
+      '</div>' +
+      '<p class="lead" style="text-align:center;margin:0 0 var(--s-3)">انتخاب امتیاز</p>' +
+      '<div class="chip-row" id="sc-row" style="justify-content:center"></div>';
+
     var scrim = modal({
-      title: 'انتخاب دسته',
-      icon: c.cid === 40 ? 'bolt' : (c.cid === 50 ? 'star' : (c.cid === 60 ? 'music' : 'book')),
-      body: body + '<div class="chip-row" id="sc-row" style="justify-content:center"></div>',
+      title: 'دسته انتخاب شد',
+      icon: ic,
+      body: body,
       dismiss: false,
       actions: [
         { label: 'انصراف', cls: 'btn-ghost', onClick: function () { catSel = null; } },

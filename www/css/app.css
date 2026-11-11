@@ -268,6 +268,81 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
 }
 .chip-row { display: flex; flex-wrap: wrap; gap: var(--s-2); }
 
+/* ---------- دسته‌ها: باکس اختصاصی + آیکون مخصوص هر دسته ---------- */
+.cat-section { display: block; }
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-2);
+}
+@media (min-width: 420px) { .cat-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 640px) { .cat-grid { grid-template-columns: repeat(6, 1fr); gap: var(--s-3); } }
+
+.cat-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  min-height: 104px;
+  padding: var(--s-3) var(--s-2) var(--s-2);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-md);
+  background: linear-gradient(158deg, var(--surface-2) 0%, var(--surface) 55%, var(--bg-elev) 100%);
+  box-shadow: var(--clay);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--dur) var(--ease-clay), box-shadow var(--dur), border-color var(--dur);
+}
+.cat-tile:active { transform: translateY(4px); box-shadow: var(--clay-press); border-color: var(--cat); }
+
+.cat-ic {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  color: var(--cat);
+  background: var(--surface-2); /* fallback برای WebView قدیمی */
+  background:
+    radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,.10), transparent 60%),
+    color-mix(in srgb, var(--cat) 16%, var(--surface));
+  border: 1.5px solid rgba(255,255,255,.14); /* fallback */
+  border: 1.5px solid color-mix(in srgb, var(--cat) 45%, transparent);
+  box-shadow: 0 6px 12px rgba(0,0,0,.4); /* fallback */
+  box-shadow:
+    inset 0 2px 4px rgba(255,255,255,.10),
+    inset 0 -3px 6px rgba(0,0,0,.35),
+    0 6px 12px color-mix(in srgb, var(--cat) 30%, transparent);
+}
+.cat-ic svg { width: 28px; height: 28px; }
+
+.cat-name {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+  color: var(--text-dim);
+}
+.cat-tile:active .cat-name { color: var(--text); }
+
+/* سرگروه‌ها با آیتم کم (ترانه/ضرب‌المثل) عرض بیشتر نگیرند */
+.cat-grid .cat-tile { min-width: 0; }
+
+/* دیالوگ دسته انتخاب‌شده */
+.cat-dlg-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: var(--s-3);
+}
+.cat-dlg-head .cat-ic { width: 46px; height: 46px; border-radius: 15px; }
+.cat-dlg-head .cat-ic svg { width: 25px; height: 25px; }
+.cat-dlg-head .cat-name { color: var(--cat); text-shadow: 0 0 18px rgba(255,255,255,.25); text-shadow: 0 0 18px color-mix(in srgb, var(--cat) 50%, transparent); }
+
 /* ---------- کارت حالت بازی ---------- */
 .mode-card {
   display: flex;
