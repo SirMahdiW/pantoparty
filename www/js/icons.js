@@ -48,6 +48,7 @@
     heart: '<path ' + P + ' d="M12 20s-7.5-4.7-7.5-10A4.3 4.3 0 0 1 12 7.3 4.3 4.3 0 0 1 19.5 10c0 5.3-7.5 10-7.5 10z"/>',
     eye: '<path ' + P + ' d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><path ' + P + ' d="M12 15a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3z"/>',
     swap: '<path ' + P + ' d="M8 7l-5 5 5 5M16 7l5 5-5 5M13 4l-2 6-2-6M11 18l-2-6-2 6"/>',
+    next: '<path ' + P + ' d="M15 6l-6 6 6 6"/>',
 
     /* آیکون‌های اختصاصی دسته‌ها — مطابق تصاویر اورجینال APK (ic_pic_*) */
     general: '<path ' + P + ' d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H4.5l1.4-3.2A8.5 8.5 0 1 1 21 11.5z"/><circle cx="8.5" cy="11.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="12.5" cy="11.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="16.5" cy="11.5" r="1.1" fill="currentColor" stroke="none"/>',

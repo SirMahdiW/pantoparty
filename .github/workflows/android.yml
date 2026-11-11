@@ -30,6 +30,9 @@ jobs:
       - name: Add Android platform
         run: npx cap add android
 
+      - name: Apply brand icons & theme
+        run: node tools/apply-icons.mjs
+
       - name: Sync web assets
         run: npx cap sync android
 
