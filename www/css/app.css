@@ -793,14 +793,16 @@ body {
 /* ---------- نشانگر وضعیت امتیازهای هر دسته (برای تیم فعال) ---------- */
 .cat-tile.wide {
   grid-column: 1 / -1;
-  flex-direction: row;
+  justify-self: center;
+  width: min(100%, 268px);
+  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  gap: var(--s-3);
-  min-height: 78px;
+  justify-content: center;
+  gap: 10px;
+  min-height: 126px;
 }
-.cat-tile.wide .cat-ic { width: 46px; height: 46px; border-radius: 15px; }
-.cat-tile.wide .cat-name { font-size: var(--fs-body); text-align: start; }
+.cat-tile.wide .cat-ic { width: 52px; height: 52px; border-radius: 16px; }
+.cat-tile.wide .cat-name { font-size: var(--fs-body); text-align: center; }
 
 .cat-dots {
   display: flex;

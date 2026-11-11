@@ -521,8 +521,9 @@
     });
     if (rand) {
       var rg = { name: 'تصادفی', color: rand.color, items: [rand], random: true };
+      /* بالای همه‌ی دسته‌بندی‌های کلمه */
       var idx = groups.findIndex(function (g) { return g.name === 'کلمه'; });
-      groups.splice(idx >= 0 ? idx + 1 : groups.length, 0, rg);
+      groups.splice(idx >= 0 ? idx : groups.length, 0, rg);
     }
     return groups;
   }
