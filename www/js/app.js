@@ -24,13 +24,13 @@
   var TYPES = {
     adabazi: {
       title: 'ادابازی',
-      desc: 'هر نوبت یک کلمه: تیم نوبت‌دار دسته را انتخاب می‌کند، کلمه را اجرا می‌کند و بقیه حدس می‌زنند.',
+      desc: 'هر نوبت یک کلمه: تیم نوبت‌دار دسته را انتخاب می‌کند و بقیه حدس می‌زنند.',
       icon: 'book',
       glow: 'linear-gradient(150deg, #7C3AED, #4C1D95)'
     },
     boom: {
       title: 'بوم',
-      desc: 'کلمه به کلمه و دست‌به‌دست: «اسم پسر با الف»، «غذا با ب»… درست = ثانیه‌های باقی‌مانده + ۱ امتیاز.',
+      desc: 'کلمه به کلمه و دست‌به‌دست؛ درست = ثانیه‌های باقی‌مانده + ۱ امتیاز.',
       icon: 'bolt',
       glow: 'linear-gradient(150deg, #F43F5E, #9F1239)'
     }
@@ -88,10 +88,15 @@
   }
 
   function modal(opts) {
+    var iconStyle = '';
+    if (opts.iconColor) {
+      var c = opts.iconColor;
+      iconStyle = 'color:' + c + ';border-color:' + c + '55;background:linear-gradient(158deg,' + c + '26,' + c + '0d)';
+    }
     var scrim = h(
       '<div class="scrim" role="dialog" aria-modal="true" aria-label="' + esc(opts.title || 'پنجره') + '">' +
       '<div class="modal clay">' +
-      (opts.icon ? '<div class="winner-card" style="padding:0 0 8px"><div class="w-crown" style="width:64px;height:64px;border-radius:22px' + (opts.iconColor ? ';color:' + opts.iconColor + ';border-color:' + opts.iconColor + '55' : '') + '">' + Icons.get(opts.icon) + '</div></div>' : '') +
+      (opts.icon ? '<div class="modal-icon" style="' + iconStyle + '">' + Icons.get(opts.icon) + '</div>' : '') +
       '<h2>' + esc(opts.title || '') + '</h2>' +
       (opts.body ? '<div class="m-body">' + opts.body + '</div>' : '') +
       '<div class="modal-actions"></div>' +
@@ -166,28 +171,56 @@
     { icon: 'book', title: 'یک کلمه، یک نتیجه', desc: 'کلمه مخفی است؛ با «شروع تایمر» اجرا می‌شود. در پایان دیالوگ درست/غلط امتیاز را ثبت می‌کند.' }
   ];
 
+  function sectionHead(icon, title, sub) {
+    return h(
+      '<div class="section-head">' +
+      '<span class="sh-ic">' + Icons.get(icon) + '</span>' +
+      '<span class="sh-txt"><h2>' + esc(title) + '</h2>' +
+      (sub ? '<p>' + esc(sub) + '</p>' : '') +
+      '</span></div>'
+    );
+  }
+
+  function statRow(icon, title, sub, value, id) {
+    var b = h(
+      '<button type="button" class="stat-row"' + (id ? ' data-' + id : '') + '>' +
+      '<span class="sr-ic">' + Icons.get(icon) + '</span>' +
+      '<span class="sr-txt"><strong>' + esc(title) + '</strong><span>' + esc(sub) + '</span></span>' +
+      '<span class="sr-val">' + fa(value) + '</span>' +
+      '</button>'
+    );
+    return b;
+  }
+
   function renderHome() {
     var s = Store.stats;
     var el = h('<div></div>');
 
+    /* ---------- هیرو ---------- */
     el.appendChild(h(
       '<section class="clay hero">' +
-      '<div class="hero-tags"><span class="tag">رایگان</span><span class="tag">بدون تبلیغات</span><span class="tag">بدون خرید درون‌برنامه‌ای</span><span class="tag">' + fa(data.totals.adabazi) + ' کلمه</span></div>' +
-      '<h1>بازی گروهی<br>پانتومیم <span class="grad-text">و حدس کلمه</span></h1>' +
-      '<p>دقیقاً با همان منطق اپ اصلی: گروه‌ها، دورها، دسته‌ها و امتیازها — کاملاً رایگان و بدون تبلیغات.</p>' +
+      '<h1>بازی گروهی <span class="grad-text">پانتومیم و حدس کلمه</span></h1>' +
+      '<p class="hero-sub">دقیقاً با همان منطق اپ اصلی ادابازی: گروه‌ها، دورها، دسته‌ها و امتیازها — بدون تبلیغات و بدون پرداخت درون‌برنامه‌ای.</p>' +
+      '<div class="hero-tags">' +
+      '<span class="tag">رایگان</span>' +
+      '<span class="tag">بدون تبلیغات</span>' +
+      '<span class="tag">' + fa(data.totals.adabazi + data.totals.proverb) + ' محتوا</span>' +
+      '</div>' +
       '<div class="hero-actions">' +
       '<button type="button" class="btn btn-primary btn-lg" id="cta-play">' + Icons.get('play') + ' شروع بازی</button>' +
+      '<button type="button" class="btn btn-ghost btn-lg" id="cta-boom">' + Icons.get('bolt') + ' بازی بوم</button>' +
       '</div>' +
       '<div class="hero-stats">' +
       '<div class="hs-item"><strong>' + fa(data.totals.adabazi) + '</strong><span>کلمه</span></div>' +
       '<div class="hs-item"><strong>' + fa(data.totals.proverb) + '</strong><span>ضرب‌المثل</span></div>' +
       '<div class="hs-item"><strong>' + fa(data.totals.boom) + '</strong><span>چالش بوم</span></div>' +
-      '<div class="hs-item"><strong>' + fa(s.games) + '</strong><span>بازی شما</span></div>' +
       '</div>' +
       '</section>'
     ));
 
-    var bento = h('<div class="bento" style="margin-top:var(--s-4)"></div>');
+    /* ---------- حالت‌های بازی ---------- */
+    el.appendChild(sectionHead('grid', 'حالت‌های بازی', 'دو حالت، با قوانین یکسان اپ اصلی'));
+    var bento = h('<div class="bento"></div>');
     Object.keys(TYPES).forEach(function (key) {
       var m = TYPES[key];
       var count = key === 'boom' ? data.totals.boom : (data.totals.adabazi + data.totals.proverb + data.totals.songs);
@@ -204,7 +237,8 @@
     });
     el.appendChild(bento);
 
-    var howWrap = h('<div class="bento" style="margin-top:var(--s-4)"></div>');
+    /* ---------- چطور بازی کنیم ---------- */
+    el.appendChild(sectionHead('spark', 'چطور بازی کنیم؟', 'سه قدم تا اولین دور'));
     var steps = h('<div class="how-grid"></div>');
     HOW_STEPS.forEach(function (st, i) {
       steps.appendChild(h(
@@ -215,24 +249,35 @@
         '</div>'
       ));
     });
-    howWrap.appendChild(steps);
-    el.appendChild(howWrap);
+    el.appendChild(steps);
 
-    var stats = h('<div class="bento" style="margin-top:var(--s-4)"></div>');
-    stats.appendChild(mini('chart', 'بازی‌ها', fa(s.games), 'تعداد کل بازی‌ها', '#7C3AED', 'stats'));
-    stats.appendChild(mini('target', 'کلمه‌ها', fa(s.words), 'کلمه بازی‌شده', '#F43F5E', 'stats'));
-    stats.appendChild(mini('history', 'تاریخچه', fa(Store.history.length), 'بازی‌های اخیر', '#22D3EE', 'history'));
-    el.appendChild(stats);
+    /* ---------- آمار شما ---------- */
+    el.appendChild(sectionHead('chart', 'آمار شما', 'آمار بازی‌های همین دستگاه'));
+    var statList = h('<div class="clay stat-list"></div>');
+    statList.appendChild(statRow('chart', 'بازی‌ها', 'تعداد کل بازی‌های انجام‌شده', s.games, 'stats'));
+    statList.appendChild(statRow('target', 'کلمه‌ها', 'کلمه‌های بازی‌شده', s.words, 'stats'));
+    statList.appendChild(statRow('history', 'تاریخچه', 'بازی‌های اخیر', Store.history.length, 'history'));
+    el.appendChild(statList);
 
+    /* ---------- تنظیمات و درباره ---------- */
     el.appendChild(h(
-      '<div class="bento" style="margin-top:var(--s-4)">' +
-      '<button type="button" class="clay pressable mini-card span-3" id="open-settings" style="--glow:#34D399">' +
+      '<div class="bento" style="margin-top:var(--s-3)">' +
+      '<button type="button" class="clay pressable mini-card span-2" id="open-settings" style="--glow:#34D399">' +
       '<span class="mc-icon">' + Icons.get('settings') + '</span>' +
       '<strong>تنظیمات بازی</strong><span>صدا و لرزش</span></button>' +
-      '<button type="button" class="clay pressable mini-card span-3" id="open-about" style="--glow:#FBBF24">' +
+      '<button type="button" class="clay pressable mini-card span-2" id="open-about" style="--glow:#FBBF24">' +
       '<span class="mc-icon">' + Icons.get('info') + '</span>' +
       '<strong>درباره و حریم خصوصی</strong><span>بدون جمع‌آوری داده</span></button>' +
       '</div>'
+    ));
+
+    /* ---------- بند پایانی ---------- */
+    el.appendChild(h(
+      '<section class="clay cta-band">' +
+      '<h2>آماده‌ای شروع کنی؟</h2>' +
+      '<p>گروه‌ها را بساز، دسته را انتخاب کن و بازی را شروع کن. بدون تبلیغ، بدون خرید درون‌برنامه‌ای.</p>' +
+      '<button type="button" class="btn btn-primary btn-lg btn-block" id="cta-final">' + Icons.get('play') + ' شروع بازی</button>' +
+      '</section>'
     ));
 
     el.appendChild(h(
@@ -241,6 +286,8 @@
     ));
 
     el.querySelector('#cta-play').addEventListener('click', function () { beep('click'); pendingType = 'adabazi'; go('create'); });
+    el.querySelector('#cta-final').addEventListener('click', function () { beep('click'); pendingType = 'adabazi'; go('create'); });
+    el.querySelector('#cta-boom').addEventListener('click', function () { beep('click'); pendingType = 'boom'; go('create'); });
     el.querySelector('#open-settings').addEventListener('click', function () { beep('click'); go('settings'); });
     el.querySelector('#open-about').addEventListener('click', function () { beep('click'); go('about'); });
     el.querySelectorAll('[data-stats], [data-history]').forEach(function (b) {
@@ -248,17 +295,6 @@
     });
 
     return el;
-  }
-
-  function mini(icon, title, value, sub, glow, id) {
-    var b = h(
-      '<button type="button" class="clay pressable mini-card span-2" style="--glow:' + glow + '">' +
-      '<span class="mc-icon">' + Icons.get(icon) + '</span>' +
-      '<strong>' + value + '</strong><span>' + title + ' — ' + sub + '</span>' +
-      '</button>'
-    );
-    if (id) b.setAttribute('data-' + id, '');
-    return b;
   }
 
   /* ----- ساخت بازی (CreateFragment) ----- */
@@ -1312,6 +1348,10 @@
     if ('serviceWorker' in navigator && location.protocol !== 'file:') {
       navigator.serviceWorker.register('sw.js').catch(function () { /* بی‌صدا */ });
     }
+
+    /* آیکون دکمه‌های نوار بالا */
+    btnBack.innerHTML = Icons.get('back');
+    btnSettings.innerHTML = Icons.get('settings');
 
     var loading = h('<div class="loading"><div class="spinner" role="status" aria-label="در حال بارگذاری"></div><div>در حال بارگذاری کلمات…</div></div>');
     main.appendChild(loading);

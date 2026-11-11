@@ -13,7 +13,7 @@
   /* --- متن --- */
   --text:          #F4F4FF;
   --text-dim:      #A6A6C4;
-  --text-faint:    #6E6E8C;
+  --text-faint:    #8E8EAE;   /* کنتراست ≥ 4.5:1 روی زمینه‌ی مشکی */
 
   /* --- رنگ‌های زنده (Vibrant) --- */
   --violet:  #7C3AED;
@@ -76,13 +76,13 @@
   --font-display: 'Lalezar', 'Vazirmatn', system-ui, sans-serif;
   --font-body:    'Vazirmatn', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  --fs-hero:  clamp(34px, 8vw, 56px);
+  --fs-hero:  clamp(32px, 7.6vw, 52px);
   --fs-h1:    clamp(26px, 5.5vw, 38px);
   --fs-h2:    clamp(20px, 4vw, 26px);
   --fs-h3:    clamp(17px, 3.4vw, 20px);
   --fs-body:  clamp(15px, 3.6vw, 17px);
   --fs-sm:    13px;
-  --fs-xs:    11.5px;
+  --fs-xs:    12px;
 
   /* --- حرکت --- */
   --ease-out:  cubic-bezier(.22, .61, .36, 1);
@@ -95,6 +95,24 @@
   --gutter: clamp(16px, 4.5vw, 28px);
   --maxw: 780px;
   --topbar-h: 64px;
+
+  /* --- ریتم عمودی بخش‌ها (۸dp) --- */
+  --section-gap: 32px;
+  --pad-card: 16px;
+  --pad-hero: 20px;
+
+  /* --- اندازه آیکون‌ها --- */
+  --icon-sm: 18px;
+  --icon-md: 24px;
+  --icon-lg: 30px;
+
+  @media (min-width: 768px) {
+    :root {
+      --section-gap: 48px;
+      --pad-card: 20px;
+      --pad-hero: 28px;
+    }
+  }
 
   --z-bg: 0;
   --z-main: 1;

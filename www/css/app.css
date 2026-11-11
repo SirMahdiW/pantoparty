@@ -4,6 +4,9 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+/* ویژگی hidden باید واقعاً عنصر را پنهان کند (CSS display نباید آن را بی‌اثر کند) */
+[hidden] { display: none !important; }
+
 html, body { height: 100%; }
 
 body {
@@ -121,7 +124,7 @@ body {
 
 /* ---------- دکمه آیکونی ---------- */
 .icon-btn {
-  width: 46px; height: 46px;
+  width: 48px; height: 48px;
   flex: none;
   display: grid; place-items: center;
   border: var(--bw) solid var(--line);
@@ -186,23 +189,120 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   box-shadow: var(--clay-press);
 }
 
-/* ---------- بلوک‌ها / گرید بنتو (Block-based) ---------- */
+/* ---------- بلوک‌ها / گرید بنتو (Block-based) — موبایل‌محور ---------- */
 .bento {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--s-3);
 }
 .bento > * { min-width: 0; }
-.span-6 { grid-column: span 6; }
-.span-4 { grid-column: span 4; }
-.span-3 { grid-column: span 3; }
-.span-2 { grid-column: span 2; }
+/* موبایل: هر اسپن کل عرض یا نصف عرض */
+.span-6 { grid-column: span 2; }
+.span-4 { grid-column: span 2; }
+.span-3 { grid-column: span 2; }
+.span-2 { grid-column: span 1; }
 
-@media (min-width: 640px) {
-  .bento { gap: var(--s-4); }
+@media (min-width: 768px) {
+  .bento { grid-template-columns: repeat(6, 1fr); gap: var(--s-4); }
+  .span-6 { grid-column: span 6; }
   .span-4 { grid-column: span 4; }
   .span-3 { grid-column: span 3; }
   .span-2 { grid-column: span 2; }
+}
+
+/* ---------- عنوان بخش‌ها ---------- */
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: var(--section-gap) 0 var(--s-4);
+}
+.section-head:first-child { margin-top: 0; }
+.section-head .sh-ic {
+  width: 38px; height: 38px;
+  flex: none;
+  display: grid; place-items: center;
+  border-radius: 13px;
+  background: linear-gradient(150deg, var(--violet-2), var(--violet));
+  color: #fff;
+  box-shadow: inset 2px 2px 0 rgba(255,255,255,.35), inset -3px -3px 8px rgba(0,0,0,.45);
+}
+.section-head .sh-ic svg { width: 20px; height: 20px; }
+.section-head .sh-txt { min-width: 0; }
+.section-head h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  line-height: 1.3;
+  margin: 0;
+}
+.section-head p {
+  margin: 2px 0 0;
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+  line-height: 1.6;
+}
+
+/* ---------- فهرست آمار ---------- */
+.stat-list { padding: var(--s-2) var(--pad-card); }
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 60px;
+  padding: 10px 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.stat-row + .stat-row { border-top: 1px solid var(--line); }
+.stat-row:active { opacity: .72; }
+.stat-row .sr-ic {
+  width: 38px; height: 38px;
+  flex: none;
+  display: grid; place-items: center;
+  border-radius: 12px;
+  background: rgba(255,255,255,.05);
+  border: 1.5px solid var(--line-strong);
+  color: var(--violet-2);
+}
+.stat-row .sr-ic svg { width: 19px; height: 19px; }
+.stat-row .sr-txt { flex: 1; min-width: 0; }
+.stat-row .sr-txt strong { display: block; font-size: var(--fs-sm); font-weight: 700; }
+.stat-row .sr-txt span { display: block; font-size: var(--fs-xs); color: var(--text-faint); }
+.stat-row .sr-val {
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1;
+  color: var(--cyan);
+}
+
+/* ---------- بند پایانی CTA ---------- */
+.cta-band {
+  margin-top: var(--section-gap);
+  padding: var(--s-5) var(--pad-card);
+  text-align: center;
+  background:
+    linear-gradient(150deg, rgba(124,58,237,.30), rgba(244,63,94,.16) 60%, rgba(34,211,238,.12)),
+    linear-gradient(158deg, var(--surface-2), var(--bg-elev));
+}
+.cta-band h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  margin: 0 0 6px;
+}
+.cta-band p {
+  margin: 0 0 var(--s-4);
+  color: var(--text-dim);
+  font-size: var(--fs-sm);
+  line-height: 1.8;
+  max-width: 46ch;
+  margin-inline: auto;
 }
 
 /* ---------- دکمه‌ها ---------- */
@@ -250,7 +350,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  min-height: 44px;
+  min-height: 48px;
   padding: 8px 16px;
   border-radius: var(--r-pill);
   border: var(--bw) solid var(--line);
@@ -357,26 +457,13 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
 .mode-card {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-height: 150px;
-  padding: var(--s-4);
+  gap: 8px;
+  min-height: 0;
+  padding: var(--pad-card);
   overflow: hidden;
 }
-.mode-card::after {
-  content: "";
-  position: absolute;
-  inset-inline-end: -30px;
-  top: -30px;
-  width: 110px; height: 110px;
-  border-radius: 50%;
-  background: var(--glow, var(--violet));
-  opacity: .3;
-  filter: blur(6px);
-  transition: transform var(--dur-slow) var(--ease-clay);
-}
-.mode-card:hover::after { transform: scale(1.25); }
 .mode-card .m-icon {
-  width: 54px; height: 54px;
+  width: 52px; height: 52px;
   display: grid; place-items: center;
   border-radius: var(--r-sm);
   background: linear-gradient(150deg, var(--glow, var(--violet)), rgba(0,0,0,.35));
@@ -384,20 +471,31 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   color: #fff;
   position: relative; z-index: 1;
 }
-.mode-card .m-icon svg { width: 28px; height: 28px; }
+.mode-card .m-icon svg { width: 27px; height: 27px; }
 .mode-card h3 {
   font-family: var(--font-display);
   font-size: var(--fs-h2);
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   position: relative; z-index: 1;
 }
-.mode-card p { margin: 0; color: var(--text-dim); font-size: var(--fs-sm); position: relative; z-index: 1; }
+.mode-card p {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: var(--fs-sm);
+  line-height: 1.85;
+  position: relative; z-index: 1;
+}
 .mode-card .m-count {
   margin-top: auto;
+  padding-top: 10px;
   font-size: var(--fs-xs);
   font-weight: 700;
   color: var(--text-faint);
   position: relative; z-index: 1;
+}
+@media (hover: hover) {
+  .mode-card { transition: transform var(--dur) var(--ease-clay), box-shadow var(--dur); }
+  .mode-card:hover { transform: translateY(-3px); }
 }
 
 /* ---------- کارت کوچک آمار/لینک ---------- */
@@ -406,7 +504,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   flex-direction: column;
   gap: 8px;
   min-height: 116px;
-  padding: var(--s-4);
+  padding: var(--pad-card);
 }
 .mini-card .mc-icon {
   width: 42px; height: 42px;
@@ -422,20 +520,29 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
 
 /* ---------- هیرو ---------- */
 .hero {
-  padding: var(--s-5) var(--s-4);
+  padding: var(--pad-hero) var(--pad-card);
   overflow: hidden;
   background:
-    linear-gradient(150deg, rgba(124,58,237,.35), rgba(244,63,94,.2) 55%, rgba(34,211,238,.16)),
+    linear-gradient(150deg, rgba(124,58,237,.32), rgba(244,63,94,.18) 55%, rgba(34,211,238,.14)),
     linear-gradient(158deg, var(--surface-2), var(--bg-elev));
 }
 .hero h1 {
   font-family: var(--font-display);
   font-size: var(--fs-hero);
   line-height: 1.25;
-  margin: 0 0 8px;
+  margin: 0 0 10px;
+  max-width: 20ch;
+  text-wrap: balance;
   text-shadow: 0 3px 10px rgba(0,0,0,.55);
 }
-.hero p { margin: 0 0 var(--s-4); color: var(--text-dim); }
+.hero h1 .grad-text { display: block; }
+.hero .hero-sub {
+  margin: 0 0 var(--s-4);
+  color: var(--text-dim);
+  font-size: var(--fs-body);
+  line-height: 1.9;
+  max-width: 46ch;
+}
 .hero .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--s-4); }
 .tag {
   font-size: var(--fs-xs);
@@ -444,6 +551,7 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   border-radius: var(--r-pill);
   background: rgba(0,0,0,.35);
   border: 2px solid rgba(255,255,255,.14);
+  white-space: nowrap;
 }
 
 /* ---------- ردیف تنظیمات ---------- */
@@ -679,6 +787,19 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
 }
 .modal h2 { font-family: var(--font-display); font-size: var(--fs-h1); margin: 0 0 6px; text-align: center; }
 .modal .m-body { color: var(--text-dim); margin-bottom: var(--s-4); }
+
+/* آیکون دیالوگ‌ها — استایل اختصاصی (نه استایل تاجِ صفحهٔ پایان) */
+.modal-icon {
+  width: 62px; height: 62px;
+  margin: 0 auto var(--s-3);
+  border-radius: 22px;
+  display: grid; place-items: center;
+  background: linear-gradient(158deg, var(--surface-3), var(--bg-elev));
+  border: var(--bw) solid var(--line);
+  box-shadow: inset 2px 2px 0 rgba(255,255,255,.08), inset -5px -6px 12px rgba(0,0,0,.55), 6px 8px 18px rgba(0,0,0,.55);
+  color: var(--violet-2);
+}
+.modal-icon svg { width: 30px; height: 30px; }
 .modal-actions { display: flex; gap: var(--s-2); flex-wrap: wrap; }
 .modal-actions .btn { flex: 1 1 140px; min-height: 52px; }
 
@@ -862,32 +983,62 @@ button.clay, a.clay, [role="button"].clay { cursor: pointer; color: inherit; fon
   background-clip: text;
   color: transparent;
 }
-.hero-actions { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-3); }
+.hero-actions { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-4); }
 .hero-actions .btn { flex: 1 1 100%; }
-@media (min-width: 480px) { .hero-actions .btn { flex: 0 1 auto; } }
+@media (min-width: 480px) {
+  .hero-actions .btn { flex: 1 1 0; }
+}
 .hero-stats {
-  display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4);
-  margin-top: var(--s-5); padding-top: var(--s-4);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-3);
+  margin-top: var(--s-5);
+  padding-top: var(--s-4);
   border-top: var(--bw) solid var(--line);
 }
-.hs-item { display: flex; flex-direction: column; gap: 2px; min-width: 70px; }
-.hs-item strong { font-family: var(--font-display); font-size: 26px; font-weight: 400; background: linear-gradient(120deg, var(--violet-2), var(--cyan)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hs-item { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.hs-item strong {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 5.4vw, 26px);
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--cyan);
+}
 .hs-item span { font-size: var(--fs-xs); color: var(--text-dim); }
 
 .how-grid { display: grid; grid-template-columns: 1fr; gap: var(--s-3); }
-.how-card { position: relative; display: flex; flex-direction: column; gap: 8px; padding: var(--s-4) var(--s-4) var(--s-5); overflow: hidden; text-align: right; }
-.how-card .h-top { display: flex; align-items: center; justify-content: space-between; }
+@media (min-width: 768px) { .how-grid { grid-template-columns: repeat(3, 1fr); gap: var(--s-4); } }
+.how-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--pad-card);
+  overflow: hidden;
+  text-align: start;
+}
+.how-card .h-top { display: flex; align-items: center; gap: 10px; }
 .how-card .h-icon { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 15px; background: linear-gradient(150deg, var(--violet-2), var(--violet)); color: #fff; box-shadow: inset 2px 2px 0 rgba(255,255,255,.35), inset -3px -3px 8px rgba(0,0,0,.45); }
 .how-card .h-icon svg { width: 22px; height: 22px; }
 .how-card h3 { font-family: var(--font-display); font-size: var(--fs-h3); margin: 0; position: relative; z-index: 1; }
-.how-card p { margin: 0; color: var(--text-dim); font-size: var(--fs-sm); position: relative; z-index: 1; line-height: 1.9; }
-.how-card .h-num { position: absolute; top: -18px; inset-inline-end: var(--s-3); font-family: var(--font-display); font-size: 96px; line-height: .75; color: rgba(255,255,255,.05); pointer-events: none; }
-@media (min-width: 640px) { .how-grid { grid-template-columns: repeat(3, 1fr); } }
-
+.how-card p { margin: 0; color: var(--text-dim); font-size: var(--fs-sm); position: relative; z-index: 1; line-height: 1.85; }
+.how-card .h-num {
+  width: 30px; height: 30px;
+  flex: none;
+  display: grid; place-items: center;
+  border-radius: 10px;
+  background: rgba(255,255,255,.06);
+  border: 1.5px solid var(--line-strong);
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--text-dim);
+}
 /* ---------- واکنش‌گرایی ---------- */
 @media (max-width: 380px) {
-  .span-4, .span-3, .span-2 { grid-column: span 6; }
+  .span-6, .span-4, .span-3 { grid-column: span 2; }
+  .span-2 { grid-column: span 1; }
   .mode-card { min-height: 132px; }
+  .cat-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (min-width: 900px) {
