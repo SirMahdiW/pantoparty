@@ -24,6 +24,7 @@
     this.log = [];               // رکورد کلمه‌ها برای بازگشت
     this.roundDelta = this.teams.map(function () { return 0; });
     this.finished = false;
+    this.lastSummary = null;
     this.pool = this.buildPool();
     this.phase = 'setup';        // setup | show | running | paused | finished
     this.timeState = 'ready';    // ready | running | paused | finished
@@ -42,6 +43,13 @@
     var d = this.data, pool = [];
     if (this.mode === 'boom') {
       d.boom.forEach(function (w) { pool.push({ text: w, score: 3 }); });
+    } else if (this.mode === 'proverb') {
+      /* دسته‌ی ضرب‌المثل (cid 50) — سطح امتیاز: ۲/۴/۶/۲۰ */
+      var arr = d.adabazi['50'] || [];
+      var lvl = this.opts.level || 0;
+      var sel = lvl ? arr.filter(function (x) { return x[1] === lvl; }) : arr;
+      if (!sel.length) sel = arr;
+      sel.forEach(function (w) { pool.push({ text: w[0], score: w[1] }); });
     } else if (this.mode === 'songs') {
       d.songs.forEach(function (s) {
         pool.push({ text: s.t, sub: s.s, score: s.s && s.s.score ? s.s.score : 5 });
@@ -115,64 +123,80 @@
   };
 
   Engine.prototype.addFault = function () {
-    if (this.phase === 'finished') return false;
+    if (this.phase === 'finished' || this.over) return false;
     this.faults++;
+    this.teams[this.turnIndex].score -= 1;
+    this.roundDelta[this.turnIndex] -= 1;
+    this.turnScore -= 1;
     return true;
   };
 
-  /* تعویض کلمه: فقط یک بار در هر نوبت؛ جریمه -۱ (R) و تایمر ریست نمیشود */
+  /* تعویض کلمه: فقط یک بار در هر نوبت؛ جریمه −۱ (R) بلافاصله اعمال می‌شود و تایمر ریست نمیشود */
   Engine.prototype.swapWord = function () {
     if (this.phase !== 'show' && this.phase !== 'running') return false;
-    if (this.swapUsed) return false;
+    if (this.swapUsed || this.over) return false;
     var w = this.currentWord();
     if (!w) return false;
     var replaced = null;
     if (this.mode === 'boom') {
       replaced = { text: this.data.boom[(Math.random() * this.data.boom.length) | 0], score: 3 };
     } else if (this.mode === 'songs') {
-      replaced = { text: this.data.songs[(Math.random() * this.data.songs.length) | 0].t, sub: this.data.songs[(Math.random() * this.data.songs.length) | 0].s, score: 5 };
+      var s = this.data.songs[(Math.random() * this.data.songs.length) | 0];
+      replaced = { text: s.t, sub: s.s, score: s.s && s.s.score ? s.s.score : 5 };
     } else {
-      // همان دسته و همان امتیاز
-      var targetCid = null, targetArr = null;
+      /* همان دسته و همان امتیاز (به‌جز خود کلمه) */
+      var targetArr = null;
       for (var cid in this.data.adabazi) {
         var arr = this.data.adabazi[cid] || [];
         for (var i = 0; i < arr.length; i++) {
-          if (arr[i][0] === w.text) { targetCid = cid; targetArr = arr; break; }
+          if (arr[i][0] === w.text) { targetArr = arr; break; }
         }
-        if (targetCid) break;
+        if (targetArr) break;
       }
-      var same = targetArr ? targetArr.filter(function (x) { return x[1] === w[1]; }) : [];
-      replaced = same.length ? same[(Math.random() * same.length) | 0] : { text: 'کلمه‌ی جدید', score: w[1] };
+      var same = targetArr ? targetArr.filter(function (x) { return x[0] !== w.text; }) : [];
+      var sameScore = same.filter(function (x) { return x[1] === w.score; });
+      var pick = sameScore.length ? sameScore : same;
+      replaced = pick.length
+        ? (function (p) { var r = p[(Math.random() * p.length) | 0]; return { text: r[0], score: r[1] }; })(pick)
+        : w;
     }
     this.queue[this.wordIndex] = replaced;
     this.swapUsed = true;
     this.swapPenalty = 1;
+    this.teams[this.turnIndex].score -= 1;
+    this.roundDelta[this.turnIndex] -= 1;
+    this.turnScore -= 1;
     return true;
   };
 
-  /* پاسخ: 'correct' | 'wrong' | 'skip' — با فرمول امتیاز نوبت: S = P - E - R + B */
+  /* پاسخ: 'correct' | 'wrong' | 'skip' — امتیاز تجمعی نوبت: S = P − E − R + B */
   Engine.prototype.answer = function (kind) {
     var w = this.currentWord();
     if (!w) return null;
-    if (this.phase === 'finished') return null;
+    if (this.phase === 'finished' || this.over) return null;
     if (this.phase !== 'show' && this.phase !== 'running') return null;
 
-    var rec = { word: w, kind: kind, team: this.turnIndex, gained: 0, delta: 0 };
+    var rec = { word: w, kind: kind, team: this.turnIndex, gained: w.score, delta: 0 };
     var S = 0;
 
     if (kind === 'correct') {
-      var B = this.opts.timeReward ? 1 : 0;
-      S = w.score - this.faults - this.swapPenalty + B;
-      this.teams[this.turnIndex].score += S;
-      this.turnScore = S;
+      S = w.score;
+      /* B — پاداش زمان: فقط وقتی تایمر در حال اجراست و زمان باقی مانده */
+      if (this.opts.timeReward && this.phase === 'running' && this.timeLeft > 0) S += 1;
       this.turnCorrect++;
-      this.roundDelta[this.turnIndex] += S;
       this.totalWords++;
-      rec.gained = w.score;
+    } else if (kind === 'wrong') {
+      /* E — هر پاسخ غلط یک خطاست: −۱ */
+      this.faults++;
+      S = -1;
     } else {
-      S = -this.faults - this.swapPenalty;
+      S = 0; /* skip */
+    }
+
+    if (S) {
       this.teams[this.turnIndex].score += S;
-      this.turnScore = S;
+      this.roundDelta[this.turnIndex] += S;
+      this.turnScore += S;
     }
     rec.delta = S;
 
@@ -180,8 +204,7 @@
     this.wordIndex++;
     this.turnActions++;
 
-    if (this.phase === 'running' && this.timeLeft <= 0) this.endTurn();
-    else if (this.wordIndex >= this.queue.length) this.endTurn();
+    if (this.wordIndex >= this.queue.length) this.endTurn();
     return rec;
   };
 
@@ -219,7 +242,7 @@
   };
 
   Engine.prototype.endTurn = function () {
-    if (this.over) return;
+    if (this.over) return this.lastSummary || null;
     this.over = true;
     this.phase = 'finished';
     this.timeState = 'finished';
@@ -228,30 +251,31 @@
       team: this.turnIndex,
       gained: this.turnScore,
       correct: this.turnCorrect,
-      totals: this.teams.map(function (t) { return t.score; })
+      totals: this.teams.map(function (t) { return t.score; }),
+      type: 'next-turn'   // 'next-turn' | 'round-end' | 'end'
     };
 
     if (this.turnsInRound + 1 >= this.teams.length) {
-      // پایان دور
+      // پایان دور — شروع‌کننده‌ی دور بعد، تیم بعدی است (چرخش)
+      this.turnIndex = (this.turnIndex + 1) % this.teams.length;
       if (this.round >= this.opts.rounds) {
         this.finished = true;
-        summary.end = true;
+        summary.type = 'end';
       } else {
-        summary.roundEnd = true;
+        summary.type = 'round-end';
       }
     } else {
-      // نوبت تیم بعدی
       this.turnIndex = (this.turnIndex + 1) % this.teams.length;
-      this.turnsInRound = 0;
-      this.startTurn();
+      this.turnsInRound++;
     }
+
+    this.lastSummary = summary;
     return summary;
   };
 
   Engine.prototype.nextRound = function () {
     this.round++;
     this.turnsInRound = 0;
-    this.turnIndex = 0;
     this.roundDelta = this.teams.map(function () { return 0; });
     this.startTurn();
   };
@@ -265,8 +289,9 @@
     for (var i = 1; i < this.teams.length; i++) {
       if (this.teams[i].score > this.teams[best].score) best = i;
     }
-    var tie = this.teams.every(function (t) { return t.score === this.teams[best].score; }, this);
-    return tie ? null : this.teams[best];
+    var top = this.teams[best].score;
+    var count = this.teams.filter(function (t) { return t.score === top; }).length;
+    return count > 1 ? null : this.teams[best];
   };
 
   Engine.prototype.isTie = function () {

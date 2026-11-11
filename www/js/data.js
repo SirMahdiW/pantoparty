@@ -29,9 +29,9 @@
 
   function normalize(json) {
     var cats = (json.categories || []).slice();
-    // فقط دسته‌هایی که محتوا دارند (cid در adabazi موجود است)
+    // فقط دسته‌های «کلمات» با محتوا (cid از ۷۰ به بالا؛ ۵۰ = ضرب‌المثل حالت مستقل است)
     var groups = json.adabazi || {};
-    var usable = cats.filter(function (c) { return groups[String(c.cid)]; });
+    var usable = cats.filter(function (c) { return c.cid >= 70 && groups[String(c.cid)]; });
 
     return {
       categories: cats,
@@ -45,7 +45,10 @@
         return g ? g.length : 0;
       },
       totals: {
-        adabazi: Object.keys(groups).reduce(function (n, k) { return n + groups[k].length; }, 0),
+        adabazi: Object.keys(groups).reduce(function (n, k) {
+          return k === '50' ? n : n + groups[k].length;
+        }, 0),
+        proverb: (groups['50'] || []).length,
         boom: (json.boom || []).length,
         songs: (json.songs || []).length
       }

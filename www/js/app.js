@@ -22,6 +22,12 @@
       icon: 'book',
       glow: 'linear-gradient(150deg, #7C3AED, #4C1D95)'
     },
+    proverb: {
+      title: 'ضرب‌المثل',
+      desc: 'ضرب‌المثل را اجرا کن و بقیه حدس بزنند؛ سطح‌های ۲/۴/۶/۲۰ امتیازی.',
+      icon: 'star',
+      glow: 'linear-gradient(150deg, #34D399, #065F46)'
+    },
     boom: {
       title: 'بوم',
       desc: 'هر کلمه یک چالش سریع: «اسم پسر با الف»، «غذا با ب»…',
@@ -159,7 +165,7 @@
 
     el.appendChild(h(
       '<section class="clay hero">' +
-      '<div class="hero-tags"><span class="tag">رایگان</span><span class="tag">بدون تبلیغات</span><span class="tag">بدون خرید درون‌برنامه‌ای</span><span class="tag">۱۶,۳۰۵ کلمه</span></div>' +
+      '<div class="hero-tags"><span class="tag">رایگان</span><span class="tag">بدون تبلیغات</span><span class="tag">بدون خرید درون‌برنامه‌ای</span><span class="tag">' + data.totals.adabazi.toLocaleString('fa-IR') + ' کلمه</span></div>' +
       '<h1>بازی گروهی<br>پانتومیم <span class="grad-text">و حدس کلمه</span></h1>' +
       '<p>یک تیم کلمه می‌خواند و اجرا می‌کند؛ تیم دیگر حدس می‌زند. دورهای کوتاه، امتیازهای درشت، ذهنیت جمعی و بدون تبلیغات.</p>' +
       '<div class="hero-actions">' +
@@ -167,9 +173,10 @@
       '<button type="button" class="btn btn-ghost btn-lg" id="cta-how">' + Icons.get('dice') + ' چیدمان بازی</button>' +
       '</div>' +
       '<div class="hero-stats">' +
-      '<div class="hs-item"><strong>۱۶,۳۰۵</strong><span>کلمه ادبیات</span></div>' +
-      '<div class="hs-item"><strong>۱,۰۲۹</strong><span>چالش بوم</span></div>' +
-      '<div class="hs-item"><strong>۵۰</strong><span>ترانه</span></div>' +
+      '<div class="hs-item"><strong>' + data.totals.adabazi.toLocaleString('fa-IR') + '</strong><span>کلمه ادبیات</span></div>' +
+      '<div class="hs-item"><strong>' + data.totals.proverb.toLocaleString('fa-IR') + '</strong><span>ضرب‌المثل</span></div>' +
+      '<div class="hs-item"><strong>' + data.totals.boom.toLocaleString('fa-IR') + '</strong><span>چالش بوم</span></div>' +
+      '<div class="hs-item"><strong>' + data.totals.songs.toLocaleString('fa-IR') + '</strong><span>ترانه</span></div>' +
       '<div class="hs-item"><strong>' + s.games.toLocaleString('fa-IR') + '</strong><span>بازی انجام‌شده</span></div>' +
       '</div>' +
       '</section>'
@@ -181,7 +188,7 @@
       var m = MODES[key];
       var count = data.totals[key];
       var card = h(
-        '<button type="button" class="clay pressable mode-card span-2" data-mode="' + key + '" style="--glow:' + m.glow + '">' +
+        '<button type="button" class="clay pressable mode-card span-3" data-mode="' + key + '" style="--glow:' + m.glow + '">' +
         '<span class="m-icon">' + Icons.get(m.icon) + '</span>' +
         '<h3>' + m.title + '</h3>' +
         '<p>' + m.desc + '</p>' +
@@ -271,6 +278,7 @@
         wordsPerTurn: st.wordsPerTurn,
         timeReward: !!st.timeReward,
         cats: data.usableCategories.map(function (c) { return c.cid; }),
+        level: 2,
         teamNames: st.teamNames.slice(),
         teamColors: st.teamColors.slice()
       };
@@ -384,6 +392,30 @@
       el.appendChild(catBox);
     }
 
+    /* سطح امتیاز (فقط ضرب‌المثل) */
+    if (d.mode === 'proverb') {
+      var lvlBox = h('<div style="margin-top:var(--s-5)"><div class="section-title">' + Icons.get('star') + ' سطح ضرب‌المثل</div>' +
+        '<div class="chip-row" id="lvl-row"></div></div>');
+      var lvlRow = lvlBox.querySelector('#lvl-row');
+      [2, 4, 6, 20].forEach(function (lv) {
+        var chip = h('<button type="button" class="chip" data-lv="' + lv + '">' + lv.toLocaleString('fa-IR') + ' امتیازی <span style="opacity:.7">' +
+          data.adabazi['50'].filter(function (x) { return x[1] === lv; }).length.toLocaleString('fa-IR') + '</span></button>');
+        chip.addEventListener('click', function () {
+          d.level = lv;
+          paintLvls();
+          beep('click');
+        });
+        lvlRow.appendChild(chip);
+      });
+      function paintLvls() {
+        lvlRow.querySelectorAll('[data-lv]').forEach(function (chip) {
+          chip.classList.toggle('is-on', Number(chip.dataset.lv) === d.level);
+        });
+      }
+      paintLvls();
+      el.appendChild(lvlBox);
+    }
+
     /* شروع */
     var start = h('<button type="button" class="btn btn-primary btn-lg btn-block" style="margin-top:var(--s-6)">' + Icons.get('play') + ' شروع بازی</button>');
     start.addEventListener('click', function () { beginGame(); });
@@ -429,6 +461,7 @@
     engine = new GameEngine(data, {
       mode: d.mode,
       categories: d.cats,
+      level: d.level,
       teams: d.teamNames.map(function (n, i) { return { name: n.trim() || ('تیم ' + (i + 1)), color: d.teamColors[i] }; }),
       rounds: d.rounds,
       roundTime: d.roundTime,
@@ -490,7 +523,7 @@
     el.appendChild(controls);
 
     function paintHead() {
-      var modeLabel = engine.mode === 'adabazi' ? 'ادبیات' : engine.mode === 'boom' ? 'بوم' : 'ترانه';
+      var modeLabel = MODES[engine.mode] ? MODES[engine.mode].title : engine.mode;
       head.innerHTML =
         '<span class="round-pill">دور ' + engine.round.toLocaleString('fa-IR') + ' از ' + engine.opts.rounds.toLocaleString('fa-IR') + '</span>' +
         '<span class="turn-pill" id="turn-pill">' + Icons.get('users') + ' نوبت: ' + esc(engine.team().name) + '</span>' +
@@ -524,12 +557,10 @@
       if (!w) { txt.textContent = 'تمام شد'; sub.textContent = ''; meta.innerHTML = ''; return; }
 
       meta.innerHTML = '';
-      if (engine.mode === 'adabazi') {
-        meta.appendChild(h('<span class="score-badge">' + w.score.toLocaleString('fa-IR') + ' امتیاز</span>'));
-      } else if (engine.mode === 'songs') {
-        meta.appendChild(h('<span class="score-badge">' + (w.score || 5).toLocaleString('fa-IR') + ' امتیاز</span>'));
-      } else {
+      if (engine.mode === 'boom') {
         meta.appendChild(h('<span class="score-badge">۳ امتیاز</span>'));
+      } else {
+        meta.appendChild(h('<span class="score-badge">' + (w.score || 5).toLocaleString('fa-IR') + ' امتیاز</span>'));
       }
       if (engine.mode === 'adabazi') {
         var cat = data.usableCategories.filter(function (c) { return (data.adabazi[String(c.cid)] || []).some(function (x) { return x[0] === w.text && x[1] === w.score; }); })[0];
@@ -578,7 +609,18 @@
         finishTurn();
       } else {
         paintWord();
+        syncControls();
       }
+    }
+
+    /* هماهنگ‌سازی دکمه‌ها با فاز فعلی موتور */
+    function syncControls() {
+      var startBtn = el.querySelector('#c-start');
+      var pauseBtn = el.querySelector('#c-pause');
+      if (startBtn) startBtn.style.display = (engine.phase === 'show') ? 'inline-flex' : 'none';
+      if (pauseBtn) pauseBtn.innerHTML = (engine.phase === 'paused')
+        ? Icons.get('play2') + '<span>ادامه</span>'
+        : Icons.get('pause') + '<span>مکث</span>';
     }
 
     function answer(kind) {
@@ -593,10 +635,17 @@
     }
 
     el.querySelector('#c-show').addEventListener('click', function () {
-      if (engine.phase === 'setup') { engine.show(); afterAction(); var sb = el.querySelector('#c-start'); if (sb) sb.style.display = 'inline-flex'; }
+      if (engine.phase === 'setup') {
+        engine.show();
+        afterAction();
+      }
     });
     el.querySelector('#c-start').addEventListener('click', function () {
-      if (engine.phase === 'show') { engine.startTimer(); afterAction(); var sb = el.querySelector('#c-start'); if (sb) sb.style.display = 'none'; }
+      if (engine.phase === 'show' || engine.phase === 'paused') {
+        engine.startTimer();
+        startTick();          // ← اینتروال تایتر واقعی (باگ: قبلاً راه‌اندازی نمی‌شد)
+        afterAction();
+      }
     });
     el.querySelector('#c-ok').addEventListener('click', function () { answer('correct'); });
     el.querySelector('#c-bad').addEventListener('click', function () { answer('wrong'); });
@@ -609,7 +658,8 @@
       if (engine.undo()) {
         beep('click');
         paintScore(); paintHead(); paintWord();
-        if (engine.phase === 'running' && timerId === null) startTimer();
+        if (engine.phase === 'running' && timerId === null) startTick();
+        syncControls();
         toast('آخرین کلمه لغو شد');
       } else {
         toast('چیزی برای بازگشت نیست');
@@ -619,26 +669,27 @@
     el.querySelector('#c-pause').addEventListener('click', function () {
       if (engine.phase === 'running') {
         engine.pauseTimer();
+        stopTimer();
         toast('بازی متوقف شد');
-        this.innerHTML = Icons.get('play2') + '<span>ادامه</span>';
+        syncControls();
       } else if (engine.phase === 'paused') {
         engine.startTimer();
+        startTick();          // ← ادامه‌ی تایتر (باگ: قبلاً اینتروال از سر گرفته نمی‌شد)
         toast('ادامه بازی');
-        this.innerHTML = Icons.get('pause') + '<span>مکث</span>';
+        syncControls();
       }
     });
 
     paintHead();
     paintScore();
     paintWord();
+    lastTickShown = null;
     paintTimer();
-    startTimer();
-    var startBtn = el.querySelector('#c-start');
-    if (startBtn) startBtn.style.display = (engine.phase === 'show') ? 'inline-flex' : 'none';
+    if (engine.phase === 'running') startTick();
+    syncControls();
 
-    function startTimer() {
+    function startTick() {
       stopTimer();
-      lastTickShown = null;
       timerId = setInterval(function () {
         if (!engine || engine.phase !== 'running') { stopTimer(); return; }
         var left = engine.tick();
@@ -649,6 +700,7 @@
           vibrate([30, 60, 30]);
           paintScore();
           paintHead();
+          paintWord();
           if (engine.over) finishTurn();
           return;
         }
@@ -657,25 +709,22 @@
     }
 
     function finishTurn() {
-      var summary = {
-        team: engine.turnIndex,
-        gained: engine.turnScore,
-        correct: engine.turnCorrect,
-        roundEnd: engine.turnsInRound >= engine.teams.length && !engine.finished,
-        end: engine.finished
-      };
+      stopTimer();
+      var summary = engine.lastSummary;
 
-      if (engine.finished) { endGame(); return; }
+      if (engine.finished || !summary || summary.type === 'end') { endGame(); return; }
 
-      if (summary.roundEnd) {
+      if (summary.type === 'round-end') {
         showRoundSummary();
-      } else {
-        // ادامه: نوبت تیم بعدی قبلاً در endTurn جابه‌جا شده
-        engine.continueAfterTurn();
-        paintHead(); paintScore(); paintWord();
-        paintTimer();
-        toast('نوبت ' + engine.team().name);
+        return;
       }
+
+      // ادامه: نوبت تیم بعدی (قبلاً در endTurn چرخش شده)
+      engine.continueAfterTurn();
+      paintHead(); paintScore(); paintWord();
+      paintTimer();
+      syncControls();
+      toast('نوبت ' + engine.team().name);
     }
 
     function showRoundSummary() {
@@ -703,6 +752,8 @@
             beep('start');
             paintHead(); paintScore(); paintWord();
             paintTimer();
+            syncControls();
+            toast('دور ' + engine.round.toLocaleString('fa-IR') + ' — نوبت ' + engine.team().name);
           }
         }]
       });
@@ -900,8 +951,8 @@
     [
       ['shield', 'رایگان و بدون قفل', 'هیچ دسته، کلمه یا امکانی قفل نیست. هیچ پرداختی در کار نیست.', '#34D399'],
       ['heart', 'بدون جمع‌آوری داده', 'هیچ اطلاعاتی از دستگاهت به بیرون ارسال نمی‌شود. همه چیز محلی است.', '#F43F5E'],
-      ['book', '۱۶,۳۰۵ کلمه ادبیات', 'به‌همراه ۱,۰۲۹ چالش بوم و ۵۰ ترانه، در ۱۸ دسته موضوعی.', '#7C3AED'],
-      ['grid', 'سه حالت بازی', 'ادبیات (پانتومیم)، بوم (سریع) و ترانه (آوازی).', '#22D3EE']
+      ['book', '۱۶,۳۰۵ کلمه ادبیات', 'به‌همراه ۱,۶۹۸ ضرب‌المثل، ۱,۰۲۹ چالش بوم و ۵۰ ترانه، در ۱۸ دسته موضوعی.', '#7C3AED'],
+      ['grid', 'چهار حالت بازی', 'ادبیات (پانتومیم)، ضرب‌المثل، بوم (سریع) و ترانه (آوازی).', '#22D3EE']
     ].forEach(function (r) {
       list.appendChild(h(
         '<div class="row"><span class="r-icon" style="--glow:' + r[3] + '">' + Icons.get(r[0]) + '</span>' +
