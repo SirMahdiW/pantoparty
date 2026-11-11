@@ -21,7 +21,8 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - uses: android-actions/setup-android@v3
+      # Android SDK روی رانرهای ubuntu-latest از قبل نصب است؛
+      # gradle اجزای کمبود را خودش با licenses پذیرفته‌شده دانلود می‌کند.
 
       - name: Install dependencies
         run: npm install
