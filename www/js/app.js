@@ -508,11 +508,22 @@
       }
     });
     var team = engine.team(engine.turnIndex);
+    var rand = null;
     groups.forEach(function (g) {
+      /* «تصادفی» از گروه جدا می‌شود تا در ردیف مستقل بیاید */
+      g.items = g.items.filter(function (i) {
+        if (i.cid === 69) { rand = i; return false; }
+        return true;
+      });
       if (g.name === 'ضرب المثل' && (team.proverbState || engine.isCardUsed(engine.turnIndex, 50, 20))) {
         g.items = g.items.filter(function (i) { return i.score !== 20; });
       }
     });
+    if (rand) {
+      var rg = { name: 'تصادفی', color: rand.color, items: [rand], random: true };
+      var idx = groups.findIndex(function (g) { return g.name === 'کلمه'; });
+      groups.splice(idx >= 0 ? idx + 1 : groups.length, 0, rg);
+    }
     return groups;
   }
 
@@ -539,6 +550,22 @@
 
     var wrap = h('<div></div>');
     categoryGroups().forEach(function (g) {
+      /* ردیف مستقل «تصادفی» — بدون نشانگر وضعیت */
+      if (g.random) {
+        var rc = g.items[0];
+        var ric = CAT_ICON[rc.cid] || 'dice';
+        var rTile = h(
+          '<button type="button" class="cat-tile wide" style="--cat:' + rc.color + '">' +
+          '<span class="cat-ic">' + Icons.get(ric) + '</span>' +
+          '<span class="cat-name">' + esc(rc.fa) + '</span>' +
+          '</button>'
+        );
+        rTile.addEventListener('click', function () { openCatDialog(rc); });
+        var rSec = h('<div class="cat-section"><div class="cat-grid"></div></div>');
+        rSec.querySelector('.cat-grid').appendChild(rTile);
+        wrap.appendChild(rSec);
+        return;
+      }
       var sec = h(
         '<div class="cat-section">' +
         '<div class="section-head" style="margin-top:0">' +
