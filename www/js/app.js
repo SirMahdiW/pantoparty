@@ -509,6 +509,8 @@
     });
     var team = engine.team(engine.turnIndex);
     groups.forEach(function (g) {
+      /* بخش «تصادفی» از انتخاب دسته حذف شده است */
+      g.items = g.items.filter(function (i) { return i.cid !== 69; });
       if (g.name === 'ضرب المثل' && (team.proverbState || engine.isCardUsed(engine.turnIndex, 50, 20))) {
         g.items = g.items.filter(function (i) { return i.score !== 20; });
       }

@@ -132,7 +132,6 @@
     var pick = free[rnd(free.length)];
     return { cid: pick.cid, text: pick.text, sub: '', score: pick.score };
   };
-
   /* صف سرعتی: ۸ کلمه تصادفی (نامحدود: ۸۰) */
   Engine.prototype.drawSpeedWords = function (score) {
     var self = this, cids = this.randomCids(), items = [];
@@ -208,7 +207,8 @@
       if (!t.speedList.length) return null;
       t.word = t.speedList[0].word;
     } else {
-      t.word = this.drawWord(cid, cid === 69 ? 0 : score);
+      /* دسته‌ی تصادفی (69): کلمه از همه‌ی دسته‌های کلمه ولی فقط با امتیاز انتخاب‌شده */
+      t.word = this.drawWord(cid, score);
       if (!t.word) return null;
       t.wordScore = t.word.score;
     }
