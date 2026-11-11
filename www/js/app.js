@@ -243,12 +243,12 @@
 
     /* حالت‌های بازی */
     el.appendChild(sectionHead('grid', 'حالت‌های بازی'));
-    var modes = h('<div class="bento"></div>');
+    var modes = h('<div class="bento-2"></div>');
     Object.keys(TYPES).forEach(function (key) {
       var m = TYPES[key];
       var accent = key === 'boom' ? '#4F46E5' : '#6D28D9';
       var card = h(
-        '<button type="button" class="mode-card span-3" data-type="' + key + '" style="--glow-color:' + accent + '">' +
+        '<button type="button" class="clay pressable mode-card" data-type="' + key + '" style="--glow-color:' + accent + '">' +
         '<span class="orb" style="--orb:' + accent + '">' + Icons.get(m.icon) + '</span>' +
         '<h3>' + m.title + '</h3>' +
         '<p>' + m.desc + '</p>' +
@@ -1164,15 +1164,15 @@
 
     /* کنش‌ها */
     var actions = h('<div class="bento" style="margin-top:var(--s-4)"></div>');
-    var shareBtn = h('<button type="button" class="mode-card span-3" style="--glow-color:#0891B2">' +
+    var shareBtn = h('<button type="button" class="clay pressable mode-card span-3" style="--glow-color:#0891B2">' +
       '<span class="orb" style="--orb:#0891B2">' + Icons.get('share') + '</span>' +
       '<h3>اشتراک نتیجه</h3><p>متن نتیجه بازی</p></button>');
     shareBtn.addEventListener('click', function () { shareResult(); });
-    var again = h('<button type="button" class="mode-card span-3" style="--glow-color:#6D28D9">' +
+    var again = h('<button type="button" class="clay pressable mode-card span-3" style="--glow-color:#6D28D9">' +
       '<span class="orb" style="--orb:#6D28D9">' + Icons.get('refresh') + '</span>' +
       '<h3>بازی دوباره</h3><p>با همین تنظیمات</p></button>');
     again.addEventListener('click', function () { beep('click'); beginGame(); });
-    var home = h('<button type="button" class="mode-card span-3" style="--glow-color:#4F46E5">' +
+    var home = h('<button type="button" class="clay pressable mode-card span-3" style="--glow-color:#4F46E5">' +
       '<span class="orb" style="--orb:#4F46E5">' + Icons.get('home') + '</span>' +
       '<h3>صفحه اصلی</h3><p>انتخاب حالت بازی</p></button>');
     home.addEventListener('click', function () { beep('click'); engine = null; go('home'); });

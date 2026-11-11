@@ -1197,3 +1197,12 @@ body {
   .span-3 { grid-column: span 3; }
   .span-2 { grid-column: span 2; }
 }
+
+/* گرید دو‌ستونه (کارت‌های حالت بازی در صفحه اصلی — همیشه کنار هم) */
+.bento-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s-3);
+}
+.bento-2 > * { min-width: 0; }
+@media (min-width: 768px) { .bento-2 { gap: var(--s-4); } }
