@@ -27,7 +27,8 @@ for (const d of DENS) {
     ['ic_launcher-' + d + '.png', 'ic_launcher.png'],
     ['ic_launcher_round-' + d + '.png', 'ic_launcher_round.png'],
     ['ic_launcher_foreground-' + d + '.png', 'ic_launcher_foreground.png'],
-    ['ic_launcher_background-' + d + '.png', 'ic_launcher_background.png']
+    ['ic_launcher_background-' + d + '.png', 'ic_launcher_background.png'],
+    ['ic_launcher_monochrome-' + d + '.png', 'ic_launcher_monochrome.png']
   ];
   for (const [src, dest] of files) {
     const s = path.join(ICONS, src);
@@ -45,7 +46,7 @@ const adaptive = `<?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@mipmap/ic_launcher_background"/>
     <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
-    <monochrome android:drawable="@mipmap/ic_launcher_foreground"/>
+    <monochrome android:drawable="@mipmap/ic_launcher_monochrome"/>
 </adaptive-icon>
 `;
 fs.writeFileSync(path.join(anydpi, 'ic_launcher.xml'), adaptive);
