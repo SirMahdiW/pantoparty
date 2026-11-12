@@ -168,7 +168,7 @@
   var HOW_STEPS = [
     { icon: 'users', title: 'بازی را بسازید', desc: 'تعداد گروه‌ها (۲ تا ۶)، تعداد دور و زمان اضافه را انتخاب کنید.' },
     { icon: 'spark', title: 'هر نوبت یک دسته', desc: 'تیم نوبت‌دار دسته را انتخاب می‌کند و امتیاز کلمه را مشخص می‌کند.' },
-    { icon: 'book', title: 'یک کلمه، یک نتیجه', desc: 'کلمه مخفی است؛ با «شروع تایمر» اجرا می‌شود و در پایان امتیاز ثبت می‌کند.' }
+    { icon: 'book', title: 'یک کلمه، یک نتیجه', desc: 'کلمه مخفی است؛ با «شروع تایمر و اجرا» اجرا می‌شود و در پایان امتیاز ثبت می‌کند.' }
   ];
 
   /* ---------------- ابزارهای نمایشی جدید ---------------- */
@@ -717,12 +717,13 @@
     function paintBig() {
       var label, icon, cls;
       if (t.state === 1) { label = 'نمایش کلمه'; icon = 'eye'; cls = 'btn-primary'; }
-      else if (t.state === 2) { label = 'شروع تایمر'; icon = 'play2'; cls = 'btn-success'; }
+      else if (t.state === 2) { label = 'شروع تایمر و اجرا'; icon = 'play2'; cls = 'btn-success'; }
       else if (isSpeed) { label = 'تایمر در حال اجرا'; icon = 'pause'; cls = 'btn-ghost'; }
-      else { label = 'پایان نوبت'; icon = 'flag'; cls = 'btn-success'; }
+      else if (t.running) { label = 'پایان نوبت'; icon = 'flag'; cls = 'btn-danger'; }
+      else { label = 'نتیجه نوبت'; icon = 'check'; cls = 'btn-ghost'; }
       bigBtn.className = 'btn ' + cls + ' btn-lg btn-block';
       bigBtn.innerHTML = Icons.get(icon) + '<span>' + label + '</span>';
-      bigBtn.disabled = (isSpeed && t.state === 3);
+      bigBtn.disabled = (isSpeed && t.state === 3) || (t.state === 4) || (t.state === 3 && !t.running && !isSpeed);
     }
 
     function paintControls() {
