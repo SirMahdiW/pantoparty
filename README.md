@@ -1,59 +1,39 @@
-# پانتوپارتی / ادابازی 🎭
+# ادابازی — پروژه‌ی اندروید (APK)
 
-بازی گروهی ادا و حدس کلمه برای دورهمی. وب‌اپ با HTML/CSS/JS خالص، و بسته‌بندی اندروید با [Capacitor](https://capacitorjs.com).
+بسته‌ی اندروید اپلیکیشن ادابازی بر پایه‌ی **Capacitor**. خروجی APK به‌صورت خودکار با GitHub Actions ساخته می‌شود.
 
-این ریپو همان بازی «ادابازی» (نسخه‌ی کامل وب) را داخل اپ اندروید بسته‌بندی می‌کند.
+📦 **آخرین نسخه:** https://github.com/SirMahdiW/pantoparty/releases
+
+🌐 **نسخه‌ی وب:** https://sirmahdiw.github.io/adabazi/
+
+---
 
 ## ساختار
-
 ```
-├── www/                    # خود بازی (همه‌چیز اینجاست)
-│   ├── index.html
-│   ├── css/                # tokens.css (دیزاین‌تکن) + app.css (کلی‌مورفیسم)
-│   ├── js/                 # icons, store, audio, data, confetti, game, app
-│   ├── data/words.json     # ۱۶,۳۰۵ کلمه ادبیات + ۱,۰۲۹ چالش بوم + ۵۰ ترانه
-│   ├── fonts/              # Lalezar + Vazirmatn (محلی، بدون نیاز به اینترنت، OFL)
-│   └── icons/              # آیکون‌های اپ
-├── capacitor.config.json   # تنظیمات اپ اندروید (appId: app.adabazi.game)
-├── package.json
-└── .github/workflows/android.yml   # ساخت خودکار APK
+.github/workflows/android.yml   خط لوله‌ی ساخت APK
+www/                             همان رابط کاربری وب (کپی همگام با ریپوی سایت)
+tools/apply-icons.mjs            تزریق آیکون و تم برند به پروژه‌ی اندروید
+tools/icons/                     آیکون‌های لانچر در همه‌ی دانسیتی‌ها
+capacitor.config.json            تنظیمات Capacitor
+UI-NOTE.md                       سند کامل طراحی رابط کاربری
 ```
 
-پوشه‌ی `android/` عمداً در گیت نیست؛ هر بار توسط `cap add android` ساخته می‌شود.
-
-## اجرا در مرورگر
-
-```bash
-npm install
-npm run serve      # یا هر سرور استاتیک روی پوشه‌ی www
-```
-
-## گرفتن APK
-
-**راه ۱ — GitHub Actions (بدون نصب چیزی):**
-کد را روی `main` push کنید → تب **Actions** → ورک‌فلو *Build Android APK* → بعد از چند دقیقه فایل `app-debug.apk` را از بخش Artifacts (یا Releases) دانلود کنید و روی گوشی نصب کنید.
-
-**راه ۲ — روی سیستم خودتان** (نیاز: Node 22، JDK 21، Android SDK):
-
+## ساخت
 ```bash
 npm install
 npx cap add android
-npm run android:build
-# خروجی: android/app/build/outputs/apk/debug/app-debug.apk
+node tools/apply-icons.mjs      # آیکون و تم برند
+npx cap sync android
+cd android && ./gradlew assembleDebug
 ```
 
-## نسخه‌ی release (برای انتشار)
+در CI هر push به `main` این مراحل خودکار اجرا و APK به‌صورت artifact آماده می‌شود.
 
-APK دیباگ فقط برای تست است. برای انتشار باید keystore بسازید و با آن امضا کنید (`assembleRelease` + `apksigner`). keystore را هرگز در گیت نگذارید.
+## همگام‌سازی با وب
+پوشه‌ی `www/` باید با ریپوی سایت (`SirMahdiW/adabazi`) یکسان باشد؛
+پس از هر تغییر در وب، فایل‌های `www/` را کپی و commit کنید.
 
-## فونت‌ها
-
-Lalezar و Vazirmatn به‌صورت محلی در `www/fonts/` باندل شده‌اند (مجوز OFL) — اپ کاملاً آفلاین کار می‌کند و هیچ درخواست اینترنتی ندارد.
-
-## قوانین امتیاز
-
-فرمول هر نوبت: `S = P − E − R + B`
-- P: امتیاز پایه کلمه (۱ تا ۶ بر اساس سطح)
-- E: جریمه‌ی خطاها (هر خطا −۱)
-- R: جریمه‌ی تعویض کلمه (فقط یک بار، −۱)
-- B: پاداش زمان باقی‌مانده (+۱، در تنظیمات قابل خاموش‌کردن)
+## نکته‌ها
+- فونت‌ها **محلی** هستند (`www/fonts/`) تا اپ کاملاً آفلاین کار کند
+- Service Worker در نسخه‌ی اندروید ثبت نمی‌شود (فقط وب)
+- هیچ SDK تبلیغاتی یا پرداخت درون‌برنامه‌ای وجود ندارد
