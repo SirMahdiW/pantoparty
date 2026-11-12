@@ -413,7 +413,31 @@
     });
 
     beep('start');
-    go('team');
+    /* شروع نوبت اول — بدون صفحه‌ی واسط */
+    engine.continueTurn();
+    if (engine.gameType === 'boom') { engine.startBoom(); go('boom'); }
+    else go('category');
+  }
+
+  /* ---------- نوار وضعیت چسبان: نوبت فعلی، دور و امتیازها ---------- */
+  function hud() {
+    var team = engine.team(engine.turnIndex);
+    var color = TEAM_COLORS[team.color].v;
+    var el = h(
+      '<div class="hud">' +
+      '<div class="hud-top">' +
+      '<span class="hud-team" style="--team:' + color + '">' + Icons.get('users') + ' ' + esc(team.name) + '</span>' +
+      '<span class="hud-round">' + Icons.get('flag') + ' دور ' + fa(engine.roundNumber()) + ' از ' + fa(engine.rounds) + '</span>' +
+      '</div>' +
+      '<div class="hud-scores">' +
+      engine.teams.map(function (t, i) {
+        return '<span class="hud-score' + (i === engine.turnIndex ? ' is-now' : '') + '" style="--team:' + TEAM_COLORS[t.color].v + '">' +
+          '<i></i>' + esc(t.name) + '<b>' + fa(t.score) + '</b></span>';
+      }).join('') +
+      '</div>' +
+      '</div>'
+    );
+    return el;
   }
 
   /* ---------------- صفحه گروه ---------------- */
@@ -510,17 +534,16 @@
 
   function renderCategory() {
     var el = h('<div></div>');
-    var team = engine.team(engine.turnIndex);
+
+    el.appendChild(hud());
 
     el.appendChild(h(
-      '<div class="pill-row" style="margin-bottom:var(--s-4)">' +
-      '<span class="pill pill-accent">' +
-      Icons.get('users') + ' نوبت ' + esc(team.name) + '</span>' +
-      '<span class="pill">' + Icons.get('flag') + ' دور ' + fa(engine.roundNumber()) + ' از ' + fa(engine.rounds) + '</span>' +
+      '<div class="cat-tools">' +
+      '<input type="search" id="cat-search" class="cat-search" placeholder="جست‌وجوی دسته…" autocomplete="off" aria-label="جست‌وجوی دسته">' +
+      '<button type="button" class="chip chip-sm" id="cat-free" aria-pressed="false">' + Icons.get('eye') + ' فقط آزادها</button>' +
       '</div>'
     ));
-
-    el.appendChild(h('<p class="lead" style="color:var(--text-dim);margin:0 0 var(--s-4)">دسته‌ی این نوبت را انتخاب کن</p>'));
+    el.appendChild(h('<p class="lead" style="color:var(--text-dim);margin:0 0 var(--s-3)">دسته‌ی این نوبت را انتخاب کن</p>'));
 
     var wrap = h('<div></div>');
     categoryGroups().forEach(function (g) {
@@ -529,7 +552,7 @@
         var rc = g.items[0];
         var ric = CAT_ICON[rc.cid] || 'dice';
         var rTile = h(
-          '<button type="button" class="cat-tile wide" style="--cat:' + rc.color + '">' +
+          '<button type="button" class="cat-tile wide" style="--cat:' + rc.color + '" data-name="' + esc(rc.fa) + '" data-used="0">' +
           '<span class="cat-ic">' + Icons.get(ric) + '</span>' +
           '<span class="cat-name">' + esc(rc.fa) + '</span>' +
           '</button>'
@@ -558,6 +581,7 @@
         var dots = used.map(function (u) { return '<i class="dot' + (u ? ' is-used' : '') + '"></i>'; }).join('');
         var tile = h(
           '<button type="button" class="cat-tile' + (allUsed ? ' is-done' : '') + '" style="--cat:' + c.color + '"' +
+          ' data-name="' + esc(c.fa) + '" data-used="' + (allUsed ? '1' : '0') + '"' +
           (allUsed ? ' aria-disabled="true"' : '') + '>' +
           '<span class="cat-ic">' + Icons.get(ic) + '</span>' +
           '<span class="cat-name">' + esc(c.fa) + '</span>' +
@@ -573,6 +597,39 @@
       wrap.appendChild(sec);
     });
     el.appendChild(wrap);
+
+    /* جست‌وجو + فیلتر «فقط آزادها» */
+    var input = el.querySelector('#cat-search');
+    var freeBtn = el.querySelector('#cat-free');
+    var onlyFree = false;
+    function applyFilter() {
+      var q = (input.value || '').trim();
+      var visible = 0;
+      wrap.querySelectorAll('.cat-tile').forEach(function (t) {
+        var name = t.getAttribute('data-name') || '';
+        var used = t.getAttribute('data-used') === '1';
+        var match = (!q || name.indexOf(q) > -1) && (!onlyFree || !used);
+        t.style.display = match ? '' : 'none';
+        if (match) visible++;
+      });
+      /* اگر هیچ چیزی نماند، پیام بده */
+      var empty = el.querySelector('#cat-empty');
+      if (empty) empty.hidden = visible > 0;
+      /* گروه‌های خالی پنهان شوند */
+      wrap.querySelectorAll('.cat-section').forEach(function (sec) {
+        var any = [...sec.querySelectorAll('.cat-tile')].some(function (t) { return t.style.display !== 'none'; });
+        sec.style.display = any ? '' : 'none';
+      });
+    }
+    if (input) input.addEventListener('input', applyFilter);
+    if (freeBtn) freeBtn.addEventListener('click', function () {
+      onlyFree = !onlyFree;
+      freeBtn.classList.toggle('is-on', onlyFree);
+      freeBtn.setAttribute('aria-pressed', onlyFree ? 'true' : 'false');
+      applyFilter();
+      beep('click');
+    });
+    el.appendChild(h('<div class="empty" id="cat-empty" hidden><div>دسته‌ای با این نام پیدا نشد</div></div>'));
 
     render._cleanup = function () { stopTimer(); };
     return el;
@@ -662,7 +719,8 @@
       '</div>'
     ));
 
-    el.appendChild(h(gaugeMarkup(t.stableTime, 'gauge')));
+    var stage = h('<div class="play-landscape"></div>');
+    stage.appendChild(h(gaugeMarkup(t.stableTime, 'gauge')));
 
     var wordCard = h(
       '<div class="spotlight" id="word-card">' +
@@ -671,12 +729,14 @@
       '<div class="w-sub" id="w-sub"></div>' +
       '</div>'
     );
+    stage.appendChild(wordCard);
 
     var bigBtn = h('<button type="button" class="btn btn-primary btn-lg btn-block" id="big-btn" style="margin-top:var(--s-4);min-height:64px"></button>');
 
     var controls = h('<div class="controls" id="controls"></div>');
 
-    el.appendChild(wordCard);
+    el.appendChild(hud());
+    el.appendChild(stage);
     el.appendChild(bigBtn);
     el.appendChild(controls);
 
@@ -867,8 +927,11 @@
         var total = engine.total();
         var s = engine.commitTurn(total);
         closeModal();
-        if (s.type === 'end') { go('rank'); }
-        else { go('team'); toast('امتیاز ثبت شد: ' + (total >= 0 ? '+' : '') + fa(total)); }
+        if (s.type === 'end') { go('rank'); return; }
+        /* نوبت بعدی مستقیم: یک کلیک کمتر در هر دور */
+        engine.continueTurn();
+        go('category');
+        toast('امتیاز ثبت شد: ' + (total >= 0 ? '+' : '') + fa(total));
       }
 
       if (!faultOut) {
@@ -926,8 +989,10 @@
       setTimeout(function () {
         var s = engine.commitTurn(sum);
         closeModal();
-        if (s.type === 'end') go('rank');
-        else { go('team'); toast('امتیاز ثبت شد: ' + (sum >= 0 ? '+' : '') + fa(sum)); }
+        if (s.type === 'end') { go('rank'); return; }
+        engine.continueTurn();
+        go('category');
+        toast('امتیاز ثبت شد: ' + (sum >= 0 ? '+' : '') + fa(sum));
       }, 1500);
     }
   }
@@ -938,6 +1003,7 @@
     var b = engine.boom;
     var el = h('<div></div>');
 
+    el.appendChild(hud());
     el.appendChild(h(
       '<div class="pill-row" style="margin-bottom:var(--s-3)">' +
       '<span class="pill pill-accent" id="boom-player">' +
@@ -1328,8 +1394,25 @@
   btnSettings.addEventListener('click', function () { beep('click'); go('settings'); });
 
   document.addEventListener('keydown', function (e) {
-    if (route !== 'play' || !engine || !engine.turn) return;
     if (e.target && /input|textarea/i.test(e.target.tagName)) return;
+
+    /* Space = دکمه‌ی اصلی (نمایش کلمه / شروع تایمر / پایان نوبت) */
+    if (route === 'play' && e.key === ' ') {
+      var main = document.getElementById('big-btn');
+      if (main && !main.disabled && !modalRoot.childElementCount) {
+        e.preventDefault();
+        main.click();
+      }
+      return;
+    }
+    /* 1 / 2 / 3 = انتخاب امتیاز در شیت دسته */
+    if (route === 'category' && /^[123]$/.test(e.key) && modalRoot.childElementCount) {
+      var chip = document.querySelector('#sc-row .chip[data-sc="' + e.key + '"]');
+      if (chip && !chip.disabled) { e.preventDefault(); chip.click(); }
+      return;
+    }
+
+    if (route !== 'play' || !engine || !engine.turn) return;
     if (modalRoot.childElementCount) return;
     var t = engine.turn;
     var id = null;
