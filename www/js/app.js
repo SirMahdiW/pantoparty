@@ -236,7 +236,6 @@
       '<p>هر نوبت یک کلمه: دسته را انتخاب کن، اجرا کن و امتیاز بگیر.</p>' +
       '<div class="hero-actions">' +
       '<button type="button" class="btn btn-primary btn-lg" id="cta-play">' + Icons.get('play') + ' شروع بازی</button>' +
-      '<button type="button" class="btn btn-ghost btn-lg" id="cta-boom">' + Icons.get('bolt') + ' بازی بوم</button>' +
       '</div>' +
       '</section>'
     ));
@@ -277,14 +276,14 @@
     el.appendChild(sectionHead('chart', 'آمار شما'));
     var statGrid = h('<div class="stat-grid"></div>');
     statGrid.appendChild(h(
-      '<button type="button" class="stat-card" data-stats>' +
+      '<div class="stat-card is-static">' +
       '<span class="orb orb-sm sc-orb" style="--orb:#6D28D9">' + Icons.get('chart') + '</span>' +
-      '<b>' + fa(s.games) + '</b><span class="sc-lbl">بازی انجام‌شده</span></button>'
+      '<b>' + fa(s.games) + '</b><span class="sc-lbl">بازی انجام‌شده</span></div>'
     ));
     statGrid.appendChild(h(
-      '<button type="button" class="stat-card" data-stats>' +
+      '<div class="stat-card is-static">' +
       '<span class="orb orb-sm sc-orb" style="--orb:#0891B2">' + Icons.get('target') + '</span>' +
-      '<b>' + fa(s.words) + '</b><span class="sc-lbl">کلمه‌ی بازی‌شده</span></button>'
+      '<b>' + fa(s.words) + '</b><span class="sc-lbl">کلمه‌ی بازی‌شده</span></div>'
     ));
     statGrid.appendChild(h(
       '<button type="button" class="stat-card" data-history>' +
@@ -293,34 +292,8 @@
     ));
     el.appendChild(statGrid);
 
-    /* تنظیمات و درباره */
-    el.appendChild(h(
-      '<div class="list" style="margin-top:var(--s-3)">' +
-      '<button type="button" class="list-row" id="open-settings">' +
-      '<span class="orb orb-sm" style="--orb:#0891B2">' + Icons.get('settings') + '</span>' +
-      '<span class="lr-txt"><strong>تنظیمات بازی</strong><span>صدا و لرزش</span></span>' +
-      Icons.get('next') + '</button>' +
-      '<button type="button" class="list-row" id="open-about">' +
-      '<span class="orb orb-sm" style="--orb:#4F46E5">' + Icons.get('info') + '</span>' +
-      '<span class="lr-txt"><strong>درباره و حریم خصوصی</strong><span>بدون جمع‌آوری داده</span></span>' +
-      Icons.get('next') + '</button>' +
-      '</div>'
-    ));
-
-    /* CTA پایانی */
-    el.appendChild(h(
-      '<section class="card card-lg card-accent" style="margin-top:var(--section-gap);text-align:center">' +
-      '<h2 style="font-size:var(--fs-h2);font-weight:800;margin:0 0 var(--s-4)">آماده‌ای شروع کنی؟</h2>' +
-      '<button type="button" class="btn btn-primary btn-lg btn-block" id="cta-final">' + Icons.get('play') + ' شروع بازی</button>' +
-      '</section>'
-    ));
-
     el.querySelector('#cta-play').addEventListener('click', function () { beep('click'); pendingType = 'adabazi'; go('create'); });
-    el.querySelector('#cta-final').addEventListener('click', function () { beep('click'); pendingType = 'adabazi'; go('create'); });
-    el.querySelector('#cta-boom').addEventListener('click', function () { beep('click'); pendingType = 'boom'; go('create'); });
-    el.querySelector('#open-settings').addEventListener('click', function () { beep('click'); go('settings'); });
-    el.querySelector('#open-about').addEventListener('click', function () { beep('click'); go('about'); });
-    el.querySelectorAll('[data-stats], [data-history]').forEach(function (b) {
+    el.querySelectorAll('[data-history]').forEach(function (b) {
       b.addEventListener('click', function () { beep('click'); go('history'); });
     });
 
@@ -889,6 +862,14 @@
       }
       paintRows();
 
+      function finish() {
+        var total = engine.total();
+        var s = engine.commitTurn(total);
+        closeModal();
+        if (s.type === 'end') { go('rank'); }
+        else { go('team'); toast('امتیاز ثبت شد: ' + (total >= 0 ? '+' : '') + fa(total)); }
+      }
+
       if (!faultOut) {
         var ok = h('<button type="button" class="btn btn-success">' + Icons.get('check') + '<span>درست</span></button>');
         ok.addEventListener('click', function () {
@@ -899,6 +880,7 @@
           ok.disabled = true;
           no.disabled = true;
           toast('پاداش زمان اضافه شد: ' + fa(Math.floor(t.timeLeft / 30)));
+          setTimeout(finish, 700);
         });
         var no = h('<button type="button" class="btn btn-danger">' + Icons.get('x') + '<span>غلط</span></button>');
         no.addEventListener('click', function () {
@@ -908,20 +890,14 @@
           paintRows();
           ok.disabled = true;
           no.disabled = true;
+          setTimeout(finish, 700);
         });
         actions.appendChild(ok);
         actions.appendChild(no);
+      } else {
+        /* سه خطا: خودکار ادامه می‌دهد */
+        setTimeout(finish, 1200);
       }
-
-      var cont = h('<button type="button" class="btn btn-primary btn-block" style="margin-top:var(--s-2)">' + Icons.get('play') + '<span>ادامه</span></button>');
-      cont.addEventListener('click', function () {
-        var total = engine.total();
-        var s = engine.commitTurn(total);
-        closeModal();
-        if (s.type === 'end') { go('rank'); }
-        else { go('team'); toast('امتیاز ثبت شد: ' + (total >= 0 ? '+' : '') + fa(total)); }
-      });
-      actions.appendChild(cont);
     }
 
     /* دیالوگ نتیجه سرعتی */
@@ -943,14 +919,15 @@
         iconColor: '#6D28D9',
         body: body,
         dismiss: false,
-        actions: [{
-          label: 'ادامه', cls: 'btn-primary', onClick: function () {
-            var s = engine.commitTurn(sum);
-            if (s.type === 'end') go('rank');
-            else { go('team'); toast('امتیاز ثبت شد: ' + (sum >= 0 ? '+' : '') + fa(sum)); }
-          }
-        }]
+        actions: []
       });
+      /* بدون دکمه — خودکار ادامه می‌دهد */
+      setTimeout(function () {
+        var s = engine.commitTurn(sum);
+        closeModal();
+        if (s.type === 'end') go('rank');
+        else { go('team'); toast('امتیاز ثبت شد: ' + (sum >= 0 ? '+' : '') + fa(sum)); }
+      }, 1500);
     }
   }
 
@@ -1261,9 +1238,6 @@
     });
     about.appendChild(resetBtn);
 
-    var aboutBtn = h('<button type="button" class="btn btn-ghost btn-block" style="margin-top:var(--s-2)">' + Icons.get('info') + ' درباره ادابازی</button>');
-    aboutBtn.addEventListener('click', function () { go('about'); });
-    about.appendChild(aboutBtn);
     el.appendChild(about);
 
     return el;

@@ -521,6 +521,8 @@ body {
   transition: transform var(--t-fast) var(--ease), border-color var(--t) var(--ease);
 }
 .stat-card:active { transform: scale(.97); }
+.stat-card.is-static { cursor: default; }
+.stat-card.is-static:active { transform: none; }
 .stat-card .sc-orb { width: 36px; height: 36px; border-radius: 12px; }
 .stat-card .sc-orb svg { width: var(--icon-md); height: var(--icon-md); }
 .stat-card b {
