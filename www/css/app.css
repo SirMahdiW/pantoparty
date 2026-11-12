@@ -752,7 +752,99 @@ body {
 .controls .btn svg { width: var(--icon-lg); height: var(--icon-lg); }
 .controls .btn-wide { grid-column: 1 / -1; min-height: 54px; flex-direction: row; }
 
-/* ---------- دسته‌ها ---------- */
+/* ---------- نوار وضعیت چسبان (HUD) ---------- */
+.hud {
+  position: sticky;
+  top: calc(var(--topbar-h) + env(safe-area-inset-top));
+  z-index: 5;
+  margin: calc(var(--s-4) * -1) calc(var(--gutter) * -1) var(--s-4);
+  padding: var(--s-3) var(--gutter);
+  background: rgba(255, 255, 255, .92);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  border-bottom: 1px solid var(--line);
+}
+.hud-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+.hud-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 800;
+  font-size: var(--fs-sm);
+  color: var(--team, var(--primary));
+  min-width: 0;
+}
+.hud-team svg { width: var(--icon-sm); height: var(--icon-sm); flex: none; }
+.hud-round {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+.hud-round svg { width: var(--icon-sm); height: var(--icon-sm); }
+.hud-scores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px var(--s-3);
+  margin-top: 7px;
+}
+.hud-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+.hud-score i {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--team);
+  flex: none;
+}
+.hud-score b { color: var(--text-dim); font-weight: 800; }
+.hud-score.is-now { color: var(--text); font-weight: 700; }
+.hud-score.is-now b { color: var(--text); }
+
+/* ---------- ابزار جست‌وجوی دسته ---------- */
+.cat-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-bottom: var(--s-3);
+}
+.cat-search {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  padding: 0 14px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line-2);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+}
+.cat-search::placeholder { color: var(--text-faint); }
+.cat-search:focus { outline: 2px solid var(--primary); outline-offset: 1px; border-color: transparent; }
+.chip-sm { min-height: 42px; padding: 8px 12px; }
+
+/* ---------- چیدمان افقی (بازی) ---------- */
+@media (orientation: landscape) and (max-height: 560px) {
+  .play-landscape { display: grid; grid-template-columns: 1.2fr 1fr; gap: var(--s-4); align-items: start; }
+  .play-landscape .gauge { margin: 0 auto; width: clamp(120px, 26vw, 150px); }
+  .play-landscape .spotlight { min-height: 150px; }
+}
+
+
 .cat-section { margin-bottom: var(--s-6); }
 .cat-grid {
   display: grid;
