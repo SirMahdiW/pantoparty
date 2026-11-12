@@ -1,59 +1,60 @@
 /* ============================================================
-   ادابازی — Design System v3
-   هویت: «Midnight Party» — تم تیره، شیشه‌ی مات، هاله‌ی نئونی
-   پالت هماهنگ با آیکون اپ (بنفش‌نارنجی + طلایی)
+   ادابازی — Design System v4
+   هویت: «Pantomime Playbill» — تم پسته‌ی تئاتر
+   کاغذ کرم + بنفش ریالی + طلای سیرک + جزئیات کارت بلیت
    ============================================================ */
 
 :root {
-  /* ---------- بستر ---------- */
-  --bg:           #08060F;
-  --ink:          #08060F;
-  --ink-2:        #0C0918;
-  --surface:      rgba(255, 255, 255, .045);
-  --surface-2:    rgba(255, 255, 255, .075);
-  --surface-3:    rgba(255, 255, 255, .11);
-  --surface-4:    rgba(255, 255, 255, .16);
+  /* ---------- بستر (کاغذ/پرده) ---------- */
+  --bg:           #F6EEDF;   /* پسته */
+  --bg-2:         #FBF6EA;
+  --ink:          #241432;   /* بادمجانی تیره */
+  --ink-2:        #3A2450;
+  --surface:      #FFFCF4;   /* کاغذ */
+  --surface-2:    #FFFDF7;
+  --surface-3:    #F3E9D6;
+  --surface-4:    #E9DCC3;
 
   /* ---------- متن ---------- */
-  --text:         #F7F4FC;
-  --text-dim:     #C3BBD4;
-  --text-faint:   #948CA8;
-  --text-on-accent: #120A1E;
+  --text:         #241432;
+  --text-dim:     #5B4A66;
+  --text-faint:   #85748E;
+  --text-on-accent: #FFF8E7;
 
-  /* ---------- برند ---------- */
-  --primary:      #B23BE0;   /* بنفش‌نارنجی (هماهنگ آیکون) */
-  --primary-2:    #D96BF0;
-  --primary-ink:  #8A22B0;
-  --primary-soft: rgba(178, 59, 224, .16);
-  --indigo:       #6D5BF5;
-  --indigo-soft:  rgba(109, 91, 245, .16);
+  /* ---------- برند (سیرک) ---------- */
+  --primary:      #6D28B8;   /* بنفش ریالی */
+  --primary-2:    #8B3FD0;
+  --primary-ink:  #4C1D80;
+  --primary-soft: rgba(109, 40, 184, .09);
+  --indigo:       #4C3BCF;
+  --indigo-soft:  rgba(76, 59, 207, .09);
 
-  --gold:         #F0B429;   /* طلایی — اکشن اصلی */
-  --gold-2:       #F7D069;
-  --gold-ink:     #6B4A00;
-  --gold-soft:    rgba(240, 180, 41, .14);
+  --gold:         #C9922B;   /* طلای سیرک */
+  --gold-2:       #E6B855;
+  --gold-ink:     #46300A;
+  --gold-soft:    rgba(201, 146, 43, .14);
 
-  --aqua:         #2DD4BF;
-  --aqua-soft:    rgba(45, 212, 191, .14);
-  --success:      #2DD4BF;
-  --success-soft: rgba(45, 212, 191, .14);
-  --warning:      #FF8A5B;
-  --warning-soft: rgba(255, 138, 91, .14);
-  --peach:        #FF8A5B;
-  --peach-soft:   rgba(255, 138, 91, .14);
-  --danger:       #FB7185;
-  --danger-soft:  rgba(251, 113, 133, .14);
-  --info:         #38BDF8;
-  --amber:        #FBBF24;
+  --crimson:      #BE2E4B;   /* پرده */
+  --crimson-soft: rgba(190, 46, 75, .10);
+  --aqua:         #2E9E8F;
+  --aqua-soft:    rgba(46, 158, 143, .12);
+  --danger:       #C0344F;
+  --danger-soft:  rgba(192, 52, 79, .10);
+  --warning:      #D08016;
+  --info:         #2C7BA8;
+  --amber:        #C9922B;
+  --success:      #2E9E8F;
+  --success-soft: rgba(46, 158, 143, .12);
 
-  --accent:       var(--gold);
-  --accent-soft:  var(--gold-soft);
+  --accent:       var(--primary);
+  --accent-soft:  var(--primary-soft);
 
   /* ---------- خطوط ---------- */
-  --line:         rgba(255, 255, 255, .10);
-  --line-2:       rgba(255, 255, 255, .16);
-  --line-3:       rgba(255, 255, 255, .26);
-  --line-accent:  rgba(240, 180, 41, .34);
+  --line:         rgba(90, 60, 120, .13);
+  --line-2:       rgba(90, 60, 120, .22);
+  --line-3:       rgba(90, 60, 120, .32);
+  --line-accent:  rgba(201, 146, 43, .48);
+  --line-ticket:  rgba(201, 146, 43, .55);   /* خط‌چینِ کارت بلیت */
 
   /* ---------- شعاع ---------- */
   --r-xs:  10px;
@@ -73,16 +74,17 @@
   --s-7: 48px;
   --s-8: 64px;
 
-  /* ---------- عمق ---------- */
-  --shadow-1: 0 2px 10px rgba(0, 0, 0, .34);
-  --shadow-2: 0 18px 40px -18px rgba(0, 0, 0, .78), 0 1px 0 rgba(255,255,255,.05) inset;
-  --shadow-3: 0 30px 70px -22px rgba(0, 0, 0, .85);
-  --glow-gold: 0 10px 34px -10px rgba(240, 180, 41, .48);
-  --glow-primary: 0 12px 38px -12px rgba(178, 59, 224, .55);
+  /* ---------- عمق (گرم و ملایم) ---------- */
+  --shadow-1: 0 1px 2px rgba(72, 44, 18, .05), 0 2px 6px rgba(72, 44, 18, .05);
+  --shadow-2: 0 10px 26px -14px rgba(72, 44, 18, .30), 0 2px 6px rgba(72, 44, 18, .06);
+  --shadow-3: 0 26px 60px -24px rgba(60, 34, 16, .38), 0 4px 10px rgba(72, 44, 18, .08);
+  --shadow-gold: 0 8px 22px -10px rgba(201, 146, 43, .55);
+  --shadow-primary: 0 8px 22px -10px rgba(109, 40, 184, .50);
 
-  /* ---------- شیشه ---------- */
-  --glass: linear-gradient(158deg, rgba(255,255,255,.085), rgba(255,255,255,.028));
-  --glass-blur: saturate(150%) blur(16px);
+  /* ---------- کاغذ ---------- */
+  --paper: linear-gradient(178deg, #FFFDF8, #FDF7EA);
+  --paper-edge: linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,0));
+  --ticket-border: 1.5px dashed var(--line-ticket);
 
   /* ---------- تایپوگرافی ---------- */
   --font-display: 'Plex Arabic', 'Vazirmatn', system-ui, sans-serif;
@@ -145,13 +147,13 @@
   }
 }
 
-/* رنگ تیم‌ها */
-.t-0 { --team: #B23BE0; }
-.t-1 { --team: #FB7185; }
-.t-2 { --team: #2DD4BF; }
-.t-3 { --team: #60A5FA; }
-.t-4 { --team: #A3E635; }
-.t-5 { --team: #F472B6; }
+/* رنگ تیم‌ها — پالت سیرک */
+.t-0 { --team: #6D28B8; }
+.t-1 { --team: #BE2E4B; }
+.t-2 { --team: #2E9E8F; }
+.t-3 { --team: #2C7BA8; }
+.t-4 { --team: #5E9C2B; }
+.t-5 { --team: #B53C8E; }
 
 @media (prefers-reduced-motion: reduce) {
   :root {
