@@ -1,67 +1,58 @@
 /* ============================================================
-   ادابازی — Design System v4
-   هویت: «Pantomime Playbill» — تم پسته‌ی تئاتر
-   کاغذ کرم + بنفش ریالی + طلای سیرک + جزئیات کارت بلیت
+   ادابازی — Design System v3
+   هویت: «White Premium» — Modern Minimalist / Premium Light
+   زمینه‌ی سفید، کارت‌های ظریف، رنگ اصلی بنفش مدرن
    ============================================================ */
 
 :root {
-  /* ---------- بستر (کاغذ/پرده) ---------- */
-  --bg:           #F6EEDF;   /* پسته */
-  --bg-2:         #FBF6EA;
-  --ink:          #241432;   /* بادمجانی تیره */
-  --ink-2:        #3A2450;
-  --surface:      #FFFCF4;   /* کاغذ */
-  --surface-2:    #FFFDF7;
-  --surface-3:    #F3E9D6;
-  --surface-4:    #E9DCC3;
+  /* ---------- بستر ---------- */
+  --bg:          #F6F7FB;   /* سفید مایل به خاکستری */
+  --bg-2:        #FFFFFF;
+  --surface:     #FFFFFF;   /* کارت */
+  --surface-2:   #FBFBFE;   /* بالای کارت */
+  --surface-3:   #F1F3F9;   /* سطح برجسته / آیکون */
+  --surface-4:   #E8EBF3;
 
   /* ---------- متن ---------- */
-  --text:         #241432;
-  --text-dim:     #5B4A66;
-  --text-faint:   #85748E;
-  --text-on-accent: #FFF8E7;
+  --text:         #10121A;  /* ۱۸:۱ */
+  --text-dim:     #565D70;  /* ۷.۱:۱ */
+  --text-faint:   #767D91;  /* ۴.۶:۱ */
+  --text-on-accent: #FFFFFF;
 
-  /* ---------- برند (سیرک) ---------- */
-  --primary:      #6D28B8;   /* بنفش ریالی */
-  --primary-2:    #8B3FD0;
-  --primary-ink:  #4C1D80;
-  --primary-soft: rgba(109, 40, 184, .09);
-  --indigo:       #4C3BCF;
-  --indigo-soft:  rgba(76, 59, 207, .09);
+  /* ---------- برند ---------- */
+  --primary:      #6D28D9;  /* بنفش مدرن */
+  --primary-2:    #8B5CF6;
+  --primary-ink:  #4C1D95;
+  --primary-soft: rgba(109, 40, 217, .09);
+  --indigo:       #4F46E5;
+  --indigo-soft:  rgba(79, 70, 229, .09);
 
-  --gold:         #C9922B;   /* طلای سیرک */
-  --gold-2:       #E6B855;
-  --gold-ink:     #46300A;
-  --gold-soft:    rgba(201, 146, 43, .14);
-
-  --crimson:      #BE2E4B;   /* پرده */
-  --crimson-soft: rgba(190, 46, 75, .10);
-  --aqua:         #2E9E8F;
-  --aqua-soft:    rgba(46, 158, 143, .12);
-  --danger:       #C0344F;
-  --danger-soft:  rgba(192, 52, 79, .10);
-  --warning:      #D08016;
-  --info:         #2C7BA8;
-  --amber:        #C9922B;
-  --success:      #2E9E8F;
-  --success-soft: rgba(46, 158, 143, .12);
+  /* ---------- وضعیت‌ها ---------- */
+  --success:      #16A34A;
+  --success-soft: rgba(22, 163, 74, .10);
+  --warning:      #EA580C;
+  --warning-soft: rgba(234, 88, 12, .10);
+  --danger:       #DC2626;
+  --danger-soft:  rgba(220, 38, 38, .09);
+  --info:         #0891B2;
+  --info-soft:    rgba(8, 145, 178, .10);
+  --amber:        #D97706;
 
   --accent:       var(--primary);
   --accent-soft:  var(--primary-soft);
 
   /* ---------- خطوط ---------- */
-  --line:         rgba(90, 60, 120, .13);
-  --line-2:       rgba(90, 60, 120, .22);
-  --line-3:       rgba(90, 60, 120, .32);
-  --line-accent:  rgba(201, 146, 43, .48);
-  --line-ticket:  rgba(201, 146, 43, .55);   /* خط‌چینِ کارت بلیت */
+  --line:         #E8EAF2;
+  --line-2:       #DCE0EC;
+  --line-3:       #CBD2E2;
+  --line-accent:  rgba(109, 40, 217, .24);
 
   /* ---------- شعاع ---------- */
   --r-xs:  10px;
   --r-sm:  14px;
-  --r-md:  20px;
-  --r-lg:  26px;
-  --r-xl:  34px;
+  --r-md:  18px;
+  --r-lg:  24px;
+  --r-xl:  30px;
   --r-pill: 999px;
 
   /* ---------- فاصله (۴/۸) ---------- */
@@ -74,17 +65,11 @@
   --s-7: 48px;
   --s-8: 64px;
 
-  /* ---------- عمق (گرم و ملایم) ---------- */
-  --shadow-1: 0 1px 2px rgba(72, 44, 18, .05), 0 2px 6px rgba(72, 44, 18, .05);
-  --shadow-2: 0 10px 26px -14px rgba(72, 44, 18, .30), 0 2px 6px rgba(72, 44, 18, .06);
-  --shadow-3: 0 26px 60px -24px rgba(60, 34, 16, .38), 0 4px 10px rgba(72, 44, 18, .08);
-  --shadow-gold: 0 8px 22px -10px rgba(201, 146, 43, .55);
-  --shadow-primary: 0 8px 22px -10px rgba(109, 40, 184, .50);
-
-  /* ---------- کاغذ ---------- */
-  --paper: linear-gradient(178deg, #FFFDF8, #FDF7EA);
-  --paper-edge: linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,0));
-  --ticket-border: 1.5px dashed var(--line-ticket);
+  /* ---------- سایه‌های بسیار ملایم ---------- */
+  --shadow-1: 0 1px 2px rgba(16, 18, 26, .04), 0 1px 3px rgba(16, 18, 26, .05);
+  --shadow-2: 0 6px 16px -8px rgba(16, 18, 26, .16), 0 1px 3px rgba(16, 18, 26, .05);
+  --shadow-3: 0 24px 48px -20px rgba(16, 18, 26, .22), 0 2px 6px rgba(16, 18, 26, .06);
+  --shadow-primary: 0 6px 18px -8px rgba(109, 40, 217, .48);
 
   /* ---------- تایپوگرافی ---------- */
   --font-display: 'Plex Arabic', 'Vazirmatn', system-ui, sans-serif;
@@ -119,9 +104,8 @@
   --section-gap: 34px;
   --pad-card: 18px;
   --pad-lg: 26px;
-  --pad-hero: 20px;
 
-  /* ---------- اندازه آیکون ---------- */
+  /* ---------- آیکون ---------- */
   --icon-xs: 16px;
   --icon-sm: 19px;
   --icon-md: 23px;
@@ -141,19 +125,18 @@
   :root {
     --section-gap: 52px;
     --pad-card: 22px;
-    --pad-lg: 34px;
-    --pad-hero: 28px;
+    --pad-lg: 32px;
     --maxw: 760px;
   }
 }
 
-/* رنگ تیم‌ها — پالت سیرک */
-.t-0 { --team: #6D28B8; }
-.t-1 { --team: #BE2E4B; }
-.t-2 { --team: #2E9E8F; }
-.t-3 { --team: #2C7BA8; }
-.t-4 { --team: #5E9C2B; }
-.t-5 { --team: #B53C8E; }
+/* رنگ تیم‌ها */
+.t-0 { --team: #6D28D9; }
+.t-1 { --team: #E11D48; }
+.t-2 { --team: #0891B2; }
+.t-3 { --team: #2563EB; }
+.t-4 { --team: #16A34A; }
+.t-5 { --team: #DB2777; }
 
 @media (prefers-reduced-motion: reduce) {
   :root {
