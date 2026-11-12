@@ -614,70 +614,50 @@
     if (c.cid === 50) title = 'ضرب‌المثل ' + esc(c.fa);
     if (c.cid === 60) title = 'ترانه ' + esc(c.fa);
 
+    var opts = engine.cardOptions(c);
+    var used = opts.map(function (sc) { return engine.isCardUsed(engine.turnIndex, c.cid, sc); });
+
+    /* دسته‌های با امتیاز ثابت: بدون دیالوگ، مستقیم شروع می‌شود */
+    if (c.score !== 0) {
+      launchTurn(c.cid, c.score);
+      return;
+    }
+
     var body =
       '<div class="sheet-pick" style="--orb:' + c.color + '">' +
       '<span class="sp-name">' + title + '</span>' +
       '</div>' +
-      '<p style="text-align:center;color:var(--text-faint);font-size:var(--fs-sm);margin:0 0 var(--s-4)">انتخاب امتیاز</p>' +
+      '<p style="text-align:center;color:var(--text-faint);font-size:var(--fs-sm);margin:0 0 var(--s-4)">یک امتیاز را انتخاب کنید</p>' +
       '<div class="chip-row" id="sc-row" style="justify-content:center"></div>';
 
     var scrim = modal({
-      title: 'دسته انتخاب شد',
+      title: 'انتخاب امتیاز',
       icon: ic,
       iconColor: c.color,
       body: body,
-      dismiss: false,
+      dismiss: true,
       actions: [
-        { label: 'انصراف', cls: 'btn-ghost', onClick: function () { catSel = null; } },
-        { label: 'ادامه', cls: 'btn-primary', id: 'sc-continue', onClick: function () { launchTurn(); } }
+        { label: 'انصراف', cls: 'btn-ghost btn-block' }
       ]
     });
 
-    catSel = { cid: c.cid, score: c.score };
-
     var row = scrim.querySelector('#sc-row');
-    var contBtn = null;
-    scrim.querySelectorAll('.sheet-actions .btn').forEach(function (b) {
-      if (b.textContent.indexOf('ادامه') >= 0) contBtn = b;
-    });
-
-    var opts = engine.cardOptions(c);
-    var firstFree = -1;
-    opts.forEach(function (sc) { if (firstFree < 0 && !engine.isCardUsed(engine.turnIndex, c.cid, sc)) firstFree = sc; });
-
-    if (c.score === 0) {
-      catSel.score = firstFree >= 0 ? firstFree : opts[0];
-      opts.forEach(function (sc) {
-        var used = engine.isCardUsed(engine.turnIndex, c.cid, sc);
-        var chip = h('<button type="button" class="chip' + (used ? ' is-used' : '') + '" data-sc="' + sc + '"' + (used ? ' disabled aria-disabled="true"' : '') + '>' +
-          fa(sc) + ' امتیازی' + (used ? ' ✓' : '') + '</button>');
-        chip.addEventListener('click', function () {
-          if (used) { toast('این امتیاز از «' + c.fa + '» برای این تیم استفاده شده'); return; }
-          catSel.score = sc;
-          paintSc();
-          beep('click');
-        });
-        row.appendChild(chip);
+    opts.forEach(function (sc, idx) {
+      var chip = h('<button type="button" class="chip chip-lg' + (used[idx] ? ' is-used' : '') + '"' + (used[idx] ? ' disabled aria-disabled="true"' : '') + '>' +
+        fa(sc) + ' امتیازی' + (used[idx] ? ' ✓' : '') + '</button>');
+      chip.addEventListener('click', function () {
+        if (used[idx]) { toast('این امتیاز از «' + c.fa + '» برای این تیم استفاده شده'); return; }
+        beep('click');
+        vibrate(12);
+        closeModal();
+        launchTurn(c.cid, sc);
       });
-      function paintSc() {
-        row.querySelectorAll('[data-sc]').forEach(function (ch) {
-          ch.classList.toggle('is-on', !ch.disabled && Number(ch.dataset.sc) === catSel.score);
-        });
-      }
-      paintSc();
-      if (firstFree < 0) {
-        contBtn.disabled = true;
-      }
-    } else {
-      var usedFixed = engine.isCardUsed(engine.turnIndex, c.cid, c.score);
-      row.appendChild(h('<span class="pill' + (usedFixed ? '' : ' pill-accent') + '">' + fa(c.score) + ' امتیازی' + (usedFixed ? ' ✓ استفاده‌شده' : '') + '</span>'));
-      if (usedFixed) { if (contBtn) contBtn.disabled = true; }
-      else if (contBtn) contBtn.classList.add('btn-lg');
-    }
+      row.appendChild(chip);
+    });
   }
 
-  function launchTurn() {
-    var t = engine.startTurn(catSel.cid, catSel.score);
+  function launchTurn(cid, score) {
+    var t = engine.startTurn(cid, score);
     catSel = null;
     if (!t) { toast('محتوایی برای این دسته پیدا نشد'); go('team'); return; }
     beep('start');
