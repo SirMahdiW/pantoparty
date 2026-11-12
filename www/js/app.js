@@ -1356,7 +1356,9 @@
   /* ---------------- راه‌اندازی ---------------- */
 
   function boot() {
-    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    /* سرویس‌ورکر فقط در وب (در اندروید ثبت نمی‌شود تا کش قدیمی نسازد) */
+    var isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+    if (!isNative && 'serviceWorker' in navigator && location.protocol !== 'file:') {
       navigator.serviceWorker.register('sw.js').catch(function () { /* بی‌صدا */ });
     }
 
