@@ -7,7 +7,36 @@
   <meta name="description" content="ادابازی — بازی گروهی پانتومیم و حدس کلمه. کاملاً رایگان، بدون تبلیغات.">
   <title>ادابازی | بازی گروهی پانتومیم</title>
 
-  <link rel="manifest" href="manifest.json">
+  <!-- ضدکش: سرویس‌ورکر/کش قدیمی را پاک و صفحه را تازه می‌کند -->
+  <script>
+  (function () {
+    try {
+      var V = '2.5.9', K = 'adabazi_ver';
+      var native = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+      if (native || location.protocol === 'file:') return;
+      if (localStorage.getItem(K) === V) return;
+      localStorage.setItem(K, V);
+      var need = false, jobs = [];
+      if (window.caches && window.caches.keys) {
+        jobs.push(window.caches.keys().then(function (ks) {
+          if (!ks.length) return null;
+          need = true;
+          return Promise.all(ks.map(function (n) { return window.caches.delete(n); }));
+        }).catch(function () {}));
+      }
+      if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+        jobs.push(navigator.serviceWorker.getRegistrations().then(function (rs) {
+          if (!rs.length) return null;
+          need = true;
+          return Promise.all(rs.map(function (r) { return r.unregister(); }));
+        }).catch(function () {}));
+      }
+      Promise.all(jobs).then(function () { if (need) location.reload(); });
+    } catch (e) {}
+  })();
+  </script>
+
+<link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon-app.png" type="image/png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,8 +46,8 @@
   <link rel="preload" href="fonts/PlexArabic-700-arabic.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="fonts/fonts.css">
 
-  <link rel="stylesheet" href="css/tokens.css?v=2.5.8">
-  <link rel="stylesheet" href="css/app.css?v=2.5.8">
+  <link rel="stylesheet" href="css/tokens.css?v=2.5.9">
+  <link rel="stylesheet" href="css/app.css?v=2.5.9">
 </head>
 <body>
   <div class="aurora" aria-hidden="true"><div class="aurora-grid"></div></div>
@@ -45,12 +74,12 @@
     <div class="noscript">برای اجرای این بازی باید جاوااسکریپت مرورگر فعال باشد.</div>
   </noscript>
 
-  <script src="js/icons.js?v=2.5.8"></script>
-  <script src="js/store.js?v=2.5.8"></script>
-  <script src="js/audio.js?v=2.5.8"></script>
-  <script src="js/data.js?v=2.5.8"></script>
-  <script src="js/confetti.js?v=2.5.8"></script>
-  <script src="js/game.js?v=2.5.8"></script>
-  <script src="js/app.js?v=2.5.8"></script>
+  <script src="js/icons.js?v=2.5.9"></script>
+  <script src="js/store.js?v=2.5.9"></script>
+  <script src="js/audio.js?v=2.5.9"></script>
+  <script src="js/data.js?v=2.5.9"></script>
+  <script src="js/confetti.js?v=2.5.9"></script>
+  <script src="js/game.js?v=2.5.9"></script>
+  <script src="js/app.js?v=2.5.9"></script>
 </body>
 </html>

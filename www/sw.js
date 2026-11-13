@@ -1,8 +1,8 @@
 /* سرویس‌ورکر ادابازی — کش آفلاین
- * نکته: نسخه‌ی کش (CACHE) را با هر انتشار یکی زیاد کنید.
- * دارایی‌ها با کلید کامل (شامل ?v=) کش می‌شوند تا نسخه‌ی جدید فوراً گرفته شود.
+ * نکته: با هر انتشار نام CACHE را یکی زیاد کنید تا کش قبلی پاک شود.
+ * کلیدهای کش شامل ?v= هستند ⇒ نسخه‌ی جدید بلافاصله اعمال می‌شود.
  */
-var CACHE = 'adabazi-v5';
+var CACHE = 'adabazi-v6';
 
 var ASSETS = [
   './',
@@ -21,6 +21,7 @@ var ASSETS = [
   'icons/icon-app.png',
   'icons/icon-192.png',
   'icons/icon-512.png',
+  'icons/icon-maskable-512.png',
   'fonts/fonts.css',
   'fonts/Vazirmatn-arabic.woff2',
   'fonts/Vazirmatn-latin.woff2',
@@ -55,24 +56,38 @@ self.addEventListener('fetch', function (e) {
   var url = new URL(req.url);
   if (url.origin !== location.origin) return;   /* فایل‌های بیرونی: فقط شبکه */
 
-  /* صفحه‌ها: اول شبکه (تا نسخه‌ی جدید فوراً بیاید)، در صورت قطعی از کش */
+  /* صفحه‌ها: اول شبکه (نسخه‌ی جدید فوراً بیاید)، در صورت قطعی از کش */
   if (req.mode === 'navigate') {
     e.respondWith(
-      fetch(req).catch(function () { return caches.match('index.html'); })
+      fetch(req).catch(function () {
+        return caches.match('index.html').then(function (r) { return r || caches.match('./'); });
+      })
     );
     return;
   }
 
-  /* دارایی‌ها: کلید کامل (با ?v=) ⇒ هر نسخه جدا کش می‌شود و نسخه‌ی جدید فوراً اعمال می‌شود */
+  /* دارایی‌ها: کلید دقیق (با ?v=) — بدون ignoreSearch تا نسخه‌ی کهنه سرو نشود */
   e.respondWith(
-    caches.match(req).then(function (hit) {
-      var net = fetch(req).then(function (res) {
-        if (res && res.status === 200 && res.type === 'basic') {
-          caches.open(CACHE).then(function (c) { c.put(req, res.clone()); });
+    caches.open(CACHE).then(function (c) {
+      return c.match(req).then(function (hit) {
+        var net = fetch(req).then(function (res) {
+          if (res && res.status === 200 && res.type === 'basic') {
+            c.put(req, res.clone());
+          }
+          return res;
+        }).catch(function () { return hit; });
+
+        if (hit) {
+          /* از کش پاسخ بده و در پس‌زمینه تازه کن */
+          net.catch(function () {});
+          return hit;
         }
-        return res;
-      }).catch(function () { return hit; });
-      return hit || net;
+        /* اگر نسخه‌ی دقیق نبود (مثلاً اولین بازدید): نسخه‌ی بدون پارامتر (آفلاین) */
+        return c.match(url.origin + url.pathname).then(function (lo) {
+          if (lo) { net.catch(function () {}); return lo; }
+          return net;
+        });
+      });
     })
   );
 });
