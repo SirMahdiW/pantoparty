@@ -5,7 +5,7 @@
   'use strict';
 
   /* نسخه‌ی دارایی‌ها — با هر انتشار این عدد را زیاد کنید تا کش سرویس‌ورکر باطل شود */
-  var APP_VERSION = '2.5.10';
+  var APP_VERSION = '2.5.11';
 
   var main = document.getElementById('main');
   var btnBack = document.getElementById('btn-back');
@@ -733,14 +733,19 @@
     );
     stage.appendChild(wordCard);
 
-    var bigBtn = h('<button type="button" class="btn btn-primary btn-lg btn-block u-mt-4" id="big-btn"  style="min-height:64px"></button>');
+    var bigBtn = h('<button type="button" class="btn btn-primary btn-lg btn-block" id="big-btn"  style="min-height:64px"></button>');
 
     var controls = h('<div class="controls" id="controls"></div>');
 
+    /* ستون کناری: دکمه‌ی اصلی + کنترل‌ها (در افقی کنار کارت کلمه می‌نشیند) */
+    var side = h('<div class="play-side"></div>');
+    side.appendChild(bigBtn);
+    side.appendChild(controls);
+
     el.appendChild(hud());
+    stage.appendChild(wordCard);
+    stage.appendChild(side);
     el.appendChild(stage);
-    el.appendChild(bigBtn);
-    el.appendChild(controls);
 
     function paintWord() {
       var meta = wordCard.querySelector('#w-meta');
@@ -1033,12 +1038,18 @@
       '</div>'
     );
 
-    var bigBtn = h('<button type="button" class="btn btn-primary btn-lg btn-block u-mt-4" id="big-btn"  style="min-height:64px"></button>');
+    var bigBtn = h('<button type="button" class="btn btn-primary btn-lg btn-block" id="big-btn"  style="min-height:64px"></button>');
     var controls = h('<div class="controls" id="controls"></div>');
 
-    el.appendChild(wordCard);
-    el.appendChild(bigBtn);
-    el.appendChild(controls);
+    /* همان ساختار صفحه‌ی بازی: کارت کلمه + ستون دکمه و کنترل‌ها */
+    var stage = h('<div class="play-landscape"></div>');
+    var side = h('<div class="play-side"></div>');
+    side.appendChild(bigBtn);
+    side.appendChild(controls);
+
+    stage.appendChild(wordCard);
+    stage.appendChild(side);
+    el.appendChild(stage);
 
     function paint() {
       var holder = engine.team(b.state === 1 ? b.player : b.active);

@@ -843,10 +843,19 @@ body {
 .chip-sm { min-height: 42px; padding: 8px 12px; }
 
 /* ---------- چیدمان افقی (بازی) ---------- */
+/* پیش‌فرض (عمودی): کارت کلمه بالا، دکمه و کنترل‌ها زیر آن با فاصله‌ی منظم */
+.play-landscape { display: flex; flex-direction: column; gap: var(--s-4); }
+.play-side { display: flex; flex-direction: column; gap: var(--s-4); }
+.play-side .controls { margin-top: 0; }
+
 @media (orientation: landscape) and (max-height: 560px) {
-  .play-landscape { display: grid; grid-template-columns: 1.2fr 1fr; gap: var(--s-4); align-items: start; }
+  .play-landscape { display: grid; grid-template-columns: 1.15fr 1fr; gap: var(--s-4); align-items: start; }
   .play-landscape .gauge { margin: 0 auto; width: clamp(120px, 26vw, 150px); }
   .play-landscape .spotlight { min-height: 150px; }
+  .play-landscape .w-text { font-size: clamp(21px, 4vw, 28px); line-height: 1.45; }
+  .play-landscape .w-text.len-m { font-size: clamp(20px, 3.6vw, 25px); }
+  .play-landscape .w-text.len-l { font-size: clamp(17px, 3vw, 21px); }
+  .play-landscape .w-text.len-xl { font-size: clamp(14px, 2.4vw, 17px); }
 }
 
 .cat-section { margin-bottom: var(--s-6); }
