@@ -777,7 +777,7 @@
     function paintBig() {
       var label, icon, cls;
       if (t.state === 1) { label = 'نمایش کلمه'; icon = 'eye'; cls = 'btn-primary'; }
-      else if (t.state === 2) { label = 'شروع تایمر و اجرا'; icon = 'play2'; cls = 'btn-success'; }
+      else if (t.state === 2) { label = 'شروع تایمر و اجرا'; icon = 'play2'; cls = 'btn-primary'; }
       else if (isSpeed) { label = 'تایمر در حال اجرا'; icon = 'pause'; cls = 'btn-ghost'; }
       else if (t.running) { label = 'پایان نوبت'; icon = 'flag'; cls = 'btn-danger'; }
       else { label = 'نتیجه نوبت'; icon = 'check'; cls = 'btn-ghost'; }
@@ -1065,7 +1065,7 @@
         bigBtn.disabled = false;
       } else if (b.state === 2) {
         bigBtn.innerHTML = Icons.get('play2') + '<span>شروع ' + fa(engine.moreTime) + ' ثانیه‌ای</span>';
-        bigBtn.classList.add('btn-success');
+        bigBtn.classList.add('btn-primary');
         bigBtn.disabled = false;
       } else {
         bigBtn.innerHTML = Icons.get('check') + '<span>درست</span>';

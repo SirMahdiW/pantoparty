@@ -254,6 +254,7 @@ body {
   --btn-bg: var(--surface);
   --btn-fg: var(--text-dim);
   border-color: var(--line-2);
+  box-shadow: var(--shadow-1);
 }
 .btn-ghost:hover { --btn-fg: var(--text); border-color: var(--line-3); }
 
@@ -723,12 +724,26 @@ body {
   border-radius: var(--r-md);
 }
 .controls .btn svg { width: var(--icon-lg); height: var(--icon-lg); }
-.controls .btn-danger {
-  background: var(--danger-soft);
-  color: var(--danger);
-  border-color: color-mix(in srgb, var(--danger) 24%, transparent);
-  box-shadow: none;
+/* کنترل‌های بازی: همه با یک وزن بصری — فقط رنگ متفاوت */
+.controls .btn {
+  background: var(--surface);
+  border-color: var(--line-2);
+  color: var(--text-dim);
+  box-shadow: var(--shadow-1);
 }
+.controls .btn:hover { border-color: var(--line-3); color: var(--text); }
+.controls .btn-danger {
+  background: var(--surface);
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 30%, transparent);
+}
+.controls .btn-danger:hover { background: var(--danger-soft); color: var(--danger); }
+.controls .btn-success {
+  background: var(--surface);
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 30%, transparent);
+}
+.controls .btn-success:hover { background: var(--success-soft); color: var(--success); }
 .controls .btn-wide { grid-column: 1 / -1; min-height: 54px; flex-direction: row; }
 
 /* ---------- نوار وضعیت چسبان (HUD) ---------- */
