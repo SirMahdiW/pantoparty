@@ -239,10 +239,10 @@ body {
 }
 .btn-primary:hover { --btn-bg: var(--primary-ink); }
 .btn-success {
-  --btn-bg: var(--success);
+  --btn-bg: linear-gradient(140deg, var(--primary-2), var(--primary) 58%, var(--primary-ink));
   --btn-fg: #fff;
-  border-color: transparent;
-  box-shadow: 0 6px 18px -8px rgba(22, 163, 74, .42);
+  border-color: rgba(109, 40, 184, .45);
+  box-shadow: var(--shadow-primary);
 }
 .btn-danger {
   --btn-bg: var(--danger);
@@ -740,10 +740,10 @@ body {
 .controls .btn-danger:hover { background: var(--danger-soft); color: var(--danger); }
 .controls .btn-success {
   background: var(--surface);
-  color: var(--success);
-  border-color: color-mix(in srgb, var(--success) 30%, transparent);
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 32%, transparent);
 }
-.controls .btn-success:hover { background: var(--success-soft); color: var(--success); }
+.controls .btn-success:hover { background: var(--primary-soft); color: var(--primary); }
 .controls .btn-wide { grid-column: 1 / -1; min-height: 54px; flex-direction: row; }
 
 /* ---------- نوار وضعیت چسبان (HUD) ---------- */

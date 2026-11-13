@@ -944,7 +944,7 @@
       }
 
       if (!faultOut) {
-        var ok = h('<button type="button" class="btn btn-success">' + Icons.get('check') + '<span>درست</span></button>');
+        var ok = h('<button type="button" class="btn btn-primary">' + Icons.get('check') + '<span>درست</span></button>');
         ok.addEventListener('click', function () {
           engine.dialogRight();
           beep('correct');
