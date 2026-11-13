@@ -324,7 +324,7 @@
     ));
 
     /* چیدمان بازی */
-    var fields = h('<div style="margin-top:var(--s-4)"></div>');
+    var fields = h('<div class="u-mt-4"></div>');
     fields.appendChild(stepper(d.gameType === 'boom' ? 'تعداد بازیکن' : 'تعداد گروه', d.groups, 2, 6, function (v) { d.groups = v; },
       d.gameType === 'boom' ? 'بازیکن‌ها بین خود بازی می‌کنند' : 'گروه‌ها به‌صورت نوبتی بازی می‌کنند'));
     fields.appendChild(stepper('تعداد دور', d.rounds, 1, 10, function (v) { d.rounds = v; }, 'هر دور یک نوبت برای هر گروه'));
@@ -450,7 +450,7 @@
     var upColor = TEAM_COLORS[upNext.color].v;
 
     el.appendChild(h(
-      '<div class="pill-row" style="margin-bottom:var(--s-4)">' +
+      '<div class="pill-row u-mb-4" >' +
       '<span class="pill pill-accent">' + Icons.get('flag') + ' دور ' + fa(engine.roundNumber()) + ' از ' + fa(engine.rounds) + '</span>' +
       '<span class="pill">' + Icons.get('grid') + ' ' + TYPES[engine.gameType].title + '</span>' +
       '</div>'
@@ -543,7 +543,7 @@
       '<button type="button" class="chip chip-sm" id="cat-free" aria-pressed="false">' + Icons.get('eye') + ' فقط آزادها</button>' +
       '</div>'
     ));
-    el.appendChild(h('<p class="lead" style="color:var(--text-dim);margin:0 0 var(--s-3)">دسته‌ی این نوبت را انتخاب کن</p>'));
+    el.appendChild(h('<p class="lead u-dim u-mb-3" >دسته‌ی این نوبت را انتخاب کن</p>'));
 
     var wrap = h('<div></div>');
     categoryGroups().forEach(function (g) {
@@ -657,7 +657,7 @@
       '<div class="sheet-pick" style="--orb:' + c.color + '">' +
       '<span class="sp-name">' + title + '</span>' +
       '</div>' +
-      '<p style="text-align:center;color:var(--text-faint);font-size:var(--fs-sm);margin:0 0 var(--s-4)">یک امتیاز را انتخاب کنید</p>' +
+      '<p class="u-center u-faint u-mb-4">یک امتیاز را انتخاب کنید</p>' +
       '<div class="chip-row" id="sc-row" style="justify-content:center"></div>';
 
     var scrim = modal({
@@ -730,7 +730,7 @@
     );
     stage.appendChild(wordCard);
 
-    var bigBtn = h('<button type="button" class="btn btn-primary btn-lg btn-block" id="big-btn" style="margin-top:var(--s-4);min-height:64px"></button>');
+    var bigBtn = h('<button type="button" class="btn btn-primary btn-lg btn-block u-mt-4" id="big-btn"  style="min-height:64px"></button>');
 
     var controls = h('<div class="controls" id="controls"></div>');
 
@@ -1028,7 +1028,7 @@
       '</div>'
     );
 
-    var bigBtn = h('<button type="button" class="btn btn-primary btn-lg btn-block" id="big-btn" style="margin-top:var(--s-4);min-height:64px"></button>');
+    var bigBtn = h('<button type="button" class="btn btn-primary btn-lg btn-block u-mt-4" id="big-btn"  style="min-height:64px"></button>');
     var controls = h('<div class="controls" id="controls"></div>');
 
     el.appendChild(wordCard);
@@ -1160,7 +1160,7 @@
     var el = h('<div></div>');
 
     var head = h(
-      '<section class="card card-lg card-accent" style="text-align:center">' +
+      '<section class="card card-lg card-accent u-center" >' +
       '<span class="sheet-icon" style="--orb:' + (isTie ? '#7DD3FC' : '#6D28D9') + '">' + Icons.get(isTie ? 'heart' : 'crown') + '</span>' +
       '<h1 style="font-size:var(--fs-h1);font-weight:900;margin:0 0 4px">' + (isTie ? 'مساوی شد!' : 'برنده') + '</h1>' +
       '<p style="margin:0;color:var(--text-dim)">' + (isTie ? 'گروه‌ها مساوی‌اند' : esc(winner.name)) + '</p>' +
@@ -1194,7 +1194,7 @@
     el.appendChild(list);
 
     /* کنش‌ها */
-    var actions = h('<div class="bento" style="margin-top:var(--s-4)"></div>');
+    var actions = h('<div class="bento u-mt-4" ></div>');
     var shareBtn = h('<button type="button" class="clay pressable mode-card span-3" style="--glow-color:#0891B2">' +
       '<span class="orb" style="--orb:#0891B2">' + Icons.get('share') + '</span>' +
       '<h3>اشتراک نتیجه</h3><p>متن نتیجه بازی</p></button>');
@@ -1222,7 +1222,7 @@
     var el = h('<div></div>');
 
     el.appendChild(h(
-      '<section class="card card-lg" style="text-align:center">' +
+      '<section class="card card-lg u-center" >' +
       '<span class="eyebrow" style="justify-content:center">آرشیو</span>' +
       '<h1 style="font-size:var(--fs-h1);font-weight:900;margin:var(--s-2) 0 0">تاریخچه بازی‌ها</h1>' +
       '</section>'
@@ -1236,7 +1236,7 @@
       return el;
     }
 
-    var list = h('<div class="list" style="margin-top:var(--s-4)"></div>');
+    var list = h('<div class="list u-mt-4" ></div>');
     Store.history.slice().reverse().forEach(function (g) {
       var isBoom = g.mode === 'boom';
       list.appendChild(h(
@@ -1250,7 +1250,7 @@
     });
     el.appendChild(list);
 
-    var clear = h('<button type="button" class="btn btn-ghost btn-block" style="margin-top:var(--s-4)">' + Icons.get('trash') + ' پاک کردن تاریخچه</button>');
+    var clear = h('<button type="button" class="btn btn-ghost btn-block u-mt-4" >' + Icons.get('trash') + ' پاک کردن تاریخچه</button>');
     clear.addEventListener('click', function () {
       modal({
         title: 'پاک کردن تاریخچه؟', icon: 'trash', iconColor: '#DC2626',
@@ -1279,13 +1279,13 @@
     var el = h('<div></div>');
 
     el.appendChild(h(
-      '<section class="card card-lg" style="text-align:center">' +
+      '<section class="card card-lg u-center" >' +
       '<span class="eyebrow" style="justify-content:center">تنظیمات</span>' +
       '<h1 style="font-size:var(--fs-h1);font-weight:900;margin:var(--s-2) 0 0">صدا و لرزش</h1>' +
       '</section>'
     ));
 
-    var box = h('<div style="margin-top:var(--s-4)"></div>');
+    var box = h('<div class="u-mt-4"></div>');
     box.appendChild(toggleRow('volume', 'صداهای بازی', 'بوق درست/غلط و پایان زمان', st.sound, function (v) {
       Store.setSetting('sound', v); GameAudio.setEnabled(v); if (v) beep('correct');
     }));
@@ -1294,7 +1294,7 @@
     }));
     el.appendChild(box);
 
-    var about = h('<div style="margin-top:var(--s-4)"></div>');
+    var about = h('<div class="u-mt-4"></div>');
     var resetBtn = h('<button type="button" class="btn btn-ghost btn-block">' + Icons.get('refresh') + ' بازنشانی کامل تنظیمات</button>');
     resetBtn.addEventListener('click', function () {
       modal({
@@ -1313,6 +1313,18 @@
     about.appendChild(resetBtn);
 
     el.appendChild(about);
+
+    /* دسترسی به «درباده» */
+    var aboutRow = h(
+      '<div class="list u-mt-3">' +
+      '<button type="button" class="list-row" id="open-about">' +
+      '<span class="orb orb-sm" style="--orb:#8B5CF6">' + Icons.get('info') + '</span>' +
+      '<span class="lr-txt"><strong>درباره ادابازی</strong><span>حریم خصوصی و قوانین</span></span>' +
+      Icons.get('next') + '</button>' +
+      '</div>'
+    );
+    aboutRow.querySelector('#open-about').addEventListener('click', function () { beep('click'); go('about'); });
+    el.appendChild(aboutRow);
 
     return el;
   }
@@ -1340,13 +1352,13 @@
     var el = h('<div></div>');
 
     el.appendChild(h(
-      '<section class="card card-lg" style="text-align:center">' +
+      '<section class="card card-lg u-center" >' +
       '<span class="eyebrow" style="justify-content:center">درباره</span>' +
       '<h1 style="font-size:var(--fs-h1);font-weight:900;margin:var(--s-2) 0 0">ادابازی</h1>' +
       '</section>'
     ));
 
-    var list = h('<div class="list" style="margin-top:var(--s-4)"></div>');
+    var list = h('<div class="list u-mt-4" ></div>');
     [
       ['heart', 'بدون جمع‌آوری داده', 'همه چیز روی همین دستگاه ذخیره می‌شود.', '#DC2626'],
       ['book', 'منطق اپ اصلی', 'ساخت نوبت‌ها، زمان هر دسته، تعویض کلمه، خطاها و پاداش زمان.', '#6D28D9'],
