@@ -27,6 +27,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Quality checks (CSS / markup / IDs / engine tests)
+        run: |
+          node tools/check.js www
+          node tests/engine.test.js
+
       - name: Add Android platform
         run: npx cap add android
 
