@@ -632,8 +632,8 @@ body {
 
 /* ---------- کارت کلمه ---------- */
 .spotlight .w-gauge { margin: 0 auto 2px; }
-.spotlight .w-gauge .gauge { width: clamp(88px, 22vw, 112px); margin: 0; }
-.spotlight .w-gauge .gauge-num { font-size: clamp(24px, 6.4vw, 30px); }
+.spotlight .w-gauge .gauge { width: clamp(104px, 27vw, 138px); margin: 0; }
+.spotlight .w-gauge .gauge-num { font-size: clamp(26px, 7.4vw, 34px); }
 .spotlight.is-live {
   border-color: color-mix(in srgb, var(--primary) 34%, transparent);
   box-shadow: var(--shadow-2), 0 0 0 3px color-mix(in srgb, var(--primary) 10%, transparent);
@@ -645,8 +645,8 @@ body {
   flex-direction: row;
   align-items: center;
   gap: var(--s-4);
-  min-height: 132px;
-  padding: var(--s-4);
+  min-height: 164px;
+  padding: var(--s-4) var(--s-5);
   border-radius: var(--r-lg);
   border: 1px solid var(--line);
   background:
@@ -678,17 +678,17 @@ body {
 .boom-spot .w-gauge .gauge-num { font-size: clamp(28px, 8vw, 36px); }
 .spotlight .w-text {
   font-family: var(--font-word);
-  font-size: clamp(24px, 7vw, 38px);
+  font-size: clamp(28px, 8.6vw, 46px);
   line-height: 1.4;
   color: var(--text);
   word-break: break-word;
   text-align: start;
 }
-.spotlight .w-text.len-m { font-size: clamp(24px, 6.8vw, 34px); }
-.spotlight .w-text.len-l { font-size: clamp(19px, 5vw, 26px); line-height: 1.6; }
-.spotlight .w-text.len-xl { font-size: clamp(15px, 4vw, 21px); line-height: 1.75; }
+.spotlight .w-text.len-m { font-size: clamp(26px, 8vw, 40px); }
+.spotlight .w-text.len-l { font-size: clamp(21px, 5.6vw, 30px); line-height: 1.6; }
+.spotlight .w-text.len-xl { font-size: clamp(16px, 4.4vw, 24px); line-height: 1.75; }
 .spotlight .w-sub { color: var(--text-dim); font-size: var(--fs-sm); }
-.spotlight.is-hidden .w-text { color: var(--text-faint); letter-spacing: .12em; }
+.spotlight.is-hidden .w-text { color: var(--text-faint); font-size: clamp(19px, 5.2vw, 26px); letter-spacing: .01em; }
 
 .score-badge {
   display: inline-flex;
