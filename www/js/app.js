@@ -5,7 +5,7 @@
   'use strict';
 
   /* نسخه‌ی دارایی‌ها — با هر انتشار این عدد را زیاد کنید تا کش سرویس‌ورکر باطل شود */
-  var APP_VERSION = '2.5.15';
+  var APP_VERSION = '2.5.16';
 
   var main = document.getElementById('main');
   var btnBack = document.getElementById('btn-back');

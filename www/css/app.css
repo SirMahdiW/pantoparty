@@ -657,8 +657,8 @@ body {
   text-align: center;
   overflow: hidden;
 }
-.spotlight .w-meta { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-.spotlight .w-main { flex: 1; min-width: 0; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+.spotlight .w-meta { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 6px; }
+.spotlight .w-main { flex: 1; min-width: 0; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
 .spotlight .w-head {
   display: inline-flex;
   align-items: center;
@@ -879,8 +879,8 @@ body {
 @media (orientation: landscape) and (max-height: 560px) {
   .play-landscape { display: grid; grid-template-columns: 1.15fr 1fr; gap: var(--s-4); align-items: start; }
   .play-landscape .spotlight { flex-direction: row; min-height: 150px; padding: var(--s-4); gap: var(--s-3); justify-content: flex-start; }
-  .play-landscape .spotlight .w-main { align-items: flex-start; justify-content: center; text-align: start; }
-  .play-landscape .spotlight .w-meta { justify-content: flex-start; }
+  .play-landscape .spotlight .w-main { align-items: flex-start; justify-content: center; text-align: start; gap: 8px; }
+  .play-landscape .spotlight .w-meta { justify-content: flex-start; margin-bottom: 2px; }
   .play-landscape .spotlight .w-head { align-self: flex-start; }
   .play-landscape .spotlight .w-gauge .gauge { width: clamp(100px, 22vw, 128px); }
   .play-landscape .spotlight .w-text { font-size: clamp(22px, 4.2vw, 30px); line-height: 1.4; text-align: start; }
