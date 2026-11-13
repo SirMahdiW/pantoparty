@@ -1,5 +1,6 @@
 /* سرویس‌ورکر ادابازی — کش آفلاین
- * با هر انتشار نسخه‌ی کش (CACHE) را یکی زیاد کنید تا کش قدیمی پاک شود.
+ * نکته: نسخه‌ی کش (CACHE) را با هر انتشار یکی زیاد کنید.
+ * دارایی‌ها با کلید کامل (شامل ?v=) کش می‌شوند تا نسخه‌ی جدید فوراً گرفته شود.
  */
 var CACHE = 'adabazi-v5';
 
@@ -20,7 +21,6 @@ var ASSETS = [
   'icons/icon-app.png',
   'icons/icon-192.png',
   'icons/icon-512.png',
-  'icons/icon-maskable-512.png',
   'fonts/fonts.css',
   'fonts/Vazirmatn-arabic.woff2',
   'fonts/Vazirmatn-latin.woff2',
@@ -53,11 +53,9 @@ self.addEventListener('fetch', function (e) {
   if (req.method !== 'GET') return;
 
   var url = new URL(req.url);
+  if (url.origin !== location.origin) return;   /* فایل‌های بیرونی: فقط شبکه */
 
-  /* فایل‌های بیرونی: فقط از شبکه */
-  if (url.origin !== location.origin) return;
-
-  /* صفحه‌ها: اول شبکه، در صورت قطعی از کش */
+  /* صفحه‌ها: اول شبکه (تا نسخه‌ی جدید فوراً بیاید)، در صورت قطعی از کش */
   if (req.mode === 'navigate') {
     e.respondWith(
       fetch(req).catch(function () { return caches.match('index.html'); })
@@ -65,9 +63,9 @@ self.addEventListener('fetch', function (e) {
     return;
   }
 
-  /* دارایی‌ها: از کش، سپس به‌روزرسانی در پس‌زمینه */
+  /* دارایی‌ها: کلید کامل (با ?v=) ⇒ هر نسخه جدا کش می‌شود و نسخه‌ی جدید فوراً اعمال می‌شود */
   e.respondWith(
-    caches.match(req, { ignoreSearch: true }).then(function (hit) {
+    caches.match(req).then(function (hit) {
       var net = fetch(req).then(function (res) {
         if (res && res.status === 200 && res.type === 'basic') {
           caches.open(CACHE).then(function (c) { c.put(req, res.clone()); });

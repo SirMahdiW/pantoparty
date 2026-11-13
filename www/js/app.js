@@ -4,6 +4,9 @@
 (function () {
   'use strict';
 
+  /* نسخه‌ی دارایی‌ها — با هر انتشار این عدد را زیاد کنید تا کش سرویس‌ورکر باطل شود */
+  var APP_VERSION = '2.5.8';
+
   var main = document.getElementById('main');
   var btnBack = document.getElementById('btn-back');
   var btnSettings = document.getElementById('btn-settings');
@@ -1464,7 +1467,8 @@
     /* سرویس‌ورکر فقط در وب (در اندروید ثبت نمی‌شود تا کش قدیمی نسازد) */
     var isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
     if (!isNative && 'serviceWorker' in navigator && location.protocol !== 'file:') {
-      navigator.serviceWorker.register('sw.js').catch(function () { /* بی‌صدا */ });
+      /* ?v= باعث می‌شود مرورگر نسخه‌ی جدید سرویس‌ورکر را بگیرد */
+      navigator.serviceWorker.register('sw.js?v=' + APP_VERSION).catch(function () { /* بی‌صدا */ });
     }
 
     /* آیکون دکمه‌های نوار بالا */
