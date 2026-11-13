@@ -663,6 +663,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  align-self: flex-start;
   min-width: 54px;
   padding: 6px 16px;
   border-radius: var(--r-pill);
@@ -672,6 +673,9 @@ body {
   font-size: 17px;
   font-weight: 700;
 }
+/* بوم: حلقه‌ی تایمر کمی بزرگ‌تر (مهلت کوتاه است) */
+.boom-spot .w-gauge .gauge { width: clamp(112px, 29vw, 142px); }
+.boom-spot .w-gauge .gauge-num { font-size: clamp(28px, 8vw, 36px); }
 .spotlight .w-text {
   font-family: var(--font-word);
   font-size: clamp(24px, 7vw, 38px);
@@ -1313,15 +1317,20 @@ body {
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
   .podium { gap: 6px; }
 }
+
+/* گرید کارت‌های اقدام (نتیجه‌ی بازی) — روی موبایل هم گرید است تا دکمه‌ها تمام‌عرض شوند */
+.bento { display: grid; grid-template-columns: 1fr; gap: var(--s-3); }
+.bento > * { min-width: 0; }
+.bento > .span-2, .bento > .span-3, .bento > .span-4, .bento > .span-6 { grid-column: 1 / -1; }
+
 @media (min-width: 768px) {
   .stat-grid { grid-template-columns: repeat(3, 1fr); }
   .timeline { grid-template-columns: repeat(3, 1fr); }
-  .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--s-4); }
-  .bento > * { min-width: 0; }
-  .span-6 { grid-column: span 6; }
-  .span-4 { grid-column: span 4; }
-  .span-3 { grid-column: span 3; }
-  .span-2 { grid-column: span 2; }
+  .bento { grid-template-columns: repeat(6, 1fr); gap: var(--s-4); }
+  .bento > .span-6 { grid-column: span 6; }
+  .bento > .span-4 { grid-column: span 4; }
+  .bento > .span-3 { grid-column: span 3; }
+  .bento > .span-2 { grid-column: span 2; }
 }
 
 /* گرید دو‌ستونه (کارت‌های حالت بازی در صفحه اصلی — همیشه کنار هم) */

@@ -5,7 +5,7 @@
   'use strict';
 
   /* نسخه‌ی دارایی‌ها — با هر انتشار این عدد را زیاد کنید تا کش سرویس‌ورکر باطل شود */
-  var APP_VERSION = '2.5.9';
+  var APP_VERSION = '2.5.10';
 
   var main = document.getElementById('main');
   var btnBack = document.getElementById('btn-back');
@@ -250,7 +250,7 @@
       var m = TYPES[key];
       var accent = key === 'boom' ? '#4F46E5' : '#6D28D9';
       var card = h(
-        '<button type="button" class="clay pressable mode-card" data-type="' + key + '" style="--glow-color:' + accent + '">' +
+        '<button type="button" class="mode-card" data-type="' + key + '">' +
         '<span class="orb" style="--orb:' + accent + '">' + Icons.get(m.icon) + '</span>' +
         '<h3>' + m.title + '</h3>' +
         '<p>' + m.desc + '</p>' +
@@ -1018,14 +1018,14 @@
     el.appendChild(hud());
     el.appendChild(h(
       '<div class="pill-row" style="margin-bottom:var(--s-3);justify-content:flex-start">' +
+      '<span class="pill pill-accent" id="boom-player">' + Icons.get('users') + ' ' + esc(engine.team(b.active).name) + '</span>' +
       '<span class="pill">' + Icons.get('flag') + ' <span id="boom-round">' + fa(engine.roundNumber()) + '</span> / ' + fa(engine.rounds) + '</span>' +
       '</div>'
     ));
 
-    el.appendChild(h(gaugeMarkup(engine.moreTime, 'gauge')));
-
     var wordCard = h(
-      '<div class="spotlight" id="word-card">' +
+      '<div class="spotlight boom-spot" id="word-card">' +
+      '<div class="w-gauge">' + gaugeMarkup(engine.moreTime, 'gauge') + '</div>' +
       '<div class="w-main">' +
       '<div class="w-head">سه</div>' +
       '<div class="w-text" id="w-text">' + esc(b.word || '') + '</div>' +
@@ -1043,21 +1043,23 @@
     function paint() {
       var holder = engine.team(b.state === 1 ? b.player : b.active);
       var pill = el.querySelector('#boom-player');
-      pill.innerHTML = Icons.get('users') + ' ' + esc(holder.name);
+      if (pill) pill.innerHTML = Icons.get('users') + ' ' + esc(holder.name);
 
       var txt = el.querySelector('#w-text');
       if (b.word) {
-        txt.textContent = b.word;
+        if (txt) txt.textContent = b.word;
         var len = b.word.length;
-        txt.classList.toggle('len-m', len > 14 && len <= 30);
-        txt.classList.toggle('len-l', len > 30 && len <= 70);
-        txt.classList.toggle('len-xl', len > 70);
-      } else {
+        if (txt) {
+          txt.classList.toggle('len-m', len > 14 && len <= 30);
+          txt.classList.toggle('len-l', len > 30 && len <= 70);
+          txt.classList.toggle('len-xl', len > 70);
+        }
+      } else if (txt) {
         txt.textContent = '—';
       }
 
       var num = el.querySelector('#timer-num');
-      num.textContent = mmss(b.state === 1 ? engine.moreTime : b.timeLeft);
+      if (num) num.textContent = mmss(b.state === 1 ? engine.moreTime : b.timeLeft);
       paintGauge(el.querySelector('#gauge'), b.state === 1 ? engine.moreTime : b.timeLeft, engine.moreTime, b.running);
 
       var round = el.querySelector('#boom-round');
@@ -1200,15 +1202,15 @@
 
     /* کنش‌ها */
     var actions = h('<div class="bento u-mt-4" ></div>');
-    var shareBtn = h('<button type="button" class="clay pressable mode-card span-3" style="--glow-color:#0891B2">' +
+    var shareBtn = h('<button type="button" class="mode-card span-3">' +
       '<span class="orb" style="--orb:#0891B2">' + Icons.get('share') + '</span>' +
       '<h3>اشتراک نتیجه</h3><p>متن نتیجه بازی</p></button>');
     shareBtn.addEventListener('click', function () { shareResult(); });
-    var again = h('<button type="button" class="clay pressable mode-card span-3" style="--glow-color:#6D28D9">' +
+    var again = h('<button type="button" class="mode-card span-3">' +
       '<span class="orb" style="--orb:#6D28D9">' + Icons.get('refresh') + '</span>' +
       '<h3>بازی دوباره</h3><p>با همین تنظیمات</p></button>');
     again.addEventListener('click', function () { beep('click'); beginGame(); });
-    var home = h('<button type="button" class="clay pressable mode-card span-3" style="--glow-color:#4F46E5">' +
+    var home = h('<button type="button" class="mode-card span-3">' +
       '<span class="orb" style="--orb:#4F46E5">' + Icons.get('home') + '</span>' +
       '<h3>صفحه اصلی</h3><p>انتخاب حالت بازی</p></button>');
     home.addEventListener('click', function () { beep('click'); engine = null; go('home'); });
