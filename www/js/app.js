@@ -720,10 +720,11 @@
     ));
 
     var stage = h('<div class="play-landscape"></div>');
-    stage.appendChild(h(gaugeMarkup(t.stableTime, 'gauge')));
 
+    /* تایمر داخل کارت کلمه — همه‌چیز در یک نگاه و بدون اسکرول */
     var wordCard = h(
       '<div class="spotlight" id="word-card">' +
+      '<div class="w-gauge">' + gaugeMarkup(t.stableTime, 'gauge') + '</div>' +
       '<div class="w-meta" id="w-meta"></div>' +
       '<div class="w-text" id="w-text">کلمه مخفی است</div>' +
       '<div class="w-sub" id="w-sub"></div>' +
@@ -746,6 +747,7 @@
       var sub = wordCard.querySelector('#w-sub');
       meta.innerHTML = '';
       wordCard.classList.toggle('is-hidden', t.state === 1);
+      wordCard.classList.toggle('is-live', t.state === 3);
       if (t.state === 1) {
         txt.textContent = 'کلمه مخفی است';
         txt.classList.remove('len-m', 'len-l', 'len-xl');
@@ -807,9 +809,17 @@
         }, 'c-speed-fault');
       } else {
         if (!(t.cid === 50 && t.score === 20)) {
-          addBtn('btn-ghost', 'swap', 'تعویض کلمه' + (t.changeState ? ' (' + fa(t.changeState) + ')' : ''), function () {
+          /* تعویض کلمه فقط پیش از شروع تایمر */
+          var canSwap = (t.state !== 3);
+          var swapBtn = addBtn('btn-ghost', 'swap', 'تعویض کلمه' + (t.changeState ? ' (' + fa(t.changeState) + ')' : ''), function () {
+            if (!canSwap) { toast('حین اجرای تایمر نمی‌شود کلمه را عوض کرد'); return; }
             if (engine.change()) { beep('click'); vibrate(10); repaint(); }
           });
+          if (swapBtn && !canSwap) {
+            swapBtn.disabled = true;
+            swapBtn.setAttribute('aria-disabled', 'true');
+            swapBtn.title = 'پس از شروع تایمر قفل می‌شود';
+          }
         }
         if (t.cid === 50) {
           addBtn('btn-ghost', 'timer', 'زمان اضافه +۳۰ث' + (t.extraTimeState ? ' (' + fa(t.extraTimeState) + ')' : ''), function () {
@@ -828,6 +838,7 @@
       var b = h('<button type="button" class="btn ' + cls + '"' + (id ? ' id="' + id + '"' : '') + '>' + Icons.get(icon) + '<span>' + label + '</span></button>');
       b.addEventListener('click', fn);
       controls.appendChild(b);
+      return b;
     }
 
     function paintTimer() {

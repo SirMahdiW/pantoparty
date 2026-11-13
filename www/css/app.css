@@ -666,6 +666,14 @@ body {
 .gauge.is-urgent .gauge-num { color: var(--danger); }
 
 /* ---------- کارت کلمه ---------- */
+.spotlight .w-gauge { margin: 0 auto 2px; }
+.spotlight .w-gauge .gauge { width: clamp(104px, 26vw, 132px); margin: 0 auto 2px; }
+.spotlight .w-gauge .gauge-num { font-size: clamp(24px, 6.4vw, 30px); }
+.spotlight.is-live {
+  border-color: color-mix(in srgb, var(--primary) 34%, transparent);
+  box-shadow: var(--shadow-2), 0 0 0 3px color-mix(in srgb, var(--primary) 10%, transparent);
+}
+.spotlight.is-live .gauge .g-bar { stroke: var(--primary); }
 .spotlight {
   position: relative;
   display: flex;

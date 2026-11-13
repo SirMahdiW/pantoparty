@@ -271,6 +271,8 @@
   Engine.prototype.change = function () {
     var t = this.turn;
     if (!t || t.state === 1 || t.state === 4) return false;
+    /* حین اجرای تایمر، تعویض کلمه مجاز نیست */
+    if (t.state === 3) return false;
     if (t.cid === 40) return false;          // سرعتی دکمه تعویض ندارد
     if (t.score === 20 && t.cid === 50) return false;
     t.changeState--;
