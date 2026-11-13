@@ -5,7 +5,7 @@
   'use strict';
 
   /* نسخه‌ی دارایی‌ها — با هر انتشار این عدد را زیاد کنید تا کش سرویس‌ورکر باطل شود */
-  var APP_VERSION = '2.5.14';
+  var APP_VERSION = '2.5.15';
 
   var main = document.getElementById('main');
   var btnBack = document.getElementById('btn-back');
@@ -712,26 +712,11 @@
 
   /* ---------------- نوبت ادابازی ---------------- */
 
-  function turnCategoryName(t) {
-    if (t.cid === 40) return 'سرعتی ' + (t.score === 99 ? 'نامحدود' : fa(t.score) + ' امتیازی');
-    if (t.cid === 50) return 'ضرب‌المثل ' + fa(t.score) + ' امتیازی';
-    if (t.cid === 60) return 'ترانه ' + fa(t.score) + ' امتیازی';
-    if (t.cid === 69) return 'کلمه تصادفی ' + (t.score ? fa(t.score) + ' امتیازی' : '');
-    var cat = data.categories.filter(function (c) { return c.cid === t.cid && c.design !== 0; })[0];
-    return cat ? cat.fa + ' ' + fa(t.score) + ' امتیازی' : '';
-  }
-
   function renderPlay() {
     var t = engine.turn;
     var isSpeed = t.cid === 40;
     var el = h('<div></div>');
     var team = engine.team(engine.turnIndex);
-
-    el.appendChild(h(
-      '<div class="pill-row" style="margin-bottom:var(--s-3);justify-content:flex-start">' +
-      '<span class="pill">' + Icons.get('layers') + ' ' + esc(turnCategoryName(t)) + '</span>' +
-      '</div>'
-    ));
 
     var stage = h('<div class="play-landscape"></div>');
 
@@ -778,15 +763,21 @@
       if (isSpeed) {
         meta.appendChild(h('<span class="score-badge">' + fa(t.word.score) + ' امتیاز</span>'));
         var cat = data.categories.filter(function (c) { return c.cid === t.word.cid; })[0];
-        if (cat) meta.appendChild(h('<span class="tag">' + esc(cat.fa) + '</span>'));
+        meta.appendChild(h('<span class="tag">' + (cat ? esc(cat.fa) : 'سرعتی') + '</span>'));
         meta.appendChild(h('<span class="tag">' + (t.score === 99 ? fa(t.speedIndex) : fa(t.speedIndex) + ' از ' + fa(t.speedList.length)) + '</span>'));
       } else {
         meta.appendChild(h('<span class="score-badge">' + fa(t.wordScore) + ' امتیاز</span>'));
         if (t.cid === 69) {
           var c69 = data.categories.filter(function (c) { return c.cid === t.word.cid; })[0];
           if (c69) meta.appendChild(h('<span class="tag">' + esc(c69.fa) + '</span>'));
+        } else if (t.cid === 50) {
+          meta.appendChild(h('<span class="tag">ضرب‌المثل</span>'));
+        } else if (t.cid === 60) {
+          meta.appendChild(h('<span class="tag">ترانه</span>'));
+        } else {
+          var cName = data.categories.filter(function (c) { return c.cid === t.cid && c.design !== 0; })[0];
+          if (cName) meta.appendChild(h('<span class="tag">' + esc(cName.fa) + '</span>'));
         }
-        if (t.cid === 50) meta.appendChild(h('<span class="tag">ضرب‌المثل</span>'));
       }
       var w = t.word;
       txt.textContent = w.text;
