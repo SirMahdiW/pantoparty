@@ -425,16 +425,14 @@
     var color = TEAM_COLORS[team.color].v;
     var el = h(
       '<div class="hud">' +
-      '<div class="hud-top">' +
       '<span class="hud-team" style="--team:' + color + '">' + Icons.get('users') + ' ' + esc(team.name) + '</span>' +
-      '<span class="hud-round">' + Icons.get('flag') + ' ' + fa(engine.roundNumber()) + ' / ' + fa(engine.rounds) + '</span>' +
-      '</div>' +
-      '<div class="hud-scores">' +
+      '<span class="hud-scores">' +
       engine.teams.map(function (t, i) {
         return '<span class="hud-score' + (i === engine.turnIndex ? ' is-now' : '') + '" style="--team:' + TEAM_COLORS[t.color].v + '">' +
           '<i></i><b>' + fa(t.score) + '</b>' + esc(t.name) + '</span>';
       }).join('') +
-      '</div>' +
+      '</span>' +
+      '<span class="hud-round">' + Icons.get('flag') + ' ' + fa(engine.roundNumber()) + ' / ' + fa(engine.rounds) + '</span>' +
       '</div>'
     );
     return el;
@@ -723,9 +721,11 @@
     var wordCard = h(
       '<div class="spotlight" id="word-card">' +
       '<div class="w-gauge">' + gaugeMarkup(t.stableTime, 'gauge') + '</div>' +
+      '<div class="w-main">' +
       '<div class="w-meta" id="w-meta"></div>' +
       '<div class="w-text" id="w-text">کلمه مخفی است</div>' +
       '<div class="w-sub" id="w-sub"></div>' +
+      '</div>' +
       '</div>'
     );
     stage.appendChild(wordCard);
@@ -1023,8 +1023,10 @@
 
     var wordCard = h(
       '<div class="spotlight" id="word-card">' +
+      '<div class="w-main">' +
       '<div class="w-head">سه</div>' +
       '<div class="w-text" id="w-text">' + esc(b.word || '') + '</div>' +
+      '</div>' +
       '</div>'
     );
 
