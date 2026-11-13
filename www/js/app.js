@@ -5,7 +5,7 @@
   'use strict';
 
   /* نسخه‌ی دارایی‌ها — با هر انتشار این عدد را زیاد کنید تا کش سرویس‌ورکر باطل شود */
-  var APP_VERSION = '2.5.12';
+  var APP_VERSION = '2.5.13';
 
   var main = document.getElementById('main');
   var btnBack = document.getElementById('btn-back');
@@ -731,7 +731,6 @@
       '</div>' +
       '</div>'
     );
-    stage.appendChild(wordCard);
 
     var bigBtn = h('<button type="button" class="btn btn-primary btn-lg btn-block" id="big-btn"  style="min-height:64px"></button>');
 
@@ -742,9 +741,10 @@
     side.appendChild(bigBtn);
     side.appendChild(controls);
 
-    el.appendChild(hud());
     stage.appendChild(wordCard);
     stage.appendChild(side);
+
+    el.appendChild(hud());
     el.appendChild(stage);
 
     function paintWord() {

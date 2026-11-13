@@ -631,9 +631,9 @@ body {
 .gauge.is-urgent .gauge-num { color: var(--danger); }
 
 /* ---------- کارت کلمه ---------- */
-.spotlight .w-gauge { margin: 0 auto 2px; }
-.spotlight .w-gauge .gauge { width: clamp(104px, 27vw, 138px); margin: 0; }
-.spotlight .w-gauge .gauge-num { font-size: clamp(26px, 7.4vw, 34px); }
+.spotlight .w-gauge { margin: 0; flex: none; }
+.spotlight .w-gauge .gauge { width: clamp(132px, 36vw, 172px); margin: 0 auto; }
+.spotlight .w-gauge .gauge-num { font-size: clamp(30px, 8.5vw, 40px); }
 .spotlight.is-live {
   border-color: color-mix(in srgb, var(--primary) 34%, transparent);
   box-shadow: var(--shadow-2), 0 0 0 3px color-mix(in srgb, var(--primary) 10%, transparent);
@@ -642,11 +642,12 @@ body {
 .spotlight {
   position: relative;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: var(--s-4);
-  min-height: 164px;
-  padding: var(--s-4) var(--s-5);
+  min-height: clamp(280px, 42vh, 380px);
+  padding: var(--s-5) var(--s-4);
   border-radius: var(--r-lg);
   border: 1px solid var(--line);
   background:
@@ -656,14 +657,13 @@ body {
   text-align: center;
   overflow: hidden;
 }
-.spotlight .w-meta { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-start; }
-.spotlight .w-gauge { margin: 0; flex: none; }
-.spotlight .w-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.spotlight .w-meta { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.spotlight .w-main { flex: 1; min-width: 0; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
 .spotlight .w-head {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  align-self: flex-start;
+  align-self: center;
   min-width: 54px;
   padding: 6px 16px;
   border-radius: var(--r-pill);
@@ -673,22 +673,22 @@ body {
   font-size: 17px;
   font-weight: 700;
 }
-/* بوم: حلقه‌ی تایمر کمی بزرگ‌تر (مهلت کوتاه است) */
-.boom-spot .w-gauge .gauge { width: clamp(112px, 29vw, 142px); }
-.boom-spot .w-gauge .gauge-num { font-size: clamp(28px, 8vw, 36px); }
+/* بوم: حلقه‌ی تایمر کمی برجسته‌تر (مهلت کوتاه است) */
+.boom-spot .w-gauge .gauge { width: clamp(140px, 38vw, 176px); }
+.boom-spot .w-gauge .gauge-num { font-size: clamp(32px, 9vw, 42px); }
 .spotlight .w-text {
   font-family: var(--font-word);
-  font-size: clamp(28px, 8.6vw, 46px);
-  line-height: 1.4;
+  font-size: clamp(36px, 11vw, 56px);
+  line-height: 1.35;
   color: var(--text);
   word-break: break-word;
-  text-align: start;
+  text-align: center;
 }
-.spotlight .w-text.len-m { font-size: clamp(26px, 8vw, 40px); }
-.spotlight .w-text.len-l { font-size: clamp(21px, 5.6vw, 30px); line-height: 1.6; }
-.spotlight .w-text.len-xl { font-size: clamp(16px, 4.4vw, 24px); line-height: 1.75; }
+.spotlight .w-text.len-m { font-size: clamp(32px, 9.5vw, 48px); }
+.spotlight .w-text.len-l { font-size: clamp(26px, 7vw, 38px); line-height: 1.5; }
+.spotlight .w-text.len-xl { font-size: clamp(20px, 5.5vw, 30px); line-height: 1.65; }
 .spotlight .w-sub { color: var(--text-dim); font-size: var(--fs-sm); }
-.spotlight.is-hidden .w-text { color: var(--text-faint); font-size: clamp(19px, 5.2vw, 26px); letter-spacing: .01em; }
+.spotlight.is-hidden .w-text { color: var(--text-faint); font-size: clamp(20px, 5.5vw, 28px); letter-spacing: .01em; }
 
 .score-badge {
   display: inline-flex;
@@ -850,12 +850,15 @@ body {
 
 @media (orientation: landscape) and (max-height: 560px) {
   .play-landscape { display: grid; grid-template-columns: 1.15fr 1fr; gap: var(--s-4); align-items: start; }
-  .play-landscape .gauge { margin: 0 auto; width: clamp(120px, 26vw, 150px); }
-  .play-landscape .spotlight { min-height: 150px; }
-  .play-landscape .w-text { font-size: clamp(21px, 4vw, 28px); line-height: 1.45; }
-  .play-landscape .w-text.len-m { font-size: clamp(20px, 3.6vw, 25px); }
-  .play-landscape .w-text.len-l { font-size: clamp(17px, 3vw, 21px); }
-  .play-landscape .w-text.len-xl { font-size: clamp(14px, 2.4vw, 17px); }
+  .play-landscape .spotlight { flex-direction: row; min-height: 150px; padding: var(--s-4); gap: var(--s-3); justify-content: flex-start; }
+  .play-landscape .spotlight .w-main { align-items: flex-start; justify-content: center; text-align: start; }
+  .play-landscape .spotlight .w-meta { justify-content: flex-start; }
+  .play-landscape .spotlight .w-head { align-self: flex-start; }
+  .play-landscape .spotlight .w-gauge .gauge { width: clamp(100px, 22vw, 128px); }
+  .play-landscape .spotlight .w-text { font-size: clamp(22px, 4.2vw, 30px); line-height: 1.4; text-align: start; }
+  .play-landscape .spotlight .w-text.len-m { font-size: clamp(20px, 3.8vw, 26px); }
+  .play-landscape .spotlight .w-text.len-l { font-size: clamp(17px, 3.2vw, 22px); }
+  .play-landscape .spotlight .w-text.len-xl { font-size: clamp(14px, 2.6vw, 18px); }
 }
 
 .cat-section { margin-bottom: var(--s-6); }
