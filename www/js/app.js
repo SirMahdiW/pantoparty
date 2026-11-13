@@ -5,7 +5,7 @@
   'use strict';
 
   /* نسخه‌ی دارایی‌ها — با هر انتشار این عدد را زیاد کنید تا کش سرویس‌ورکر باطل شود */
-  var APP_VERSION = '2.5.13';
+  var APP_VERSION = '2.5.14';
 
   var main = document.getElementById('main');
   var btnBack = document.getElementById('btn-back');
@@ -423,21 +423,36 @@
   }
 
   /* ---------- نوار وضعیت چسبان: نوبت فعلی، دور و امتیازها ---------- */
+  function openScoresSheet() {
+    if (!engine) return;
+    beep('click');
+    var body = '<div class="list" style="margin-top:var(--s-2)">';
+    engine.teams.forEach(function (t, i) {
+      body += teamRow(t, i === engine.turnIndex);
+    });
+    body += '</div>';
+    body += '<p class="u-center u-faint u-mt-4" style="margin-bottom:0">دور ' + fa(engine.roundNumber()) + ' از ' + fa(engine.rounds) + '</p>';
+    modal({
+      title: 'امتیازات',
+      icon: 'trophy',
+      iconColor: '#E9C46A',
+      body: body,
+      dismiss: true,
+      actions: [{ label: 'بستن', cls: 'btn-primary btn-block' }]
+    });
+  }
+
   function hud() {
     var team = engine.team(engine.turnIndex);
     var color = TEAM_COLORS[team.color].v;
     var el = h(
-      '<div class="hud">' +
+      '<button type="button" class="hud" aria-label="مشاهده امتیازات">' +
       '<span class="hud-team" style="--team:' + color + '">' + Icons.get('users') + ' ' + esc(team.name) + '</span>' +
-      '<span class="hud-scores">' +
-      engine.teams.map(function (t, i) {
-        return '<span class="hud-score' + (i === engine.turnIndex ? ' is-now' : '') + '" style="--team:' + TEAM_COLORS[t.color].v + '">' +
-          '<i></i><b>' + fa(t.score) + '</b>' + esc(t.name) + '</span>';
-      }).join('') +
-      '</span>' +
+      '<span class="hud-action">' + Icons.get('trophy') + ' <b>امتیازات</b></span>' +
       '<span class="hud-round">' + Icons.get('flag') + ' ' + fa(engine.roundNumber()) + ' / ' + fa(engine.rounds) + '</span>' +
-      '</div>'
+      '</button>'
     );
+    el.addEventListener('click', openScoresSheet);
     return el;
   }
 

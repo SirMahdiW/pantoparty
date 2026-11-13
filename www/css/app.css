@@ -757,17 +757,45 @@ body {
   top: calc(var(--topbar-h) + env(safe-area-inset-top) + 8px);
   z-index: 5;
   margin: 0 0 var(--s-3);
-  padding: 8px 12px;
+  padding: 10px 12px;
   display: flex;
   align-items: center;
   gap: var(--s-3);
+  width: 100%;
   border: 1px solid var(--line);
   border-radius: var(--r-md);
-  background: rgba(255, 255, 255, .9);
+  background: rgba(255, 255, 255, .92);
   backdrop-filter: blur(16px) saturate(150%);
   -webkit-backdrop-filter: blur(16px) saturate(150%);
   box-shadow: var(--shadow-1);
+  font: inherit;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: border-color var(--t) var(--ease), box-shadow var(--t) var(--ease), transform var(--t-fast) var(--ease);
 }
+.hud:active { transform: scale(.99); }
+@media (hover: hover) {
+  .hud:hover { border-color: var(--line-3); box-shadow: var(--shadow-2); }
+}
+.hud-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-inline-start: auto;
+  padding: 6px 10px;
+  border-radius: var(--r-pill);
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  white-space: nowrap;
+  flex: none;
+}
+.hud-action svg { width: 16px; height: 16px; flex: none; }
+.hud-action b { font-weight: 800; }
 .hud-team {
   display: inline-flex;
   align-items: center;
