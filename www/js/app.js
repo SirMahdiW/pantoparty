@@ -427,12 +427,12 @@
       '<div class="hud">' +
       '<div class="hud-top">' +
       '<span class="hud-team" style="--team:' + color + '">' + Icons.get('users') + ' ' + esc(team.name) + '</span>' +
-      '<span class="hud-round">' + Icons.get('flag') + ' دور ' + fa(engine.roundNumber()) + ' از ' + fa(engine.rounds) + '</span>' +
+      '<span class="hud-round">' + Icons.get('flag') + ' ' + fa(engine.roundNumber()) + ' / ' + fa(engine.rounds) + '</span>' +
       '</div>' +
       '<div class="hud-scores">' +
       engine.teams.map(function (t, i) {
         return '<span class="hud-score' + (i === engine.turnIndex ? ' is-now' : '') + '" style="--team:' + TEAM_COLORS[t.color].v + '">' +
-          '<i></i>' + esc(t.name) + '<b>' + fa(t.score) + '</b></span>';
+          '<i></i><b>' + fa(t.score) + '</b>' + esc(t.name) + '</span>';
       }).join('') +
       '</div>' +
       '</div>'
@@ -712,9 +712,7 @@
     var team = engine.team(engine.turnIndex);
 
     el.appendChild(h(
-      '<div class="pill-row" style="margin-bottom:var(--s-3)">' +
-      '<span class="pill pill-accent">' +
-      Icons.get('users') + ' ' + esc(team.name) + '</span>' +
+      '<div class="pill-row" style="margin-bottom:var(--s-3);justify-content:flex-start">' +
       '<span class="pill">' + Icons.get('layers') + ' ' + esc(turnCategoryName(t)) + '</span>' +
       '</div>'
     ));
@@ -1016,10 +1014,8 @@
 
     el.appendChild(hud());
     el.appendChild(h(
-      '<div class="pill-row" style="margin-bottom:var(--s-3)">' +
-      '<span class="pill pill-accent" id="boom-player">' +
-      Icons.get('users') + ' ' + esc(engine.team(b.active).name) + '</span>' +
-      '<span class="pill">' + Icons.get('flag') + ' دور <span id="boom-round">' + fa(engine.roundNumber()) + '</span> از ' + fa(engine.rounds) + '</span>' +
+      '<div class="pill-row" style="margin-bottom:var(--s-3);justify-content:flex-start">' +
+      '<span class="pill">' + Icons.get('flag') + ' <span id="boom-round">' + fa(engine.roundNumber()) + '</span> / ' + fa(engine.rounds) + '</span>' +
       '</div>'
     ));
 
