@@ -499,6 +499,46 @@ body {
 }
 .stat-card .sc-lbl { font-size: var(--fs-xs); color: var(--text-faint); line-height: 1.6; }
 
+/* آمار فشرده (خانه) */
+.stats-compact { padding: var(--s-3) var(--s-4); }
+.stats-compact-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--text-faint);
+  margin-bottom: var(--s-2);
+}
+.stats-compact-head svg { width: 16px; height: 16px; color: var(--primary); }
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-2); align-items: stretch; }
+.sc-mini {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 52px;
+  padding: 6px 4px;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  color: inherit;
+  font: inherit;
+  border: 0;
+  text-align: center;
+}
+.sc-mini b {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--primary);
+}
+.sc-mini span { font-size: 11px; color: var(--text-faint); line-height: 1.4; }
+.sc-link { cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: background var(--t) var(--ease), transform var(--t-fast) var(--ease); }
+.sc-link:hover { background: var(--primary-soft); }
+.sc-link:active { transform: scale(.97); }
+
 /* ---------- فهرست ---------- */
 .list { display: grid; gap: var(--s-2); }
 .list-row {

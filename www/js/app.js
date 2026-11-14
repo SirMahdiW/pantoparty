@@ -5,7 +5,7 @@
   'use strict';
 
   /* نسخه‌ی دارایی‌ها — با هر انتشار این عدد را زیاد کنید تا کش سرویس‌ورکر باطل شود */
-  var APP_VERSION = '2.5.17';
+  var APP_VERSION = '2.5.18';
 
   var main = document.getElementById('main');
   var btnBack = document.getElementById('btn-back');
@@ -310,38 +310,18 @@
     });
     el.appendChild(modes);
 
-    /* مراحل بازی */
-    el.appendChild(sectionHead('spark', 'چطور بازی کنیم؟'));
-    var steps = h('<div class="timeline"></div>');
-    HOW_STEPS.forEach(function (st, i) {
-      steps.appendChild(h(
-        '<div class="tl-item">' +
-        '<span class="tl-num">' + fa(i + 1) + '</span>' +
-        '<div><h3>' + st.title + '</h3><p>' + st.desc + '</p></div>' +
-        '</div>'
-      ));
-    });
-    el.appendChild(steps);
-
-    /* آمار کاربر */
-    el.appendChild(sectionHead('chart', 'آمار شما'));
-    var statGrid = h('<div class="stat-grid"></div>');
-    statGrid.appendChild(h(
-      '<div class="stat-card is-static">' +
-      '<span class="orb orb-sm sc-orb" style="--orb:#6D28D9">' + Icons.get('chart') + '</span>' +
-      '<b>' + fa(s.games) + '</b><span class="sc-lbl">بازی انجام‌شده</span></div>'
-    ));
-    statGrid.appendChild(h(
-      '<div class="stat-card is-static">' +
-      '<span class="orb orb-sm sc-orb" style="--orb:#0891B2">' + Icons.get('target') + '</span>' +
-      '<b>' + fa(s.words) + '</b><span class="sc-lbl">کلمه‌ی بازی‌شده</span></div>'
-    ));
-    statGrid.appendChild(h(
-      '<button type="button" class="stat-card" data-history>' +
-      '<span class="orb orb-sm sc-orb" style="--orb:#4F46E5">' + Icons.get('history') + '</span>' +
-      '<b>' + fa(Store.history.length) + '</b><span class="sc-lbl">بازی اخیر</span></button>'
-    ));
-    el.appendChild(statGrid);
+    /* آمار کاربر — یک کارت فشرده */
+    var statCard = h(
+      '<section class="card stats-compact">' +
+      '<div class="stats-compact-head">' + Icons.get('chart') + ' <span>آمار شما</span></div>' +
+      '<div class="stats-row">' +
+      '<div class="sc-mini"><b>' + fa(s.games) + '</b><span>بازی</span></div>' +
+      '<div class="sc-mini"><b>' + fa(s.words) + '</b><span>کلمه</span></div>' +
+      '<button type="button" class="sc-mini sc-link" data-history><b>' + fa(Store.history.length) + '</b><span>تاریخچه</span></button>' +
+      '</div>' +
+      '</section>'
+    );
+    el.appendChild(statCard);
 
     el.querySelector('#cta-play').addEventListener('click', function () { beep('click'); pendingType = 'adabazi'; go('create'); });
     el.querySelectorAll('[data-history]').forEach(function (b) {
