@@ -1013,6 +1013,13 @@ body {
   from { opacity: 0; transform: translateY(28px); }
   to   { opacity: 1; transform: none; }
 }
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes sheet-out {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 0; transform: translateY(20px); }
+}
+.scrim.is-closing { animation: fade-out .18s var(--ease) both; }
+.scrim.is-closing .sheet { animation: sheet-out .18s var(--ease) both; }
 @media (min-width: 640px) {
   .scrim { place-items: center; }
   .sheet { border-radius: var(--r-lg); }
@@ -1350,6 +1357,86 @@ body {
 .u-center { text-align: center; }
 .u-dim { color: var(--text-dim); }
 .u-faint { color: var(--text-faint); }
+
+/* ---------- انیمیشن‌ها و بازخوردها ---------- */
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(.92); filter: blur(4px); }
+  60% { opacity: 1; transform: scale(1.03); filter: blur(0); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+@keyframes shake-x {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-7px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(3px); }
+}
+@keyframes pulse-soft {
+  0%, 100% { box-shadow: var(--shadow-2); }
+  50% { box-shadow: var(--shadow-2), 0 0 0 6px color-mix(in srgb, var(--danger) 18%, transparent); }
+}
+@keyframes glow-correct {
+  0% { box-shadow: var(--shadow-2); }
+  40% { box-shadow: var(--shadow-2), 0 0 0 6px color-mix(in srgb, var(--primary) 22%, transparent); }
+  100% { box-shadow: var(--shadow-2); }
+}
+@keyframes gauge-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+@keyframes score-bump {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+@keyframes row-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes hud-pulse {
+  0% { box-shadow: var(--shadow-1); }
+  40% { box-shadow: var(--shadow-1), 0 0 0 4px color-mix(in srgb, var(--primary) 20%, transparent); }
+  100% { box-shadow: var(--shadow-1); }
+}
+@keyframes chip-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+.reveal-pop { animation: pop-in .42s var(--ease-back) both; }
+.fx-shake { animation: shake-x .38s ease both; }
+.fx-correct { animation: glow-correct .55s var(--ease) both; }
+.spotlight.is-urgent { animation: pulse-soft 1s ease-in-out infinite; }
+.gauge.is-urgent svg { animation: gauge-pulse 1s ease-in-out infinite; transform-origin: center; }
+.score-bump { animation: score-bump .45s var(--ease-back) both; }
+.hud.is-updated { animation: hud-pulse .7s var(--ease) both; }
+
+.stagger-in > * {
+  opacity: 0;
+  animation: row-in .4s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+.chip.is-on { animation: chip-pop .22s var(--ease-back); }
+
+/* صفحه‌ی رتبه‌بندی */
+.rank-head { animation: pop-in .5s var(--ease-out) both; }
+.podium .pod { opacity: 0; animation: row-in .45s var(--ease-out) both; }
+.podium .pod-1 { animation-delay: 80ms; }
+.podium .pod-2 { animation-delay: 180ms; }
+.podium .pod-3 { animation-delay: 280ms; }
+.rank-list .team-row { opacity: 0; animation: row-in .4s var(--ease-out) both; animation-delay: calc(260ms + var(--i, 0) * 70ms); }
+
+/* جلوگیری از تداخل با کاهش حرکت سیستم */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-pop, .fx-shake, .fx-correct, .spotlight.is-urgent, .gauge.is-urgent svg,
+  .score-bump, .hud.is-updated, .stagger-in > *, .chip.is-on,
+  .rank-head, .podium .pod, .rank-list .team-row {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
 
 /* ---------- واکنش‌گرایی ---------- */
 @media (max-width: 380px) {

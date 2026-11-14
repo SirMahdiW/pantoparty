@@ -5,7 +5,7 @@
   'use strict';
 
   /* نسخه‌ی دارایی‌ها — با هر انتشار این عدد را زیاد کنید تا کش سرویس‌ورکر باطل شود */
-  var APP_VERSION = '2.5.16';
+  var APP_VERSION = '2.5.17';
 
   var main = document.getElementById('main');
   var btnBack = document.getElementById('btn-back');
@@ -90,6 +90,38 @@
     if (Store.settings.haptics && navigator.vibrate) navigator.vibrate(ms || 18);
   }
 
+  function reducedMotion() {
+    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+  function fx(el, cls, ms) {
+    if (!el || reducedMotion()) return;
+    el.classList.remove(cls);
+    /* ری‌فلو برای اجرای دوباره‌ی انیمیشن */
+    void el.offsetWidth;
+    el.classList.add(cls);
+    setTimeout(function () { if (el) el.classList.remove(cls); }, ms || 700);
+  }
+  function pulseHUD() {
+    var hudEl = document.querySelector('.hud');
+    if (hudEl) fx(hudEl, 'is-updated', 800);
+  }
+  function countUp(el, to, duration, prefix) {
+    if (!el) return;
+    to = Math.round(Number(to) || 0);
+    if (reducedMotion()) { el.textContent = (prefix || '') + fa(to); return; }
+    duration = duration || 650;
+    var start = 0, t0 = null;
+    function step(ts) {
+      if (!t0) t0 = ts;
+      var p = Math.min(1, (ts - t0) / duration);
+      var ease = 1 - Math.pow(1 - p, 3);
+      var val = Math.round(start + (to - start) * ease);
+      el.textContent = (prefix || '') + fa(val);
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
   function modal(opts) {
     var iconStyle = '';
     if (opts.iconColor) {
@@ -124,9 +156,22 @@
     return scrim;
   }
 
-  function closeModal() {
+  function closeModal(immediate) {
     var m = modalRoot.lastElementChild;
-    if (m) m.remove();
+    if (!m) return;
+    if (immediate === true || m.dataset.closing === '1') {
+      if (immediate === true) m.remove();
+      return;
+    }
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) { m.remove(); return; }
+    m.dataset.closing = '1';
+    m.classList.add('is-closing');
+    var done = function () {
+      if (m.parentNode) m.remove();
+    };
+    m.addEventListener('animationend', done, { once: true });
+    setTimeout(done, 260);
   }
 
   function setChrome() {
@@ -194,7 +239,10 @@
     var bar = el.querySelector('.g-bar');
     var ratio = total > 0 ? Math.max(0, Math.min(1, remaining / total)) : 0;
     if (bar) bar.style.strokeDashoffset = (C * (1 - ratio)).toFixed(2);
-    el.classList.toggle('is-urgent', !!running && remaining <= 10 && remaining > 0);
+    var urgent = !!running && remaining <= 10 && remaining > 0;
+    el.classList.toggle('is-urgent', urgent);
+    var card = el.closest ? el.closest('.spotlight') : null;
+    if (card) card.classList.toggle('is-urgent', urgent);
   }
 
   function sectionHead(icon, title, sub) {
@@ -426,9 +474,11 @@
   function openScoresSheet() {
     if (!engine) return;
     beep('click');
-    var body = '<div class="list" style="margin-top:var(--s-2)">';
+    var body = '<div class="list stagger-in" style="margin-top:var(--s-2)">';
     engine.teams.forEach(function (t, i) {
-      body += teamRow(t, i === engine.turnIndex);
+      var row = teamRow(t, i === engine.turnIndex);
+      row = row.replace('<div class="team-row', '<div style="--i:' + i + '" class="team-row');
+      body += row;
     });
     body += '</div>';
     body += '<p class="u-center u-faint u-mt-4" style="margin-bottom:0">دور ' + fa(engine.roundNumber()) + ' از ' + fa(engine.rounds) + '</p>';
@@ -807,17 +857,24 @@
         addBtn('btn-success', 'check', 'درست', function () {
           var r = engine.speedTrue();
           if (r === 'dialog') { stopTimer(); openSpeedDialog(); return; }
-          beep('correct'); vibrate(14); repaint();
+          beep('correct'); vibrate(14);
+          fx(wordCard, 'fx-correct', 550);
+          repaint();
+          fx(el.querySelector('#w-text'), 'reveal-pop', 450);
         }, 'c-speed-ok');
         addBtn('btn-ghost', 'skip', 'رد شدن', function () {
           var r = engine.speedChange();
           if (r === 'dialog') { stopTimer(); openSpeedDialog(); return; }
-          beep('skip'); vibrate(10); repaint();
+          beep('skip'); vibrate(10);
+          repaint();
+          fx(el.querySelector('#w-text'), 'reveal-pop', 450);
         }, 'c-speed-change');
         addBtn('btn-danger', 'x', 'خطا (' + fa(Math.min(3, -t.wrongCounter)) + ')', function () {
           var r = engine.speedFault();
-          if (r === 'faultout') { stopTimer(); beep('wrong'); vibrate(300); openResultDialog(true); return; }
-          beep('wrong'); vibrate([18, 40, 18]); repaint();
+          if (r === 'faultout') { stopTimer(); fx(wordCard, 'fx-shake', 450); beep('wrong'); vibrate(300); openResultDialog(true); return; }
+          beep('wrong'); vibrate([18, 40, 18]);
+          fx(wordCard, 'fx-shake', 450);
+          repaint();
         }, 'c-speed-fault');
       } else {
         if (!(t.cid === 50 && t.score === 20)) {
@@ -840,8 +897,10 @@
         }
         addBtn('btn-danger', 'x', 'خطا' + (t.wrongCounter ? ' (' + fa(t.wrongCounter) + ')' : ''), function () {
           var r = engine.fault();
-          if (r === 'faultout') { stopTimer(); beep('wrong'); vibrate(300); openResultDialog(true); return; }
-          beep('wrong'); vibrate([18, 40, 18]); paintTimer(); repaint();
+          if (r === 'faultout') { stopTimer(); fx(wordCard, 'fx-shake', 450); beep('wrong'); vibrate(300); openResultDialog(true); return; }
+          beep('wrong'); vibrate([18, 40, 18]);
+          fx(wordCard, 'fx-shake', 450);
+          paintTimer(); repaint();
         });
       }
     }
@@ -874,6 +933,7 @@
         beep('click');
         vibrate(12);
         repaint();
+        fx(el.querySelector('#w-text'), 'reveal-pop', 500);
       } else if (t.state === 2) {
         engine.run();
         startTick();
@@ -941,14 +1001,17 @@
           '<div class="score-total"><b>جمع کل</b><span>' + fa(engine.total()) + '</span></div>';
       }
 
-      function paintRows() {
+      function paintRows(animate) {
         scrim.querySelector('#res-rows').innerHTML = rowsHTML();
+        var totalEl = scrim.querySelector('.score-total span');
+        if (totalEl) countUp(totalEl, engine.total(), animate === false ? 0 : 700);
       }
-      paintRows();
+      paintRows(true);
 
       function finish() {
         var total = engine.total();
         var s = engine.commitTurn(total);
+        pulseHUD();
         closeModal();
         if (s.type === 'end') { go('rank'); return; }
         /* نوبت بعدی مستقیم: یک کلیک کمتر در هر دور */
@@ -963,21 +1026,21 @@
           engine.dialogRight();
           beep('correct');
           vibrate(20);
-          paintRows();
+          paintRows(true);
           ok.disabled = true;
           no.disabled = true;
           toast('پاداش زمان اضافه شد: ' + fa(Math.floor(t.timeLeft / 30)));
-          setTimeout(finish, 700);
+          setTimeout(finish, 900);
         });
         var no = h('<button type="button" class="btn btn-danger">' + Icons.get('x') + '<span>غلط</span></button>');
         no.addEventListener('click', function () {
           engine.dialogWrong();
           beep('wrong');
           vibrate(30);
-          paintRows();
+          paintRows(true);
           ok.disabled = true;
           no.disabled = true;
-          setTimeout(finish, 700);
+          setTimeout(finish, 900);
         });
         actions.appendChild(ok);
         actions.appendChild(no);
@@ -998,9 +1061,9 @@
           '<span class="sr-val">' + (x.right ? '+' + fa(x.word.score) : '—') + '</span>' +
           '</div>';
       });
-      body += '</div><div class="score-total"><b>جمع کل</b><span>' + fa(sum) + '</span></div>';
+      body += '</div><div class="score-total"><b>جمع کل</b><span id="speed-total">۰</span></div>';
 
-      modal({
+      var scrim = modal({
         title: 'نتیجه سرعتی',
         icon: 'bolt',
         iconColor: '#6D28D9',
@@ -1008,15 +1071,18 @@
         dismiss: false,
         actions: []
       });
+      var totalEl = scrim.querySelector('#speed-total');
+      if (totalEl) countUp(totalEl, sum, 700);
       /* بدون دکمه — خودکار ادامه می‌دهد */
       setTimeout(function () {
         var s = engine.commitTurn(sum);
+        pulseHUD();
         closeModal();
         if (s.type === 'end') { go('rank'); return; }
         engine.continueTurn();
         go('category');
         toast('امتیاز ثبت شد: ' + (sum >= 0 ? '+' : '') + fa(sum));
-      }, 1500);
+      }, 1700);
     }
   }
 
@@ -1103,8 +1169,10 @@
         no.addEventListener('click', function () {
           stopTimer();
           engine.boomFalse();
+          fx(wordCard, 'fx-shake', 450);
           beep('wrong');
           vibrate(30);
+          pulseHUD();
           afterBoom();
         });
         controls.appendChild(no);
@@ -1116,6 +1184,7 @@
       if (next === 'end') { paint(); go('rank'); return; }
       paint();
       beep('click');
+      fx(el.querySelector('#w-text'), 'reveal-pop', 450);
       toast('نوبت ' + engine.team(b.player).name);
     }
 
@@ -1134,9 +1203,11 @@
       } else if (b.state === 3) {
         stopTimer();
         var gain = engine.boomTrue();
+        fx(wordCard, 'fx-correct', 550);
         beep('correct');
         vibrate(20);
         toast('+' + fa(gain) + ' امتیاز');
+        pulseHUD();
         afterBoom();
       }
     });
@@ -1184,7 +1255,7 @@
     var el = h('<div></div>');
 
     var head = h(
-      '<section class="card card-lg card-accent u-center" >' +
+      '<section class="card card-lg card-accent u-center rank-head" >' +
       '<span class="sheet-icon" style="--orb:' + (isTie ? '#7DD3FC' : '#6D28D9') + '">' + Icons.get(isTie ? 'heart' : 'crown') + '</span>' +
       '<h1 style="font-size:var(--fs-h1);font-weight:900;margin:0 0 4px">' + (isTie ? 'مساوی شد!' : 'برنده') + '</h1>' +
       '<p style="margin:0;color:var(--text-dim)">' + (isTie ? 'گروه‌ها مساوی‌اند' : esc(winner.name)) + '</p>' +
@@ -1203,7 +1274,7 @@
           '<span class="p-rank">' + fa(i === 1 ? 1 : (i === 0 ? 2 : 3)) + '</span>' +
           '<span class="p-avatar">' + esc(initialOf(t.name)) + '</span>' +
           '<span class="p-name">' + esc(t.name) + '</span>' +
-          '<span class="p-score">' + fa(t.score) + '</span>' +
+          '<span class="p-score" data-target="' + t.score + '">۰</span>' +
           '</div>'
         ));
       });
@@ -1211,9 +1282,13 @@
     }
 
     /* فهرست کامل */
-    var list = h('<div class="list"></div>');
+    var list = h('<div class="list rank-list"></div>');
     rank.forEach(function (t, i) {
-      list.appendChild(h(teamRow(t, false, '<span class="pill" style="margin-inline-end:auto">' + fa(i + 1) + '</span>')));
+      var row = h(teamRow(t, false, '<span class="pill" style="margin-inline-end:auto">' + fa(i + 1) + '</span>'));
+      row.style.setProperty('--i', i);
+      var sc = row.querySelector('.tr-score');
+      if (sc) { sc.dataset.target = t.score; sc.textContent = '۰'; }
+      list.appendChild(row);
     });
     el.appendChild(list);
 
@@ -1235,6 +1310,12 @@
     actions.appendChild(again);
     actions.appendChild(home);
     el.appendChild(actions);
+
+    setTimeout(function () {
+      el.querySelectorAll('.p-score[data-target], .tr-score[data-target]').forEach(function (n, idx) {
+        setTimeout(function () { countUp(n, n.dataset.target, 900); }, idx * 90);
+      });
+    }, 60);
 
     render._cleanup = function () { stopTimer(); };
     return el;
