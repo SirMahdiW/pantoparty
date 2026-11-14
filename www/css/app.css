@@ -275,16 +275,19 @@ body {
 }
 .btn-ghost:hover { --btn-fg: var(--text); border-color: var(--line-3); background: rgba(255, 255, 255, .85); }
 
-/* ---------- داک پایین ---------- */
+/* ---------- داک پایین (نوار اقدام چسبانِ شیشه‌ای) ---------- */
 .dock {
   position: sticky;
-  bottom: 12px;
+  bottom: 0;
   z-index: var(--z-dock);
-  margin: var(--s-5) calc(var(--gutter) * -1) 0;
-  padding: var(--s-3) var(--gutter) calc(var(--s-3) + env(safe-area-inset-bottom));
-  background: linear-gradient(180deg, rgba(247, 243, 255, 0), rgba(247, 243, 255, .92) 38%);
+  margin: var(--s-4) calc(var(--gutter) * -1) 0;
+  padding: 14px var(--gutter) calc(14px + env(safe-area-inset-bottom));
   display: flex;
   gap: var(--s-2);
+  /* محو نرم به سمت پس‌زمینه‌ی صفحه — بدون مستطیل سفید */
+  background: linear-gradient(180deg, rgba(247, 243, 255, 0) 0%, rgba(247, 243, 255, .48) 46%, rgba(247, 243, 255, .88) 100%);
+  -webkit-backdrop-filter: blur(16px) saturate(155%);
+  backdrop-filter: blur(16px) saturate(155%);
 }
 .dock .btn { flex: 1; }
 
@@ -453,6 +456,67 @@ body {
 .mode-card-boom { background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(245,238,255,.78)); }
 .home-stats { margin-top: 0; }
 
+/* ---------- خلاصه‌ی نتیجه سرعتی ---------- */
+.speed-summary { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 12px; }
+.speed-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: var(--r-pill);
+  background: var(--surface-3);
+  border: 1px solid var(--line);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--text-dim);
+}
+.speed-chip b { font-family: var(--font-display); font-size: 17px; font-weight: 800; color: var(--text); line-height: 1; }
+.speed-chip.is-ok { background: var(--success-soft); border-color: rgba(22, 163, 74, .2); }
+.speed-chip.is-ok b { color: var(--success); }
+.speed-chip.is-no { background: var(--danger-soft); border-color: rgba(220, 38, 38, .18); }
+.speed-chip.is-no b { color: var(--danger); }
+.speed-list { max-height: 32vh; overflow: auto; }
+
+/* ---------- انتقال نوبت ---------- */
+.handover-screen { display: flex; flex-direction: column; gap: 14px; }
+.handover-hero {
+  padding: 18px;
+  border-radius: 26px;
+  border-color: color-mix(in srgb, var(--team, var(--primary)) 26%, transparent);
+  background:
+    radial-gradient(120% 100% at 100% -10%, color-mix(in srgb, var(--team, var(--primary)) 16%, transparent), transparent 60%),
+    var(--grad-surface);
+  box-shadow: var(--shadow-2), var(--inset-highlight);
+}
+.handover-top { display: flex; align-items: center; gap: 14px; }
+.handover-3d {
+  flex: none;
+  width: 74px; height: 74px;
+  display: grid; place-items: center;
+  border-radius: 22px;
+  background: radial-gradient(120% 120% at 50% 8%, rgba(255, 255, 255, .95), color-mix(in srgb, var(--team, var(--primary)) 12%, #fff));
+  border: 1px solid rgba(255, 255, 255, .8);
+  box-shadow: 0 12px 22px -14px color-mix(in srgb, var(--team, var(--primary)) 70%, transparent), inset 0 1px 0 rgba(255, 255, 255, .9);
+}
+.handover-3d .a3d { width: 64px; height: 64px; }
+.handover-copy { min-width: 0; flex: 1; }
+.handover-copy .eyebrow { margin-bottom: 2px; }
+.handover-copy h1 {
+  margin: 2px 0 4px;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 6.4vw, 32px);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+  color: var(--team, var(--primary));
+}
+.handover-copy p { margin: 0; color: var(--text-dim); font-size: 13.5px; }
+.handover-board .team-row.is-next {
+  border-color: color-mix(in srgb, var(--team, var(--primary)) 34%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--team, var(--primary)) 14%, transparent), var(--shadow-1), var(--inset-highlight);
+}
+.handover-dock { margin-top: 2px; }
+
 /* ---------- صفحه ساخت بازی ---------- */
 .create { display: flex; flex-direction: column; gap: 14px; }
 .create-hero { padding: 18px; }
@@ -511,14 +575,15 @@ body {
   display: flex; align-items: flex-start; gap: 10px;
   padding: 12px 14px;
   border-radius: 18px;
-  border: 1px dashed rgba(108,33,237,.22);
-  background: rgba(233,223,255,.35);
+  border: 1px solid rgba(255, 255, 255, .75);
+  background: linear-gradient(135deg, rgba(233, 223, 255, .55), rgba(255, 255, 255, .62));
+  box-shadow: var(--shadow-1), var(--inset-highlight);
   color: var(--text-dim);
   font-size: 13px;
   line-height: 1.7;
 }
 .create-tip svg { width: 18px; height: 18px; color: var(--primary); flex: none; margin-top: 2px; }
-.create-dock { margin-top: 2px; }
+.create-dock { margin-top: var(--s-4); }
 
 /* ---------- کارت حالت بازی ---------- */
 .mode-card {
@@ -860,7 +925,7 @@ body {
   -webkit-backdrop-filter: blur(var(--blur-md)) saturate(145%);
   box-shadow: var(--shadow-2), var(--inset-highlight);
   text-align: center;
-  overflow: hidden;
+  overflow: visible;
 }
 .spotlight .w-meta { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 6px; }
 .spotlight .w-main { flex: 1; min-width: 0; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
@@ -925,6 +990,7 @@ body {
   gap: 10px;
   margin-top: 4px;
 }
+.controls:empty { display: none; }
 .controls .btn {
   min-height: 72px;
   flex-direction: column;
@@ -1086,6 +1152,7 @@ body {
 
 /* ---------- چیدمان بازی (Play/Boom) ---------- */
 .play-landscape { display: flex; flex-direction: column; gap: 14px; }
+.play-landscape > * { flex: none; }
 .play-side { display: flex; flex-direction: column; gap: 12px; }
 .play-side .controls { margin-top: 0; }
 .play-side #big-btn { min-height: 62px; font-size: 16px; border-radius: 18px; }
@@ -1542,6 +1609,16 @@ body {
   line-height: 2;
 }
 
+/* ---------- کانفتی (جشن پایان بازی) ---------- */
+#confetti-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 70;
+}
+
 /* ---------- توست ---------- */
 .toast-region {
   position: fixed;
@@ -1551,6 +1628,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
   pointer-events: none;
   padding-inline: var(--gutter);
@@ -1685,11 +1763,122 @@ body {
   }
 }
 
+/* ============================================================
+   آسن‌های سه‌بعدی (رندر WebP محلی — بدون موتور رندر در اپ)
+   ============================================================ */
+.a3d {
+  display: block;
+  object-fit: contain;
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
+.a3d-hero { width: 120px; height: 120px; }
+.a3d-lg { width: 62px; height: 62px; }
+.a3d-md { width: 44px; height: 44px; }
+.a3d-sm { width: 30px; height: 30px; }
+.a3d-xs { width: 17px; height: 17px; }
+
+/* ماسکت هیرو — از گوشه‌ی کارت بیرون می‌زند (پشت محتوا) */
+.hero-mascot {
+  position: absolute;
+  inset-block-end: -24px;
+  inset-inline-end: -12px;
+  z-index: 0;
+  margin: 0;
+  pointer-events: none;
+}
+.hero-mascot .a3d {
+  width: 132px;
+  height: 132px;
+}
+.hero-mascot::before {
+  content: "";
+  position: absolute;
+  inset-block-end: 6px;
+  inset-inline-end: 4px;
+  width: 120px;
+  height: 46px;
+  border-radius: 50%;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(108, 33, 237, .22), transparent 70%);
+  filter: blur(8px);
+  z-index: -1;
+}
+.hero-home .hero-actions .btn { max-width: 70%; }
+
+/* نگهدارنده‌ی ماسکت (کارت حالت بازی و هیرو ساخت) */
+.mode-mascot {
+  display: grid;
+  place-items: center;
+  width: 58px; height: 58px;
+  flex: none;
+  border-radius: 18px;
+  background: radial-gradient(120% 120% at 50% 8%, rgba(255, 255, 255, .95), rgba(233, 223, 255, .55));
+  border: 1px solid rgba(255, 255, 255, .78);
+  box-shadow: 0 10px 18px -12px rgba(108, 33, 237, .5), inset 0 1px 0 rgba(255, 255, 255, .9);
+}
+.mode-mascot .a3d { width: 58px; height: 58px; }
+.create-mascot { width: 70px; height: 70px; border-radius: 20px; }
+.create-mascot .a3d { width: 64px; height: 64px; }
+
+/* پنل‌ها و هیروهای ساده */
+.panel-icon-3d { padding: 0; }
+.panel-icon-3d .a3d { width: 38px; height: 38px; }
+.page-hero-3d { display: block; width: 84px; margin: 0 auto 2px; }
+.page-hero-3d .a3d { width: 84px; height: 84px; }
+.rank-3d { display: block; width: 104px; margin: 0 auto 2px; }
+.rank-3d .a3d { width: 104px; height: 104px; }
+.category-3d { flex: none; width: 64px; }
+.category-3d .a3d { width: 64px; height: 64px; }
+.category-intro-main { display: flex; align-items: center; gap: 14px; }
+.category-intro-copy { min-width: 0; flex: 1; }
+.cat-ic-3d { background: rgba(255, 255, 255, .6); }
+.cat-ic-3d .a3d { width: 46px; height: 46px; }
+.cat-group-3d { flex: none; width: 34px; height: 34px; margin-inline-end: 2px; }
+.play-3d { flex: none; width: 34px; height: 34px; }
+.boom-3d { flex: none; width: 38px; height: 38px; }
+.rank-action-3d { width: 46px; height: 46px; border-radius: 14px; }
+.rank-action-3d .a3d { width: 38px; height: 38px; }
+.podium .pod { position: relative; }
+.p-crown { position: absolute; inset-block-start: -15px; inset-inline-start: 50%; transform: translateX(50%); z-index: 2; }
+.p-crown .a3d { width: 38px; height: 38px; }
+.podium .pod-1 { padding-block-start: 26px; }
+.spotlight .w-head { gap: 6px; }
+.boom-mark { display: inline-flex; align-items: center; gap: 8px; }
+.boom-mark .a3d { width: 46px; height: 46px; }
+.score-badge { gap: 6px; }
+.score-badge .a3d { width: 21px; height: 21px; }
+.hud-round .a3d { opacity: .92; }
+.stats-title .a3d { flex: none; }
+
+@media (min-width: 560px) {
+  .hero-mascot .a3d { width: 168px; height: 168px; }
+  .hero-mascot { inset-block-end: -34px; inset-inline-end: -18px; }
+  .hero-home .hero-actions .btn { max-width: 62%; }
+}
+
 /* ---------- واکنش‌گرایی ---------- */
 @media (max-width: 380px) {
   .cat-grid { grid-template-columns: repeat(2, 1fr); }
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
   .podium { gap: 6px; }
+  .hero-mascot .a3d { width: 104px; height: 104px; }
+  .hero-home .hero-actions .btn { max-width: 78%; }
+  .mode-mascot { width: 52px; height: 52px; border-radius: 16px; }
+  .mode-mascot .a3d { width: 44px; height: 44px; }
+
+  /* فشرده‌سازی هدفمند صفحه‌ی اصلی در موبایل کوچک (بدون حذف اطلاعات مهم) */
+  .main[data-route="home"] { padding-bottom: 34px; }
+  .hero-home p {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .home-section-head p { display: none; }
+  .home-stats { padding: 10px 12px; }
+  .home-stats .sc-mini { min-height: 40px; padding: 5px 4px; }
+  .home-stats .sc-mini b { font-size: 17px; }
 }
 
 /* گرید کارت‌های اقدام (نتیجه‌ی بازی) — روی موبایل هم گرید است تا دکمه‌ها تمام‌عرض شوند */
@@ -1712,6 +1901,8 @@ body {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--s-3);
+  align-items: stretch;
 }
 .bento-2 > * { min-width: 0; }
+.mode-card { height: 100%; }
 @media (min-width: 768px) { .bento-2 { gap: var(--s-4); } }

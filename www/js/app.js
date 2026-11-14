@@ -23,6 +23,8 @@
   var draft = null;              // تنظیمات ساخت
   var catSel = null;             // {cid, score} انتخاب امتیاز در دیالوگ دسته
   var speedScoreChoice = 1;
+  var celebrated = false;        // جشن پایان بازی فقط یک‌بار اجرا شود
+  var turnsPlayed = 0;           // نوبت‌های انجام‌شده — برای نمایش درست شماره‌ی دور
 
   var TYPES = {
     adabazi: {
@@ -54,6 +56,15 @@
     return fa(m) + ':' + (s < 10 ? '۰' : '') + fa(s);
   }
 
+  /* شماره‌ی دور برای نمایش: شمارنده‌ی موتور یک واحد جلوتر است،
+     بنابراین دور واقعی از روی تعداد نوبت‌های انجام‌شده محاسبه می‌شود. */
+  function currentRound() {
+    if (!engine) return 1;
+    var n = (engine.teams && engine.teams.length) || 1;
+    var r = Math.floor(turnsPlayed / n) + 1;
+    return Math.max(1, Math.min(r, engine.rounds));
+  }
+
   /* ---------------- کمکی‌ها ---------------- */
 
   function h(html) {
@@ -68,15 +79,25 @@
       .replace(/"/g, '&quot;');
   }
 
+  /* پیام‌ها روی هم انباشته نمی‌شوند — حداکثر دو پیام هم‌زمان */
+  var toastQueue = [];
   function toast(msg) {
-    toastRegion.innerHTML = '';
     var el = h('<div class="toast">' + esc(msg) + '</div>');
     toastRegion.appendChild(el);
+    toastQueue.push(el);
+    while (toastQueue.length > 2) {
+      var old = toastQueue.shift();
+      if (old && old.parentNode) old.remove();
+    }
     setTimeout(function () {
       el.style.transition = 'opacity .3s, transform .3s';
       el.style.opacity = '0';
       el.style.transform = 'translateY(14px)';
-      setTimeout(function () { el.remove(); }, 320);
+      setTimeout(function () {
+        el.remove();
+        var i = toastQueue.indexOf(el);
+        if (i > -1) toastQueue.splice(i, 1);
+      }, 320);
     }, 2200);
   }
 
@@ -150,25 +171,39 @@
       if (e.target === scrim && opts.dismiss !== false) closeModal();
     });
     scrim.dataset.dismiss = opts.dismiss === false ? '0' : '1';
+    scrim._lastFocus = document.activeElement;
     modalRoot.appendChild(scrim);
     var first = actions.querySelector('button');
     if (first) first.focus();
+
+    /* نگه‌داشتن فوکوس داخل شیت (دسترس‌پذیری) */
+    scrim.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab') return;
+      var items = scrim.querySelectorAll('button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])');
+      if (!items.length) return;
+      var list = Array.prototype.slice.call(items);
+      var idx = list.indexOf(document.activeElement);
+      if (e.shiftKey && (idx <= 0)) { e.preventDefault(); list[list.length - 1].focus(); }
+      else if (!e.shiftKey && (idx === list.length - 1 || idx === -1)) { e.preventDefault(); list[0].focus(); }
+    });
     return scrim;
   }
 
   function closeModal(immediate) {
     var m = modalRoot.lastElementChild;
     if (!m) return;
+    var restore = m._lastFocus;
     if (immediate === true || m.dataset.closing === '1') {
-      if (immediate === true) m.remove();
+      if (immediate === true) { m.remove(); if (restore && restore.focus) restore.focus(); }
       return;
     }
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) { m.remove(); return; }
+    if (reduce) { m.remove(); if (restore && restore.focus) restore.focus(); return; }
     m.dataset.closing = '1';
     m.classList.add('is-closing');
     var done = function () {
       if (m.parentNode) m.remove();
+      if (restore && restore.focus) restore.focus();
     };
     m.addEventListener('animationend', done, { once: true });
     setTimeout(done, 260);
@@ -179,6 +214,7 @@
     btnBack.hidden = !inner;
     brand.hidden = inner;
     btnSettings.hidden = (route === 'play' || route === 'boom' || route === 'create' || route === 'team' || route === 'category');
+    main.setAttribute('data-route', route);
   }
 
   function go(r) {
@@ -187,12 +223,14 @@
     setChrome();
     render();
     main.focus({ preventScroll: true });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' });
   }
 
   /* ---------------- رندر ---------------- */
 
   function render() {
+    /* پاک‌سازی صفحه‌ی قبلی (مثلاً توقف تایمر) پیش از ساخت صفحه‌ی جدید */
+    if (render._cleanup) { render._cleanup(); render._cleanup = null; }
     var fn = {
       home: renderHome,
       create: renderCreate,
@@ -285,6 +323,7 @@
       '<div class="hero-decor" aria-hidden="true">' +
       '<span class="hero-bubble b1"></span><span class="hero-bubble b2"></span><span class="hero-bubble b3"></span>' +
       '</div>' +
+      '<figure class="hero-mascot" aria-hidden="true">' + A3D.img('portalRing', 'a3d-hero') + '</figure>' +
       '<div class="hero-top">' +
       '<span class="eyebrow">بازی گروهی و دورهمی</span>' +
       '<span class="hero-badge">' + Icons.get('spark') + ' نسخه جدید</span>' +
@@ -308,10 +347,11 @@
       var m = TYPES[key];
       var accent = key === 'boom' ? 'var(--primary-2)' : 'var(--primary)';
       var sub = key === 'boom' ? 'ریتم سریع، کلمه‌به‌کلمه' : 'کلاسیک، مناسب هر جمعی';
+      var mascot = key === 'boom' ? 'explosion' : 'scroll';
       var card = h(
         '<button type="button" class="mode-card mode-card-' + key + '" data-type="' + key + '" style="--orb:' + accent + '">' +
         '<div class="mode-card-top">' +
-        '<span class="orb mode-orb">' + Icons.get(m.icon) + '</span>' +
+        '<span class="mode-mascot">' + A3D.img(mascot, 'a3d-lg') + '</span>' +
         '<span class="mode-chip">' + Icons.get('play') + ' شروع</span>' +
         '</div>' +
         '<div class="mode-card-body">' +
@@ -371,7 +411,7 @@
     el.appendChild(h(
       '<section class="card card-lg create-hero" style="--orb:' + accent + '">' +
       '<div class="create-hero-top">' +
-      '<span class="orb create-mode-orb">' + Icons.get(t.icon) + '</span>' +
+      '<span class="mode-mascot create-mascot">' + A3D.img(isBoom ? 'explosion' : 'scroll', 'a3d-lg') + '</span>' +
       '<div class="create-hero-copy">' +
       '<span class="eyebrow">' + t.title + '</span>' +
       '<h1>چیدمان بازی</h1>' +
@@ -385,7 +425,7 @@
       '</section>'
     ));
 
-    var fields = h('<section class="card create-panel"><div class="panel-head"><span class="panel-icon">' + Icons.get('sliders') + '</span><div><h2>تعداد و دورها</h2><p>قبل از شروع، ترکیب گروه‌ها و تعداد دور را مشخص کن.</p></div></div><div class="panel-body" data-fields></div></section>');
+    var fields = h('<section class="card create-panel"><div class="panel-head"><span class="panel-icon panel-icon-3d">' + A3D.img('rounds', 'a3d-sm') + '</span><div><h2>تعداد و دورها</h2><p>قبل از شروع، ترکیب گروه‌ها و تعداد دور را مشخص کن.</p></div></div><div class="panel-body" data-fields></div></section>');
     var fb = fields.querySelector('[data-fields]');
     var groupsStepper = stepper(isBoom ? 'تعداد بازیکن' : 'تعداد گروه', d.groups, 2, 6, function (v) {
       d.groups = v;
@@ -396,7 +436,7 @@
     fb.appendChild(roundsStepper);
     el.appendChild(fields);
 
-    var timeCard = h('<section class="card create-panel"><div class="panel-head"><span class="panel-icon">' + Icons.get('timer') + '</span><div><h2>' + (isBoom ? 'زمان هر کلمه' : 'زمان اضافه هر نوبت') + '</h2><p>' + (isBoom ? 'مهلت اجرا برای هر کلمه در حالت بوم' : 'این زمان به زمان ثابت هر دسته اضافه می‌شود') + '</p></div></div><div class="panel-body"><div class="seg create-seg" id="more-row"></div></div></section>');
+    var timeCard = h('<section class="card create-panel"><div class="panel-head"><span class="panel-icon panel-icon-3d">' + A3D.img('hourglass', 'a3d-sm') + '</span><div><h2>' + (isBoom ? 'زمان هر کلمه' : 'زمان اضافه هر نوبت') + '</h2><p>' + (isBoom ? 'مهلت اجرا برای هر کلمه در حالت بوم' : 'این زمان به زمان ثابت هر دسته اضافه می‌شود') + '</p></div></div><div class="panel-body"><div class="seg create-seg" id="more-row"></div></div></section>');
     var seg = timeCard.querySelector('#more-row');
     var moreOpts = isBoom ? [5, 6, 7] : [0, 15, 30, 45];
     moreOpts.forEach(function (v) {
@@ -419,12 +459,6 @@
     var tip = h('<div class="create-tip">' + Icons.get('spark') + '<span>نام‌ها خودکار ساخته می‌شوند و بعد از شروع، جریان نوبت‌ها مطابق منطق اصلی بازی پیش می‌رود.</span></div>');
     el.appendChild(tip);
 
-    var dock = h('<div class="dock create-dock"></div>');
-    var start = h('<button type="button" class="btn btn-primary btn-lg btn-block">' + Icons.get('play') + ' شروع بازی</button>');
-    start.addEventListener('click', function () { beginGame(); });
-    dock.appendChild(start);
-    el.appendChild(dock);
-
     var foot = h('<p class="foot" data-foot></p>');
     el.appendChild(foot);
     function paintFoot() {
@@ -432,6 +466,12 @@
       foot.textContent = 'نام ' + label + '‌ها خودکار ساخته می‌شود: ' + label + ' ' + fa(1) + ' تا ' + fa(d.groups) + '.';
     }
     paintFoot();
+
+    var dock = h('<div class="dock create-dock"></div>');
+    var start = h('<button type="button" class="btn btn-primary btn-lg btn-block">' + Icons.get('play') + ' شروع بازی</button>');
+    start.addEventListener('click', function () { beginGame(); });
+    dock.appendChild(start);
+    el.appendChild(dock);
 
     return el;
   }
@@ -461,6 +501,8 @@
 
   function beginGame() {
     var d = draft;
+    celebrated = false;
+    turnsPlayed = 0;
     Store.setSetting('rounds', d.rounds);
     Store.setSetting('groups', d.groups);
     if (d.gameType === 'boom') Store.setSetting('boomMoreTime', d.moreTime);
@@ -482,10 +524,10 @@
     });
 
     beep('start');
-    /* شروع نوبت اول — بدون صفحه‌ی واسط */
+    /* شروع نوبت اول — با صفحه‌ی انتقال نوبت تا تیم اول بداند نوبت اوست */
     engine.continueTurn();
     if (engine.gameType === 'boom') { engine.startBoom(); go('boom'); }
-    else go('category');
+    else go('team');
   }
 
   /* ---------- نوار وضعیت چسبان: نوبت فعلی، دور و امتیازها ---------- */
@@ -499,7 +541,7 @@
       body += row;
     });
     body += '</div>';
-    body += '<p class="u-center u-faint u-mt-4" style="margin-bottom:0">دور ' + fa(engine.roundNumber()) + ' از ' + fa(engine.rounds) + '</p>';
+    body += '<p class="u-center u-faint u-mt-4" style="margin-bottom:0">دور ' + fa(currentRound()) + ' از ' + fa(engine.rounds) + '</p>';
     modal({
       title: 'امتیازات',
       icon: 'trophy',
@@ -517,7 +559,7 @@
       '<button type="button" class="hud" aria-label="مشاهده امتیازات">' +
       '<span class="hud-main">' +
       '<span class="hud-team" style="--team:' + color + '"><span class="hud-dot" style="--team:' + color + '"></span>' + Icons.get('users') + ' ' + esc(team.name) + '</span>' +
-      '<span class="hud-round">' + Icons.get('flag') + ' دور ' + fa(engine.roundNumber()) + ' از ' + fa(engine.rounds) + '</span>' +
+      '<span class="hud-round">' + Icons.get('flag') + ' دور ' + fa(currentRound()) + ' از ' + fa(engine.rounds) + '</span>' +
       '</span>' +
       '<span class="hud-action">' + Icons.get('trophy') + ' <b>امتیازات</b></span>' +
       '</button>'
@@ -526,49 +568,41 @@
     return el;
   }
 
-  /* ---------------- صفحه گروه ---------------- */
+  /* ---------------- انتقال نوبت (بین تیم‌ها) ---------------- */
 
   function renderTeam() {
     if (engine.isOver()) { return renderRank(); }
 
-    var el = h('<div></div>');
+    var el = h('<div class="handover-screen"></div>');
     var upNext = engine.team(engine.turnIndex);
     var upColor = TEAM_COLORS[upNext.color].v;
 
     el.appendChild(h(
-      '<div class="pill-row u-mb-4" >' +
-      '<span class="pill pill-accent">' + Icons.get('flag') + ' دور ' + fa(engine.roundNumber()) + ' از ' + fa(engine.rounds) + '</span>' +
-      '<span class="pill">' + Icons.get('grid') + ' ' + TYPES[engine.gameType].title + '</span>' +
-      '</div>'
-    ));
-
-    el.appendChild(h(
-      '<section class="card card-lg card-accent" style="text-align:center;border-color:' + upColor + '40;background:linear-gradient(180deg,' + upColor + '12,#fff)">' +
-      '<span class="eyebrow" style="justify-content:center">نوبت بعدی</span>' +
-      '<h2 style="font-size:var(--fs-display);font-weight:900;margin:var(--s-2) 0 0;color:' + upColor + '">' + esc(upNext.name) + '</h2>' +
-      '<p style="margin:var(--s-2) 0 0;color:var(--text-dim);font-size:var(--fs-sm)">امتیاز ' + fa(upNext.score) + '</p>' +
+      '<section class="card handover-hero" style="--team:' + upColor + '">' +
+      '<div class="handover-top">' +
+      '<span class="handover-3d">' + A3D.img('token', 'a3d-lg') + '</span>' +
+      '<div class="handover-copy">' +
+      '<span class="eyebrow">نوبت بعدی</span>' +
+      '<h1>' + esc(upNext.name) + '</h1>' +
+      '<p>امتیاز ' + fa(upNext.score) + ' · دور ' + fa(currentRound()) + ' از ' + fa(engine.rounds) + '</p>' +
+      '</div>' +
+      '</div>' +
       '</section>'
     ));
 
-    el.appendChild(h('<div class="section-head"><span class="sh-bar" aria-hidden="true"></span><span class="sh-txt"><h2>جدول امتیازات</h2></span></div>'));
-    var list = h('<div class="list"></div>');
+    var list = h('<div class="list handover-board"></div>');
     engine.teams.forEach(function (t, i) {
       list.appendChild(h(teamRow(t, i === engine.turnIndex)));
     });
     el.appendChild(list);
 
-    var dock = h('<div class="dock"></div>');
-    var cta = h('<button type="button" class="btn btn-primary btn-lg">' + Icons.get('play') + ' شروع نوبت «' + esc(upNext.name) + '»</button>');
+    var dock = h('<div class="dock handover-dock"></div>');
+    var cta = h('<button type="button" class="btn btn-primary btn-lg btn-block">' +
+      Icons.get('play') + ' شروع نوبت «' + esc(upNext.name) + '»</button>');
     cta.addEventListener('click', function () {
       beep('start');
       vibrate(20);
-      engine.continueTurn();
-      if (engine.gameType === 'boom') {
-        engine.startBoom();
-        go('boom');
-      } else {
-        go('category');
-      }
+      go(engine.gameType === 'boom' ? 'boom' : 'category');
     });
     dock.appendChild(cta);
     el.appendChild(dock);
@@ -618,6 +652,14 @@
     81: 'globe', 82: 'music', 83: 'kids', 84: 'cartoon', 85: 'celebrity', 86: 'football'
   };
 
+  /* آسن سه‌بعدی هر گروه دسته‌بندی — از پک 3D Game UI Icons */
+  var CAT_GROUP_3D = {
+    'سرعتی': 'lightning',
+    'ضرب المثل': 'scroll',
+    'کلمه': 'book',
+    'ترانه': 'heart'
+  };
+
   function renderCategory() {
     var el = h('<div class="category-screen"></div>');
 
@@ -626,8 +668,13 @@
     el.appendChild(h(
       '<section class="card category-intro">' +
       '<div class="category-intro-top"><span class="eyebrow">انتخاب نوبت</span><span class="pill">' + Icons.get('grid') + ' یک دسته انتخاب کن</span></div>' +
+      '<div class="category-intro-main">' +
+      '<span class="category-3d">' + A3D.img('book', 'a3d-md') + '</span>' +
+      '<div class="category-intro-copy">' +
       '<h1>برای این نوبت چه چیزی اجرا می‌شود؟</h1>' +
       '<p>دسته را انتخاب کن؛ اگر امتیاز متغیر دارد، در مرحله بعد سطح امتیاز را مشخص می‌کنی.</p>' +
+      '</div>' +
+      '</div>' +
       '</section>'
     ));
 
@@ -646,7 +693,7 @@
         var ric = CAT_ICON[rc.cid] || 'dice';
         var rTile = h(
           '<button type="button" class="cat-tile wide cat-random" style="--cat:' + rc.color + '" data-name="' + esc(rc.fa) + '" data-used="0">' +
-          '<span class="cat-ic">' + Icons.get(ric) + '</span>' +
+          '<span class="cat-ic cat-ic-3d">' + A3D.img('token', 'a3d-md') + '</span>' +
           '<span class="cat-copy"><span class="cat-name">' + esc(rc.fa) + '</span><span class="cat-hint">یک انتخاب شانسی از دسته‌ها</span></span>' +
           '<span class="cat-go">' + Icons.get('play') + '</span>' +
           '</button>'
@@ -661,6 +708,7 @@
         '<div class="cat-section">' +
         '<div class="section-head cat-group-head" style="margin-top:0">' +
         '<span class="sh-bar" style="background:' + g.color + '"></span>' +
+        '<span class="cat-group-3d">' + A3D.img(CAT_GROUP_3D[g.name] || 'token', 'a3d-sm') + '</span>' +
         '<span class="sh-txt"><h2>' + esc(g.name) + '</h2></span>' +
         '</div>' +
         '<div class="cat-grid"></div>' +
@@ -672,14 +720,19 @@
         var opts = engine.cardOptions(c);
         var used = opts.map(function (sc) { return engine.isCardUsed(engine.turnIndex, c.cid, sc); });
         var allUsed = used.length > 0 && used.every(Boolean);
-        var dots = used.map(function (u) { return '<i class="dot' + (u ? ' is-used' : '') + '"></i>'; }).join('');
+        var freeCount = used.filter(function (u) { return !u; }).length;
+        var dots = used.map(function (u) { return '<i class="dot' + (u ? ' is-used' : '') + '" aria-hidden="true"></i>'; }).join('');
+        var dotLabel = freeCount === 0
+          ? 'همه‌ی امتیازهای این دسته برای این تیم استفاده شده'
+          : fa(freeCount) + ' امتیاز از ' + fa(used.length) + ' برای این تیم باقی مانده';
         var tile = h(
           '<button type="button" class="cat-tile' + (allUsed ? ' is-done' : '') + '" style="--cat:' + c.color + '"' +
           ' data-name="' + esc(c.fa) + '" data-used="' + (allUsed ? '1' : '0') + '"' +
           (allUsed ? ' aria-disabled="true"' : '') + '>' +
-          '<span class="cat-ic">' + Icons.get(ic) + '</span>' +
+          '<span class="cat-ic' + (c.cid === 40 ? ' cat-ic-3d' : '') + '">' +
+          (c.cid === 40 ? A3D.img('lightning', 'a3d-md') : Icons.get(ic)) + '</span>' +
           '<span class="cat-name">' + esc(c.fa) + '</span>' +
-          '<span class="cat-dots" aria-label="وضعیت امتیازهای این دسته">' + dots + '</span>' +
+          '<span class="cat-dots" aria-label="' + dotLabel + '" title="' + dotLabel + '">' + dots + '</span>' +
           '</button>'
         );
         tile.addEventListener('click', function () {
@@ -768,7 +821,8 @@
 
     var row = scrim.querySelector('#sc-row');
     opts.forEach(function (sc, idx) {
-      var chip = h('<button type="button" class="chip chip-lg' + (used[idx] ? ' is-used' : '') + '"' + (used[idx] ? ' disabled aria-disabled="true"' : '') + '>' +
+      var chip = h('<button type="button" class="chip chip-lg' + (used[idx] ? ' is-used' : '') + '"' +
+        ' data-sc="' + (idx + 1) + '"' + (used[idx] ? ' disabled aria-disabled="true"' : '') + '>' +
         fa(sc) + ' امتیازی' + (used[idx] ? ' ✓' : '') + '</button>');
       chip.addEventListener('click', function () {
         if (used[idx]) { toast('این امتیاز از «' + c.fa + '» برای این تیم استفاده شده'); return; }
@@ -784,7 +838,11 @@
   function launchTurn(cid, score) {
     var t = engine.startTurn(cid, score);
     catSel = null;
-    if (!t) { toast('محتوایی برای این دسته پیدا نشد'); go('team'); return; }
+    if (!t) {
+      /* محتوایی نمانده: در همان صفحه‌ی دسته می‌مانیم تا نوبت تیم از بین نرود */
+      toast('برای این دسته کلمه‌ای نمانده — دسته‌ی دیگری انتخاب کنید');
+      return;
+    }
     beep('start');
     go('play');
   }
@@ -839,12 +897,13 @@
         return;
       }
       if (isSpeed) {
-        meta.appendChild(h('<span class="score-badge">' + fa(t.word.score) + ' امتیاز</span>'));
+        meta.appendChild(h('<span class="play-3d">' + A3D.img('crosshair', 'a3d-sm') + '</span>'));
+        meta.appendChild(h('<span class="score-badge">' + A3D.img('star', 'a3d-xs') + '<span>' + fa(t.word.score) + ' امتیاز</span></span>'));
         var cat = data.categories.filter(function (c) { return c.cid === t.word.cid; })[0];
         meta.appendChild(h('<span class="tag">' + (cat ? esc(cat.fa) : 'سرعتی') + '</span>'));
         meta.appendChild(h('<span class="tag">' + (t.score === 99 ? fa(t.speedIndex) : fa(t.speedIndex) + ' از ' + fa(t.speedList.length)) + '</span>'));
       } else {
-        meta.appendChild(h('<span class="score-badge">' + fa(t.wordScore) + ' امتیاز</span>'));
+        meta.appendChild(h('<span class="score-badge">' + A3D.img('star', 'a3d-xs') + '<span>' + fa(t.wordScore) + ' امتیاز</span></span>'));
         if (t.cid === 69) {
           var c69 = data.categories.filter(function (c) { return c.cid === t.word.cid; })[0];
           if (c69) meta.appendChild(h('<span class="tag">' + esc(c69.fa) + '</span>'));
@@ -1039,12 +1098,13 @@
       function finish() {
         var total = engine.total();
         var s = engine.commitTurn(total);
+        turnsPlayed++;
         pulseHUD();
         closeModal();
         if (s.type === 'end') { go('rank'); return; }
         /* نوبت بعدی مستقیم: یک کلیک کمتر در هر دور */
         engine.continueTurn();
-        go('category');
+        go('team');
         toast('امتیاز ثبت شد: ' + (total >= 0 ? '+' : '') + fa(total));
       }
 
@@ -1081,7 +1141,15 @@
     /* دیالوگ نتیجه سرعتی */
     function openSpeedDialog() {
       var sum = engine.speedTotal();
-      var body = '<div style="max-height:38vh;overflow:auto">';
+      var rightCount = t.speedList.filter(function (x) { return x.right; }).length;
+      var total = t.speedList.length;
+
+      var body = '<div class="speed-summary">' +
+        '<span class="speed-chip is-ok"><b>' + fa(rightCount) + '</b> کلمه درست</span>' +
+        '<span class="speed-chip is-no"><b>' + fa(total - rightCount) + '</b> رد شد</span>' +
+        '<span class="speed-chip"><b>' + fa(total) + '</b> کلمه</span>' +
+        '</div>';
+      body += '<div class="speed-list">';
       t.speedList.forEach(function (x) {
         body += '<div class="score-row" style="--dot:' + (x.right ? 'var(--success)' : 'var(--danger)') + '">' +
           '<span class="sr-dot"></span>' +
@@ -1104,13 +1172,14 @@
       /* بدون دکمه — خودکار ادامه می‌دهد */
       setTimeout(function () {
         var s = engine.commitTurn(sum);
+        turnsPlayed++;
         pulseHUD();
         closeModal();
         if (s.type === 'end') { go('rank'); return; }
         engine.continueTurn();
-        go('category');
+        go('team');
         toast('امتیاز ثبت شد: ' + (sum >= 0 ? '+' : '') + fa(sum));
-      }, 1700);
+      }, 2400);
     }
   }
 
@@ -1123,8 +1192,9 @@
     el.appendChild(hud());
     el.appendChild(h(
       '<div class="boom-status card">' +
+      '<span class="boom-3d">' + A3D.img('explosion', 'a3d-sm') + '</span>' +
       '<span class="pill pill-accent boom-holder" id="boom-player">' + Icons.get('users') + ' ' + esc(engine.team(b.active).name) + '</span>' +
-      '<span class="boom-status-meta">' + Icons.get('flag') + ' دور <span id="boom-round">' + fa(engine.roundNumber()) + '</span> از ' + fa(engine.rounds) + '</span>' +
+      '<span class="boom-status-meta">' + Icons.get('flag') + ' دور <span id="boom-round">' + fa(currentRound()) + '</span> از ' + fa(engine.rounds) + '</span>' +
       '</div>'
     ));
 
@@ -1175,7 +1245,7 @@
       paintGauge(el.querySelector('#gauge'), b.state === 1 ? engine.moreTime : b.timeLeft, engine.moreTime, b.running);
 
       var round = el.querySelector('#boom-round');
-      if (round) round.textContent = fa(engine.roundNumber());
+      if (round) round.textContent = fa(currentRound());
 
       bigBtn.className = 'btn btn-lg btn-block';
       if (b.state === 1) {
@@ -1209,6 +1279,7 @@
     }
 
     function afterBoom() {
+      turnsPlayed++;
       var next = engine.boomNext();
       if (next === 'end') { paint(); go('rank'); return; }
       paint();
@@ -1302,7 +1373,7 @@
 
     var head = h(
       '<section class="card card-lg rank-hero u-center">' +
-      '<span class="sheet-icon rank-crown" style="--orb:' + (isTie ? 'var(--primary-2)' : 'var(--primary)') + '">' + Icons.get(isTie ? 'heart' : 'crown') + '</span>' +
+      '<span class="rank-3d">' + A3D.img(isTie ? 'heart' : 'trophy', 'a3d-lg') + '</span>' +
       '<span class="eyebrow" style="justify-content:center">پایان بازی</span>' +
       '<h1>' + (isTie ? 'نتیجه مساوی شد!' : 'قهرمان این دور') + '</h1>' +
       '<p>' + (isTie ? 'هیچ برنده قطعی‌ای نبود — رقابت نزدیک بود.' : esc(winner.name) + ' با بهترین عملکرد بازی را تمام کرد.') + '</p>' +
@@ -1318,6 +1389,7 @@
       order.forEach(function (t, i) {
         podium.appendChild(h(
           '<div class="pod ' + classes[i] + '" style="--team:' + TEAM_COLORS[t.color].v + '">' +
+          (i === 1 ? '<span class="p-crown">' + A3D.img('crown', 'a3d-sm') + '</span>' : '') +
           '<span class="p-rank">' + fa(i === 1 ? 1 : (i === 0 ? 2 : 3)) + '</span>' +
           '<span class="p-avatar">' + esc(initialOf(t.name)) + '</span>' +
           '<span class="p-name">' + esc(t.name) + '</span>' +
@@ -1350,7 +1422,7 @@
       '<div><h3>بازی دوباره</h3><p>با همین تنظیمات</p></div></button>');
     again.addEventListener('click', function () { beep('click'); beginGame(); });
     var home = h('<button type="button" class="mode-card rank-action-card">' +
-      '<span class="orb orb-sm" style="--orb:#211052">' + Icons.get('home') + '</span>' +
+      '<span class="mode-mascot rank-action-3d">' + A3D.img('home', 'a3d-sm') + '</span>' +
       '<div><h3>صفحه اصلی</h3><p>انتخاب حالت بازی</p></div></button>');
     home.addEventListener('click', function () { beep('click'); engine = null; go('home'); });
     actions.appendChild(shareBtn);
@@ -1364,6 +1436,16 @@
       });
     }, 60);
 
+    /* جشن پایان بازی — یک‌بار برای هر بازی */
+    if (!celebrated) {
+      celebrated = true;
+      setTimeout(function () {
+        if (window.Confetti) Confetti.burst(isTie ? 90 : 160);
+        beep('correct');
+        vibrate(isTie ? 12 : 28);
+      }, 320);
+    }
+
     render._cleanup = function () { stopTimer(); };
     return el;
   }
@@ -1375,6 +1457,7 @@
 
     el.appendChild(h(
       '<section class="card card-lg page-hero u-center">' +
+      '<span class="page-hero-3d">' + A3D.img('book', 'a3d-md') + '</span>' +
       '<span class="eyebrow" style="justify-content:center">آرشیو</span>' +
       '<h1>تاریخچه بازی‌ها</h1>' +
       '<p>نتیجه بازی‌های اخیر روی همین دستگاه</p>' +
@@ -1433,6 +1516,7 @@
 
     el.appendChild(h(
       '<section class="card card-lg page-hero u-center">' +
+      '<span class="page-hero-3d">' + A3D.img('cog', 'a3d-md') + '</span>' +
       '<span class="eyebrow" style="justify-content:center">تنظیمات</span>' +
       '<h1>تجربه بازی</h1>' +
       '<p>صدا، لرزش و گزینه‌های کاربردی برنامه</p>' +
@@ -1522,6 +1606,7 @@
 
     el.appendChild(h(
       '<section class="card card-lg page-hero u-center">' +
+      '<span class="page-hero-3d">' + A3D.img('heart', 'a3d-md') + '</span>' +
       '<span class="eyebrow" style="justify-content:center">درباره</span>' +
       '<h1>ادابازی</h1>' +
       '<p>بازی گروهی برای دورهمی‌ها، با تمرکز بر سادگی، سرعت و هیجان</p>' +
@@ -1548,7 +1633,8 @@
 
   /* ---------------- کنترل‌های سراسری ---------------- */
 
-  btnBack.addEventListener('click', function () {
+  /* رفتار مشترک دکمه‌ی بازگشت (نوار بالا و دکمه‌ی بازگشت سیستم/اندروید) */
+  function handleBack() {
     beep('click');
     if (route === 'play' || route === 'boom') {
       var wasRunning = (engine.turn && engine.turn.running) || (engine.boom && engine.boom.running);
@@ -1578,6 +1664,21 @@
     } else {
       go('home');
     }
+  }
+
+  btnBack.addEventListener('click', handleBack);
+
+  /* دکمه‌ی بازگشت سیستم (اندروید) — نباید وسط بازی اپ را ببندد */
+  window.addEventListener('popstate', function () {
+    if (modalRoot.lastElementChild) {
+      /* اول پنجره‌ی باز بسته شود */
+      closeModal();
+      try { history.pushState({ app: 1 }, ''); } catch (e) { }
+      return;
+    }
+    if (route === 'home') return;              /* در خانه: خروج عادی از اپ */
+    try { history.pushState({ app: 1 }, ''); } catch (e) { }
+    handleBack();
   });
 
   btnSettings.addEventListener('click', function () { beep('click'); go('settings'); });
@@ -1639,6 +1740,9 @@
     /* آیکون دکمه‌های نوار بالا */
     btnBack.innerHTML = Icons.get('back');
     btnSettings.innerHTML = Icons.get('settings');
+
+    /* یک ورودی تاریخچه تا دکمه‌ی بازگشت سیستم (اندروید) داخل اپ مدیریت شود */
+    try { history.pushState({ app: 1 }, ''); } catch (e) { }
 
     var loading = h('<div class="loading"><div class="spinner" role="status" aria-label="در حال بارگذاری"></div><div>در حال بارگذاری کلمات…</div></div>');
     main.appendChild(loading);

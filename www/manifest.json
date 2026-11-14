@@ -8,8 +8,8 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#07060D",
-  "theme_color": "#07060D",
+  "background_color": "#F7F3FF",
+  "theme_color": "#F7F3FF",
   "categories": ["games", "entertainment"],
   "icons": [
     { "src": "icons/icon-app.png", "sizes": "any", "type": "image/png", "purpose": "any" },

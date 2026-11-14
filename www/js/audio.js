@@ -11,7 +11,12 @@
       if (!C) return null;
       ctx = new C();
     }
-    if (ctx.state === 'suspended') ctx.resume();
+    if (ctx.state === 'suspended') {
+      try {
+        var p = ctx.resume();
+        if (p && typeof p.catch === 'function') p.catch(function () { /* تا اولین لمس بی‌صدا */ });
+      } catch (e) { /* بی‌صدا ادامه بده */ }
+    }
     return ctx;
   }
 

@@ -2,7 +2,7 @@
   "appId": "app.adabazi.game",
   "appName": "ادابازی",
   "webDir": "www",
-  "backgroundColor": "#05050A",
+  "backgroundColor": "#F7F3FF",
   "android": {
     "allowMixedContent": false
   }
