@@ -1,31 +1,31 @@
 /* ============================================================
-   ادابازی — Design System v3
-   هویت: «White Premium» — Modern Minimalist / Premium Light
-   زمینه‌ی سفید، کارت‌های ظریف، رنگ اصلی بنفش مدرن
+   ادابازی — Design System
+   هویت: «Premium Playful 3D» + Soft Glassmorphism
+   بنفش مدرن، پس‌زمینه یاسی روشن، کارت‌های گرد و نرم
    ============================================================ */
 
 :root {
   /* ---------- بستر ---------- */
-  --bg:          #F6F7FB;   /* سفید مایل به خاکستری */
+  --bg:          #F7F3FF;   /* پس‌زمینه اصلی */
   --bg-2:        #FFFFFF;
-  --surface:     #FFFFFF;   /* کارت */
-  --surface-2:   #FBFBFE;   /* بالای کارت */
-  --surface-3:   #F1F3F9;   /* سطح برجسته / آیکون */
-  --surface-4:   #E8EBF3;
+  --surface:     rgba(255, 255, 255, .86);   /* کارت شیشه‌ای نرم */
+  --surface-2:   rgba(255, 255, 255, .94);
+  --surface-3:   #E9DFFF;   /* سطح برجسته / بنفش روشن */
+  --surface-4:   #DDD0FF;
 
   /* ---------- متن ---------- */
-  --text:         #10121A;  /* ۱۸:۱ */
-  --text-dim:     #565D70;  /* ۷.۱:۱ */
-  --text-faint:   #767D91;  /* ۴.۶:۱ */
+  --text:         #211052;  /* تیره خوانا */
+  --text-dim:     #4A3D73;
+  --text-faint:   #6E6196;
   --text-on-accent: #FFFFFF;
 
   /* ---------- برند ---------- */
-  --primary:      #6D28D9;  /* بنفش مدرن */
-  --primary-2:    #8B5CF6;
-  --primary-ink:  #4C1D95;
-  --primary-soft: rgba(109, 40, 217, .09);
-  --indigo:       #4F46E5;
-  --indigo-soft:  rgba(79, 70, 229, .09);
+  --primary:      #6C21ED;  /* بنفش اصلی */
+  --primary-2:    #9C6EEC;  /* بنفش ثانویه */
+  --primary-ink:  #5218B8;
+  --primary-soft: rgba(108, 33, 237, .10);
+  --indigo:       #5B3FD6;
+  --indigo-soft:  rgba(91, 63, 214, .10);
 
   /* ---------- وضعیت‌ها ---------- */
   --success:      #16A34A;
@@ -42,17 +42,17 @@
   --accent-soft:  var(--primary-soft);
 
   /* ---------- خطوط ---------- */
-  --line:         #E8EAF2;
-  --line-2:       #DCE0EC;
-  --line-3:       #CBD2E2;
-  --line-accent:  rgba(109, 40, 217, .24);
+  --line:         rgba(108, 33, 237, .10);
+  --line-2:       rgba(108, 33, 237, .16);
+  --line-3:       rgba(108, 33, 237, .24);
+  --line-accent:  rgba(108, 33, 237, .28);
 
-  /* ---------- شعاع ---------- */
-  --r-xs:  10px;
-  --r-sm:  14px;
-  --r-md:  18px;
-  --r-lg:  24px;
-  --r-xl:  30px;
+  /* ---------- شعاع (گردتر) ---------- */
+  --r-xs:  12px;
+  --r-sm:  16px;
+  --r-md:  22px;
+  --r-lg:  28px;
+  --r-xl:  34px;
   --r-pill: 999px;
 
   /* ---------- فاصله (۴/۸) ---------- */
@@ -65,11 +65,11 @@
   --s-7: 48px;
   --s-8: 64px;
 
-  /* ---------- سایه‌های بسیار ملایم ---------- */
-  --shadow-1: 0 1px 2px rgba(16, 18, 26, .04), 0 1px 3px rgba(16, 18, 26, .05);
-  --shadow-2: 0 6px 16px -8px rgba(16, 18, 26, .16), 0 1px 3px rgba(16, 18, 26, .05);
-  --shadow-3: 0 24px 48px -20px rgba(16, 18, 26, .22), 0 2px 6px rgba(16, 18, 26, .06);
-  --shadow-primary: 0 6px 18px -8px rgba(109, 40, 217, .48);
+  /* ---------- سایه‌های نرم و رنگی ---------- */
+  --shadow-1: 0 2px 8px rgba(33, 16, 82, .06), 0 1px 2px rgba(33, 16, 82, .04);
+  --shadow-2: 0 10px 28px -10px rgba(108, 33, 237, .18), 0 4px 12px -4px rgba(33, 16, 82, .08);
+  --shadow-3: 0 28px 56px -18px rgba(108, 33, 237, .22), 0 8px 20px -8px rgba(33, 16, 82, .10);
+  --shadow-primary: 0 10px 24px -8px rgba(108, 33, 237, .55);
 
   /* ---------- تایپوگرافی ---------- */
   --font-display: 'Plex Arabic', 'Vazirmatn', system-ui, sans-serif;
@@ -102,8 +102,8 @@
   --dock-h: 84px;
 
   --section-gap: 34px;
-  --pad-card: 18px;
-  --pad-lg: 26px;
+  --pad-card: 20px;
+  --pad-lg: 28px;
 
   /* ---------- آیکون ---------- */
   --icon-xs: 16px;
@@ -124,14 +124,14 @@
 @media (min-width: 768px) {
   :root {
     --section-gap: 52px;
-    --pad-card: 22px;
-    --pad-lg: 32px;
+    --pad-card: 24px;
+    --pad-lg: 34px;
     --maxw: 760px;
   }
 }
 
 /* رنگ تیم‌ها */
-.t-0 { --team: #6D28D9; }
+.t-0 { --team: #6C21ED; }
 .t-1 { --team: #E11D48; }
 .t-2 { --team: #0891B2; }
 .t-3 { --team: #2563EB; }

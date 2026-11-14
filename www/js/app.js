@@ -5,7 +5,7 @@
   'use strict';
 
   /* نسخه‌ی دارایی‌ها — با هر انتشار این عدد را زیاد کنید تا کش سرویس‌ورکر باطل شود */
-  var APP_VERSION = '2.5.18';
+  var APP_VERSION = '2.5.19';
 
   var main = document.getElementById('main');
   var btnBack = document.getElementById('btn-back');
@@ -40,7 +40,7 @@
   };
 
   var TEAM_COLORS = [
-    { v: '#6D28D9', n: 'بنفش' }, { v: '#E11D48', n: 'قرمز' }, { v: '#0891B2', n: 'آبی' },
+    { v: '#6C21ED', n: 'بنفش' }, { v: '#E11D48', n: 'قرمز' }, { v: '#0891B2', n: 'آبی' },
     { v: '#2563EB', n: 'نیلی' }, { v: '#16A34A', n: 'سبز' }, { v: '#DB2777', n: 'صورتی' }
   ];
 
@@ -296,7 +296,7 @@
     var modes = h('<div class="bento-2"></div>');
     Object.keys(TYPES).forEach(function (key) {
       var m = TYPES[key];
-      var accent = key === 'boom' ? '#4F46E5' : '#6D28D9';
+      var accent = key === 'boom' ? '#9C6EEC' : '#6C21ED';
       var card = h(
         '<button type="button" class="mode-card" data-type="' + key + '">' +
         '<span class="orb" style="--orb:' + accent + '">' + Icons.get(m.icon) + '</span>' +
@@ -317,8 +317,8 @@
       '<div class="stats-row">' +
       '<div class="sc-mini"><b>' + fa(s.games) + '</b><span>بازی</span></div>' +
       '<div class="sc-mini"><b>' + fa(s.words) + '</b><span>کلمه</span></div>' +
-      '<button type="button" class="sc-mini sc-link" data-history><b>' + fa(Store.history.length) + '</b><span>تاریخچه</span></button>' +
       '</div>' +
+      '<button type="button" class="sc-history" data-history>' + Icons.get('history') + '<span>تاریخچه</span><b>' + fa(Store.history.length) + '</b></button>' +
       '</section>'
     );
     el.appendChild(statCard);
@@ -959,7 +959,7 @@
       var scrim = modal({
         title: 'نتیجه اجرا',
         icon: 'flag',
-        iconColor: '#6D28D9',
+        iconColor: '#6C21ED',
         dismiss: false,
         body: '<div id="res-rows"></div>',
         actions: []
@@ -1046,7 +1046,7 @@
       var scrim = modal({
         title: 'نتیجه سرعتی',
         icon: 'bolt',
-        iconColor: '#6D28D9',
+        iconColor: '#6C21ED',
         body: body,
         dismiss: false,
         actions: []
@@ -1236,7 +1236,7 @@
 
     var head = h(
       '<section class="card card-lg card-accent u-center rank-head" >' +
-      '<span class="sheet-icon" style="--orb:' + (isTie ? '#7DD3FC' : '#6D28D9') + '">' + Icons.get(isTie ? 'heart' : 'crown') + '</span>' +
+      '<span class="sheet-icon" style="--orb:' + (isTie ? '#9C6EEC' : '#6C21ED') + '">' + Icons.get(isTie ? 'heart' : 'crown') + '</span>' +
       '<h1 style="font-size:var(--fs-h1);font-weight:900;margin:0 0 4px">' + (isTie ? 'مساوی شد!' : 'برنده') + '</h1>' +
       '<p style="margin:0;color:var(--text-dim)">' + (isTie ? 'گروه‌ها مساوی‌اند' : esc(winner.name)) + '</p>' +
       '</section>'
@@ -1275,15 +1275,15 @@
     /* کنش‌ها */
     var actions = h('<div class="bento u-mt-4" ></div>');
     var shareBtn = h('<button type="button" class="mode-card span-3">' +
-      '<span class="orb" style="--orb:#0891B2">' + Icons.get('share') + '</span>' +
+      '<span class="orb" style="--orb:#9C6EEC">' + Icons.get('share') + '</span>' +
       '<h3>اشتراک نتیجه</h3><p>متن نتیجه بازی</p></button>');
     shareBtn.addEventListener('click', function () { shareResult(); });
     var again = h('<button type="button" class="mode-card span-3">' +
-      '<span class="orb" style="--orb:#6D28D9">' + Icons.get('refresh') + '</span>' +
+      '<span class="orb" style="--orb:#6C21ED">' + Icons.get('refresh') + '</span>' +
       '<h3>بازی دوباره</h3><p>با همین تنظیمات</p></button>');
     again.addEventListener('click', function () { beep('click'); beginGame(); });
     var home = h('<button type="button" class="mode-card span-3">' +
-      '<span class="orb" style="--orb:#4F46E5">' + Icons.get('home') + '</span>' +
+      '<span class="orb" style="--orb:#211052">' + Icons.get('home') + '</span>' +
       '<h3>صفحه اصلی</h3><p>انتخاب حالت بازی</p></button>');
     home.addEventListener('click', function () { beep('click'); engine = null; go('home'); });
     actions.appendChild(shareBtn);
@@ -1403,7 +1403,7 @@
     var aboutRow = h(
       '<div class="list u-mt-3">' +
       '<button type="button" class="list-row" id="open-about">' +
-      '<span class="orb orb-sm" style="--orb:#8B5CF6">' + Icons.get('info') + '</span>' +
+      '<span class="orb orb-sm" style="--orb:#9C6EEC">' + Icons.get('info') + '</span>' +
       '<span class="lr-txt"><strong>درباره ادابازی</strong><span>حریم خصوصی و قوانین</span></span>' +
       Icons.get('next') + '</button>' +
       '</div>'
@@ -1417,7 +1417,7 @@
   function toggleRow(icon, title, sub, val, onChange) {
     var row = h(
       '<div class="setting-row">' +
-      '<span class="orb orb-sm" style="--orb:#6D28D9">' + Icons.get(icon) + '</span>' +
+      '<span class="orb orb-sm" style="--orb:#6C21ED">' + Icons.get(icon) + '</span>' +
       '<span class="sr-txt"><strong>' + esc(title) + '</strong><span>' + esc(sub) + '</span></span>' +
       '<button type="button" class="switch" role="switch" aria-checked="' + !!val + '" aria-label="' + esc(title) + '"></button>' +
       '</div>'
@@ -1446,8 +1446,8 @@
     var list = h('<div class="list u-mt-4" ></div>');
     [
       ['heart', 'بدون جمع‌آوری داده', 'همه چیز روی همین دستگاه ذخیره می‌شود.', '#DC2626'],
-      ['book', 'منطق اپ اصلی', 'ساخت نوبت‌ها، زمان هر دسته، تعویض کلمه، خطاها و پاداش زمان.', '#6D28D9'],
-      ['grid', 'چهار دسته بازی', 'سرعتی، ضرب‌المثل، دسته‌های کلمه و ترانه + حالت ویژه‌ی بوم.', '#0891B2']
+      ['book', 'منطق اپ اصلی', 'ساخت نوبت‌ها، زمان هر دسته، تعویض کلمه، خطاها و پاداش زمان.', '#6C21ED'],
+      ['grid', 'چهار دسته بازی', 'سرعتی، ضرب‌المثل، دسته‌های کلمه و ترانه + حالت ویژه‌ی بوم.', '#9C6EEC']
     ].forEach(function (r) {
       list.appendChild(h(
         '<div class="setting-row">' +
