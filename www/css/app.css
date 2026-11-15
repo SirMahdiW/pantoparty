@@ -1,5 +1,5 @@
 /* ============================================================
-   ادابازی — استایل اصلی
+   پانتومیم — استایل اصلی
    Premium Playful 3D · Soft Glassmorphism · Purple Aesthetic
    RTL · Mobile First
    ============================================================ */
@@ -8,9 +8,18 @@
 [hidden] { display: none !important; }
 
 html, body { height: 100%; }
+/* اسکرول عمودی داخل ناحیه‌ی محتوا (.main) انجام می‌شود، نه روی خود body.
+   نتیجه: صفحه‌های کوتاه هیچ اسکرول اضافه‌ای ندارند، داک پایین همیشه
+   در پایین ناحیه‌ی دید می‌ماند و اسکرول بین صفحه‌ها همیشه از بالا شروع می‌شود. */
+html { overflow: hidden; overflow-x: clip; }
 
 body {
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-ui);
@@ -18,7 +27,6 @@ body {
   line-height: var(--lh-body);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
   min-height: 100dvh;
 }
 
@@ -39,22 +47,36 @@ body {
     radial-gradient(90% 60% at 0% 100%, rgba(233,223,255,.9), transparent 50%),
     linear-gradient(165deg, #F7F3FF 0%, #FFFFFF 46%, #F1E9FF 100%);
 }
+/* لکه‌های نور پس‌زمینه — به‌جای filter: blur(80px) که روی GPU بسیار پرهزینه بود،
+   از گرادیان چندمرحله‌ای نرم استفاده می‌شود (ظاهر یکسان، رندر چند برابر سریع‌تر). */
 .aurora::before,
 .aurora::after {
   content: "";
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
+  will-change: opacity;
 }
 .aurora::before {
-  width: 88vw; height: 88vw;
-  top: -30vw; inset-inline-end: -24vw;
-  background: radial-gradient(circle, rgba(156, 110, 236, .30), rgba(108, 33, 237, .10) 50%, transparent 70%);
+  width: 108vw; height: 108vw;
+  top: -40vw; inset-inline-end: -34vw;
+  background: radial-gradient(circle closest-side,
+    rgba(156, 110, 236, .30) 0%,
+    rgba(146, 92, 232, .25) 28%,
+    rgba(122, 60, 232, .16) 52%,
+    rgba(108, 33, 237, .08) 72%,
+    rgba(108, 33, 237, .03) 88%,
+    transparent 100%);
 }
 .aurora::after {
-  width: 74vw; height: 74vw;
-  bottom: -26vw; inset-inline-start: -20vw;
-  background: radial-gradient(circle, rgba(233, 223, 255, .95), rgba(156, 110, 236, .16) 45%, transparent 72%);
+  width: 92vw; height: 92vw;
+  bottom: -36vw; inset-inline-start: -30vw;
+  background: radial-gradient(circle closest-side,
+    rgba(233, 223, 255, .92) 0%,
+    rgba(226, 214, 252, .78) 26%,
+    rgba(196, 172, 246, .40) 50%,
+    rgba(156, 110, 236, .16) 72%,
+    rgba(156, 110, 236, .05) 88%,
+    transparent 100%);
 }
 .aurora-grid {
   position: absolute;
@@ -102,6 +124,7 @@ body {
 .topbar {
   position: sticky;
   top: 0;
+  flex: none;
   z-index: var(--z-topbar);
   min-height: calc(var(--topbar-h) + env(safe-area-inset-top));
   display: flex;
@@ -137,9 +160,7 @@ body {
   display: grid; place-items: center;
   border-radius: var(--r-pill);
   border: 1px solid rgba(255, 255, 255, .7);
-  background: rgba(255, 255, 255, .72);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, .88);
   color: var(--text-dim);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -155,14 +176,26 @@ body {
 .main {
   position: relative;
   z-index: var(--z-main);
+  flex: 1 1 auto;
+  min-height: 0;
   max-width: var(--maxw);
+  width: 100%;
   margin: 0 auto;
-  padding: var(--s-5) var(--gutter) calc(var(--s-8) + env(safe-area-inset-bottom));
-  min-height: calc(100dvh - var(--topbar-h));
+  padding: var(--s-5) var(--gutter) 0;
+  overflow-y: auto;
+  overflow-x: clip;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .main:focus { outline: none; }
 
-.screen { animation: rise var(--t-slow) var(--ease-out) both; }
+/* صفحه همیشه به اندازه‌ی ناحیه‌ی دید قد می‌کشد (بدون اسکرول اضافی)
+   و فاصله‌ی پایین همان مقدار طراحی اصلی است. */
+.screen {
+  min-height: 100%;
+  padding-bottom: calc(var(--s-8) + env(safe-area-inset-bottom));
+  animation: rise var(--t-slow) var(--ease-out) both;
+}
 @keyframes rise {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: none; }
@@ -202,14 +235,15 @@ body {
 }
 
 /* ---------- کارت ---------- */
+/* شیشه‌ی کارت بدون backdrop-filter (که روی GPU موبایل هر کارت یک
+   snapshot از پس‌زمینه می‌گیرد و FPS اسکرول را نصف می‌کند).
+   جبران با شفافیت بالاتر سطح انجام می‌شود تا ظاهر شیشه‌ای حفظ شود. */
 .card {
   position: relative;
-  background: var(--surface);
-  border: 1px solid rgba(255, 255, 255, .65);
+  background: rgba(255, 255, 255, .88);
+  border: 1px solid rgba(255, 255, 255, .72);
   border-radius: var(--r-md);
   box-shadow: var(--shadow-1);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
   padding: var(--pad-card);
 }
 .card-lg { border-radius: var(--r-lg); padding: var(--pad-lg); }
@@ -266,12 +300,10 @@ body {
   box-shadow: 0 8px 20px -8px rgba(220, 38, 38, .45);
 }
 .btn-ghost {
-  --btn-bg: rgba(255, 255, 255, .55);
+  --btn-bg: rgba(255, 255, 255, .80);
   --btn-fg: var(--text-dim);
   border-color: var(--line-2);
   box-shadow: var(--shadow-1);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 .btn-ghost:hover { --btn-fg: var(--text); border-color: var(--line-3); background: rgba(255, 255, 255, .85); }
 
@@ -362,8 +394,6 @@ body {
   border-radius: var(--r-xl);
   border: 1px solid var(--glass-border);
   background: var(--grad-hero);
-  backdrop-filter: blur(var(--blur-md)) saturate(145%);
-  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(145%);
   box-shadow: var(--shadow-2), var(--inset-highlight);
 }
 .eyebrow {
@@ -565,24 +595,12 @@ body {
   background: rgba(255,255,255,.9);
   box-shadow: 0 4px 10px -6px rgba(33,16,82,.18), var(--inset-highlight);
 }
-.create .step-val { min-width: 40px; font-size: 22px; font-weight: 800; color: var(--text); }
+.create .step-val { min-width: 40px; width: 56px; font-size: 22px; font-weight: 800; color: var(--text); }
 
 .create-seg { border-radius: 18px; padding: 6px; gap: 6px; background: rgba(255,255,255,.55); }
 .create-seg .chip { min-height: 46px; border-radius: 14px; font-size: 13.5px; }
 .create-seg .chip.is-on { box-shadow: var(--shadow-primary); }
 
-.create-tip {
-  display: flex; align-items: flex-start; gap: 10px;
-  padding: 12px 14px;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, .75);
-  background: linear-gradient(135deg, rgba(233, 223, 255, .55), rgba(255, 255, 255, .62));
-  box-shadow: var(--shadow-1), var(--inset-highlight);
-  color: var(--text-dim);
-  font-size: 13px;
-  line-height: 1.7;
-}
-.create-tip svg { width: 18px; height: 18px; color: var(--primary); flex: none; margin-top: 2px; }
 .create-dock { margin-top: var(--s-4); }
 
 /* ---------- کارت حالت بازی ---------- */
@@ -594,8 +612,6 @@ body {
   border-radius: 24px;
   border: 1px solid var(--glass-border);
   background: var(--grad-surface);
-  backdrop-filter: blur(var(--blur-sm));
-  -webkit-backdrop-filter: blur(var(--blur-sm));
   box-shadow: var(--shadow-1), var(--inset-highlight);
   color: inherit;
   font: inherit;
@@ -921,8 +937,6 @@ body {
     radial-gradient(110% 80% at 100% -10%, rgba(156, 110, 236, .22), transparent 55%),
     radial-gradient(90% 70% at 0% 110%, rgba(233, 223, 255, .85), transparent 55%),
     var(--grad-surface);
-  backdrop-filter: blur(var(--blur-md)) saturate(145%);
-  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(145%);
   box-shadow: var(--shadow-2), var(--inset-highlight);
   text-align: center;
   overflow: visible;
@@ -1022,7 +1036,8 @@ body {
 /* ---------- نوار وضعیت چسبان (HUD) ---------- */
 .hud {
   position: sticky;
-  top: calc(var(--topbar-h) + env(safe-area-inset-top) + 8px);
+  /* نوار بالا بیرون از ناحیه‌ی اسکرول است؛ پس فقط فاصله‌ی کوچک لازم است */
+  top: var(--s-2);
   z-index: 5;
   margin: 0 0 var(--s-3);
   padding: 10px 12px;
@@ -1138,9 +1153,7 @@ body {
   padding-inline-start: 38px;
   border-radius: var(--r-pill);
   border: 1px solid var(--line-2);
-  background: rgba(255, 255, 255, .82);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, .92);
   color: var(--text);
   font-family: var(--font-ui);
   font-size: var(--fs-sm);
@@ -1190,8 +1203,6 @@ body {
   border: 1px solid var(--glass-border);
   border-radius: 22px;
   background: var(--grad-surface);
-  backdrop-filter: blur(var(--blur-sm));
-  -webkit-backdrop-filter: blur(var(--blur-sm));
   box-shadow: var(--shadow-1), var(--inset-highlight);
   color: var(--text);
   font: inherit;
@@ -1565,11 +1576,9 @@ body {
   align-items: center;
   gap: var(--s-3);
   padding: var(--s-4);
-  border: 1px solid rgba(255, 255, 255, .65);
+  border: 1px solid rgba(255, 255, 255, .72);
   border-radius: var(--r-md);
-  background: rgba(255, 255, 255, .78);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, .88);
   box-shadow: var(--shadow-1);
 }
 .field + .field { margin-top: var(--s-2); }
@@ -1579,11 +1588,21 @@ body {
 .stepper { display: flex; align-items: center; gap: 6px; flex: none; }
 .stepper .step-val {
   min-width: 44px;
+  width: 56px;
+  padding: 4px 6px;
   text-align: center;
   font-family: var(--font-display);
   font-size: 22px;
   font-weight: 700;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-xs);
+  outline: none;
+  transition: border-color var(--t-fast) var(--ease), background var(--t-fast) var(--ease);
 }
+.stepper .step-val:hover { border-color: var(--line-2); }
+.stepper .step-val:focus { border-color: var(--line-3); background: rgba(255, 255, 255, .82); }
 .step-btn {
   width: 46px; height: 46px;
   display: grid; place-items: center;

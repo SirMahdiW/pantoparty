@@ -1,4 +1,4 @@
-/* اپ اصلی — روتر و صفحات؛ جریان بازی مطابق اپ اصلی ادابازی:
+/* اپ اصلی — روتر و صفحات؛ جریان بازی مطابق اپ اصلی پانتومیم:
  * ساخت بازی ← صفحه گروه ← انتخاب دسته (هر نوبت) ← بازی یک کلمه ← دیالوگ نتیجه ← صفحه گروه ... ← رتبه‌بندی
  */
 (function () {
@@ -28,7 +28,7 @@
 
   var TYPES = {
     adabazi: {
-      title: 'ادابازی',
+      title: 'پانتومیم',
       desc: 'هر نوبت یک کلمه؛ بقیه حدس می‌زنند.',
       icon: 'book',
       glow: 'linear-gradient(150deg, #7C3AED, #4C1D95)'
@@ -49,6 +49,16 @@
   var FA_DIGITS = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
   function fa(n) {
     return String(n).replace(/\d/g, function (d) { return FA_DIGITS[+d]; });
+  }
+  /* خواندن عدد از ورودی (ارقام فارسی یا لاتین) */
+  function faParse(s) {
+    var t = String(s == null ? '' : s).trim();
+    if (!t) return null;
+    t = t.replace(/[۰-۹]/g, function (d) { return String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)); });
+    t = t.replace(/[٠-٩]/g, function (d) { return String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)); });
+    t = t.replace(/[^\d-]/g, '');
+    var n = parseInt(t, 10);
+    return isNaN(n) ? null : n;
   }
   function mmss(sec) {
     sec = Math.max(0, Math.round(sec));
@@ -223,7 +233,11 @@
     setChrome();
     render();
     main.focus({ preventScroll: true });
-    window.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' });
+    /* اسکرول عمودی داخل #main انجام می‌شود — پس همان‌جا صفر می‌شود */
+    try {
+      if (main.scrollTo) main.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' });
+      else main.scrollTop = 0;
+    } catch (e) { main.scrollTop = 0; }
   }
 
   /* ---------------- رندر ---------------- */
@@ -326,12 +340,11 @@
       '<figure class="hero-mascot" aria-hidden="true">' + A3D.img('portalRing', 'a3d-hero') + '</figure>' +
       '<div class="hero-top">' +
       '<span class="eyebrow">بازی گروهی و دورهمی</span>' +
-      '<span class="hero-badge">' + Icons.get('spark') + ' نسخه جدید</span>' +
       '</div>' +
       '<h1>پانتومیم کن، <em>حدس بزن</em>، امتیاز بگیر</h1>' +
       '<p>یک دورهمی هیجان‌انگیز با کلمه‌ها، تایمر و رقابت تیمی. حالت بازی‌ات را انتخاب کن و سریع شروع کن.</p>' +
       '<div class="hero-actions">' +
-      '<button type="button" class="btn btn-primary btn-lg btn-hero" id="cta-play">' + Icons.get('play') + ' شروع سریع ادابازی</button>' +
+      '<button type="button" class="btn btn-primary btn-lg btn-hero" id="cta-play">' + Icons.get('play') + ' شروع سریع پانتومیم</button>' +
       '</div>' +
       '</section>'
     ));
@@ -431,7 +444,8 @@
       d.groups = v;
       paintFoot();
     }, isBoom ? 'هر بازیکن به‌نوبت گوشی را می‌گیرد' : 'گروه‌ها به‌صورت نوبتی بازی می‌کنند');
-    var roundsStepper = stepper('تعداد دور', d.rounds, 1, 10, function (v) { d.rounds = v; }, 'هر دور یک نوبت برای هر گروه/بازیکن');
+    /* تعداد دور: بدون محدودیت (کاربر می‌تواند هر عددی را تایپ کند) */
+    var roundsStepper = stepper('تعداد دور', d.rounds, 1, null, function (v) { d.rounds = v; }, 'هر دور یک نوبت برای هر گروه/بازیکن');
     fb.appendChild(groupsStepper);
     fb.appendChild(roundsStepper);
     el.appendChild(fields);
@@ -456,9 +470,6 @@
     paintMore();
     el.appendChild(timeCard);
 
-    var tip = h('<div class="create-tip">' + Icons.get('spark') + '<span>نام‌ها خودکار ساخته می‌شوند و بعد از شروع، جریان نوبت‌ها مطابق منطق اصلی بازی پیش می‌رود.</span></div>');
-    el.appendChild(tip);
-
     var foot = h('<p class="foot" data-foot></p>');
     el.appendChild(foot);
     function paintFoot() {
@@ -476,24 +487,41 @@
     return el;
   }
 
+  /* ---------------- استپر (مقدار قابل تایپ) ---------------- */
   function stepper(label, val, min, max, onChange, sub) {
     var wrap = h(
       '<div class="field">' +
       '<div class="f-txt"><strong>' + esc(label) + '</strong>' + (sub ? '<span>' + esc(sub) + '</span>' : '') + '</div>' +
       '<div class="stepper">' +
       '<button type="button" class="step-btn" data-dec aria-label="کاهش">' + Icons.get('minus') + '</button>' +
-      '<span class="step-val" data-val>' + fa(val) + '</span>' +
+      '<input type="text" class="step-val" data-val inputmode="numeric" autocomplete="off" spellcheck="false" aria-label="' + esc(label) + '">' +
       '<button type="button" class="step-btn" data-inc aria-label="افزایش">' + Icons.get('plus') + '</button>' +
       '</div></div>'
     );
     var v = val;
-    function paint() { wrap.querySelector('[data-val]').textContent = fa(v); }
-    wrap.querySelector('[data-dec]').addEventListener('click', function () {
-      if (v > min) { v--; paint(); onChange(v); beep('click'); vibrate(10); }
+    var input = wrap.querySelector('[data-val]');
+    function paint() { input.value = fa(v); }
+    function set(n) {
+      n = Math.round(Number(n));
+      if (!isFinite(n)) { paint(); return; }
+      if (n < min) n = min;
+      if (max != null && n > max) n = max;
+      if (n === v) { paint(); return; }
+      v = n; paint(); onChange(v); beep('click'); vibrate(10);
+    }
+    function commit() {
+      var n = faParse(input.value);
+      if (n == null) { paint(); return; }
+      set(n);
+    }
+    input.addEventListener('change', commit);
+    input.addEventListener('blur', commit);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
     });
-    wrap.querySelector('[data-inc]').addEventListener('click', function () {
-      if (v < max) { v++; paint(); onChange(v); beep('click'); vibrate(10); }
-    });
+    wrap.querySelector('[data-dec]').addEventListener('click', function () { set(v - 1); });
+    wrap.querySelector('[data-inc]').addEventListener('click', function () { set(v + 1); });
+    paint();
     return wrap;
   }
 
@@ -847,7 +875,7 @@
     go('play');
   }
 
-  /* ---------------- نوبت ادابازی ---------------- */
+  /* ---------------- نوبت پانتومیم ---------------- */
 
   function renderPlay() {
     var t = engine.turn;
@@ -1337,11 +1365,11 @@
   function shareResult() {
     if (!engine || !engine.rank) { toast('نتیجه‌ای برای اشتراک وجود ندارد'); return; }
     var rank = engine.rank();
-    var lines = ['نتیجه بازی ادابازی'];
+    var lines = ['نتیجه بازی پانتومیم'];
     rank.forEach(function (t, i) { lines.push(fa(i + 1) + '. ' + t.name + ': ' + fa(t.score)); });
     var text = lines.join('\n');
     if (navigator.share) {
-      navigator.share({ title: 'ادابازی', text: text }).catch(function () {});
+      navigator.share({ title: 'پانتومیم', text: text }).catch(function () {});
       return;
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1479,7 +1507,7 @@
         '<div class="hist-item">' +
         '<span class="h-icon">' + Icons.get(isBoom ? 'bolt' : 'book') + '</span>' +
         '<span class="h-main"><strong>' + esc(g.winner || '—') + '</strong>' +
-        '<span>' + (isBoom ? 'بوم' : 'ادابازی') + ' · ' + fa(g.rounds || 0) + ' دور · ' + fa(g.words || 0) + ' کلمه</span></span>' +
+        '<span>' + (isBoom ? 'بوم' : 'پانتومیم') + ' · ' + fa(g.rounds || 0) + ' دور · ' + fa(g.words || 0) + ' کلمه</span></span>' +
         '<span class="h-score">' + fa(g.score || 0) + '</span>' +
         '</div>'
       ));
@@ -1546,7 +1574,7 @@
       '<div class="settings-group">' +
       '<button type="button" class="list-row settings-link" id="open-about">' +
       '<span class="orb orb-sm" style="--orb:#9C6EEC">' + Icons.get('info') + '</span>' +
-      '<span class="lr-txt"><strong>درباره ادابازی</strong><span>حریم خصوصی و قوانین</span></span>' +
+      '<span class="lr-txt"><strong>درباره پانتومیم</strong><span>حریم خصوصی و قوانین</span></span>' +
       '<span class="settings-chevron">' + Icons.get('next') + '</span>' +
       '</button>' +
       '</div>' +
@@ -1608,7 +1636,7 @@
       '<section class="card card-lg page-hero u-center">' +
       '<span class="page-hero-3d">' + A3D.img('heart', 'a3d-md') + '</span>' +
       '<span class="eyebrow" style="justify-content:center">درباره</span>' +
-      '<h1>ادابازی</h1>' +
+      '<h1>پانتومیم</h1>' +
       '<p>بازی گروهی برای دورهمی‌ها، با تمرکز بر سادگی، سرعت و هیجان</p>' +
       '</section>'
     ));
@@ -1616,7 +1644,7 @@
     var list = h('<div class="list u-mt-3"></div>');
     [
       ['heart', 'بدون جمع‌آوری داده', 'همه چیز روی همین دستگاه ذخیره می‌شود.', 'var(--danger)'],
-      ['book', 'منطق اپ اصلی', 'ساخت نوبت‌ها، زمان هر دسته، تعویض کلمه، خطاها و پاداش زمان.', 'var(--primary)'],
+      ['book', 'قواعد بازی', 'ساخت نوبت‌ها، زمان هر دسته، تعویض کلمه، خطاها و پاداش زمان.', 'var(--primary)'],
       ['grid', 'حالت‌ها و دسته‌ها', 'سرعتی، ضرب‌المثل، دسته‌های کلمه و ترانه + حالت ویژه‌ی بوم.', 'var(--primary-2)']
     ].forEach(function (r) {
       list.appendChild(h(

@@ -8,7 +8,7 @@
     settings: {
       rounds: 3,          // تعداد دور
       groups: 2,          // تعداد گروه
-      moreTime: 15,       // زمان اضافه (ادابازی)
+      moreTime: 15,       // زمان اضافه (پانتومیم)
       boomMoreTime: 5,    // زمان هر کلمه (بوم)
       sound: true,
       haptics: true

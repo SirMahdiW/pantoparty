@@ -1,4 +1,4 @@
-/* موتور بازی — بازسازی دقیق منطق اپ اصلی ادابازی (AdabaziPlayFragment / TeamFragment / CategoryFragment / BoomPlayFragment)
+/* موتور بازی — بازسازی دقیق منطق اپ اصلی پانتومیم (AdabaziPlayFragment / TeamFragment / CategoryFragment / BoomPlayFragment)
  *
  * ساختار:
  *  - ساخت بازی: تعداد گروه‌ها (۲..۶) + تعداد دور (۱..۱۰) + زمان اضافه
@@ -72,7 +72,7 @@
     this.turnIndex = 0;          // تیمی که نوبتش رسیده (position=true)
 
     this.finished = false;
-    this.turn = null;            // نوبت فعلی ادابازی
+    this.turn = null;            // نوبت فعلی پانتومیم
     this.boom = null;            // وضعیت بوم
     this.lastSummary = null;
     this.wordsPlayed = 0;        // آمار: کلمه‌های درست
@@ -176,7 +176,7 @@
   };
 
   /* ================================================================
-   *  نوبت ادابازی — یک کلمه در هر نوبت
+   *  نوبت پانتومیم — یک کلمه در هر نوبت
    *  state: 1 = کلمه مخفی، 2 = کلمه نمایان/تایمر خاموش، 3 = در حال اجرا، 4 = دیالوگ نتیجه
    * ================================================================ */
   Engine.prototype.startTurn = function (cid, score) {
@@ -569,7 +569,7 @@
 
   Engine.prototype.shareText = function () {
     var r = this.rank();
-    var mode = this.gameType === 'boom' ? 'بوم' : 'ادابازی';
+    var mode = this.gameType === 'boom' ? 'بوم' : 'پانتومیم';
     function num(v) {
       return v >= 0 ? String(v) : (Math.abs(v) + '-');
     }
