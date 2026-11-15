@@ -1,4 +1,4 @@
-# سند طراحی رابط کاربری — ادابازی v3
+# سند طراحی رابط کاربری — پانتومیم v3
 
 نسخه سند: ۳.۰.۰ · هویت بصری: **White Premium** (Modern Minimalist / Premium Light)
 مبتنی بر کد واقعی پروژه (`css/tokens.css`، `css/app.css`، `js/app.js`، `js/icons.js`)
